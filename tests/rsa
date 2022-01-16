@@ -1,0 +1,42 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use lib '..';
+use Digest::SHA;
+use CDS;
+
+my $e = pack('H*', '000000010001');
+my $p = pack('H*', 'c269f608f7e92ce1152959b6255235afeb82558806dcf28b14a3d36713bbd8a2d038c3095ea1b905d33a0a435b5f6928aacae0b864e779ed8c7df9e55af9b18ef16c1fd96a4fcf014f7b449d13e22829ef677008882b9840dd56ccf43f1f7eee6ae6e65020cd2742081bdf672f0f8bc35d17c70f0e6c46f99117a52934402221');
+my $q = pack('H*', 'c211c7e0e9233ea4f02e122f15d3a8a0a5f6e476c14d3ed79e2309e5c209b4052c85ad31932c5465c5cc8e627ca872020f8bd423c5d4bfb6e6a645c0dcf28bf25c882a01f52937e008b5b75b6e8e710310cb2d2ba057afb758e68ece3475e0b54d382e59b403a2f65be40b915bcd14a4f6a52483844197db4ee6e61f3a4c5383');
+
+#my $privateKey = CDS::C::privateKeyGenerate();
+my $privateKey = CDS::C::privateKeyNew($e, $p, $q);
+my $publicKey = CDS::C::publicKeyFromPrivateKey($privateKey);
+
+print 'my $n = pack(\'H*\', \'', unpack('H*', CDS::C::publicKeyN($publicKey)), '\');', "\n";
+print 'my $e = pack(\'H*\', \'', unpack('H*', CDS::C::publicKeyE($publicKey)), '\');', "\n";
+print 'my $p = pack(\'H*\', \'', unpack('H*', CDS::C::privateKeyP($privateKey)), '\');', "\n";
+print 'my $q = pack(\'H*\', \'', unpack('H*', CDS::C::privateKeyQ($privateKey)), '\');', "\n";
+print 'my $d = pack(\'H*\', \'', unpack('H*', CDS::C::privateKeyD($privateKey)), '\');', "\n";
+print "\n";
+
+my $digest = pack('H*', 'd949b50787072150ce6858daf3496580eec72216c4c6c83d763442f63af6cc73');
+#my $digest = Digest::SHA::sha256('test');
+print 'Message: ', unpack('H*', $digest), "\n";
+
+my $signature = pack('H*', '4efd145086d115a21478ce8f2f093071c493d99b1216ea138e77bb4ee908bfa0bb601dada8b050ab66f875d738db76bf5bff8e046f6d11ea23e89d74921fe71fac8bd480aa5f4242c4fdfc02866de63eee7915553acf2014101d619c15373099b49cfa72ad3fa20f7b4918f522eee6a44f27e40295f01e17bb648773fa40bdc25684d190e1af59eb09b16b3b6bf54dabdb7c5819afeef199cb47b177c3734518789d08e06c02b9039426843c1c11d86d9530fd359f3a0022b335d016abf8a91a5efe62e6080ca603c9ab9b0b7e875e2da073c08fb93a8f6ea229513ffb08309fc2e5baf1ff6e6d1a4b311b481584e58345563ad316a9ddb6e992e179c483d3f2');
+#my $signature = CDS::C::privateKeySign($privateKey, $digest);
+print 'my $signature = pack(\'H*\', \'', unpack('H*', $signature), '\');', "\n";
+
+my $ok = CDS::C::publicKeyVerify($publicKey, $digest, $signature);
+print $ok ? 'Signature OK' : 'Signature wrong', "\n";
+print "\n";
+
+my $encrypted = CDS::C::publicKeyEncrypt($publicKey, $digest);
+print 'my $encrypted = pack(\'H*\', \'', unpack('H*', $encrypted), '\');', "\n";
+
+#my $encrypted = pack('H*', '');
+
+my $decrypted = CDS::C::privateKeyDecrypt($privateKey, $encrypted);
+print 'Decrypted: ', unpack('H*', $decrypted), "\n";
+print $decrypted eq $digest ? 'Decryption OK' : 'Decryption wrong', "\n";

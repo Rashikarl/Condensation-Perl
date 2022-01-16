@@ -1,0 +1,168 @@
+#! /usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const process = require('process');
+
+var functions = [];
+var calls = [];
+traverse('Condensation/Actors');
+traverse('Condensation/ActorWithDataTree');
+traverse('Condensation/DataTree');
+traverse('Condensation/HTTPServer');
+traverse('Condensation/Messaging');
+traverse('Condensation/Serialization');
+traverse('Condensation/Stores');
+traverse('Condensation/UnionList');
+traverseFile('Condensation/Duration.pm');
+traverseFile('Condensation/File.pm');
+traverseFile('Condensation/ISODate.pm');
+traverseFile('Condensation/Log.pm');
+traverseFile('Condensation/MinMax.pm');
+traverseFile('Condensation/Random.pm');
+traverseFile('Condensation/Version.pm');
+writeFunctions();
+writeCalls();
+
+function traverse(folder) {
+	var files = fs.readdirSync(folder);
+	for (var i = 0; i < files.length; i++) {
+		var fullname = folder + '/' + files[i];
+		var stats = fs.statSync(fullname);
+		if (stats.isDirectory()) traverse(fullname);
+		else traverseFile(fullname);
+	}
+}
+
+function traverseFile(file) {
+	console.log(file);
+	var match = file.match(/^Condensation\/(.*?)\/(.*).pm$/);
+	if (match) {
+		var section = match[1];
+		var classname = 'CDS/' + match[2];
+	} else {
+		var shortMatch = file.match(/^Condensation\/(.*).pm$/);
+		if (! shortMatch) return error(file, 'Invalid file name.');
+		section = '';
+		classname = 'CDS/' + shortMatch[1];
+	}
+
+	if (classname.match(/SplitStore/)) return;
+	if (classname.match(/FTPStore/)) return;
+	if (classname.match(/SFTPStore/)) return;
+	if (classname.match(/LogStore/)) return;
+
+	var content = fs.readFileSync(file, 'utf8');
+	var lines = content.split(/\n/);
+	for (var i = 0; i < lines.length; i++) {
+		var line = lines[i];
+
+		var subMatch = line.match(/^sub ([a-zA-Z0-9]*)\((.*)\)(\s*\{.*|\s*;.*)$/);
+		if (subMatch) {
+			if (subMatch[3].indexOf('private') >= 0) continue;
+
+			var name = subMatch[1];
+
+			var args = subMatch[2].split(/[,;]/);
+			for (var n = 0; n < args.length; n++) {
+				var arg = args[n];
+				if (arg.match(/^\s*$/)) continue;
+				var m = arg.match(/^\s*[\$\@]+([a-zA-Z0-9]*)/);
+				if (! m) {
+					error(file, 'Weird argument: ' + arg);
+					continue;
+				}
+
+				args[n] = m[1];
+			}
+
+			var firstArg = args.shift();
+			var isStatic = firstArg == 'class';
+			if (!isStatic && firstArg != 'o' && firstArg != 'this') {
+				error(file, 'Weird first argument: ' + line);
+				continue;
+			}
+
+			if (! args.length && subMatch[3].match(/\{.*\}/)) {
+				addPublicValue(classname, name);
+				continue;
+			}
+
+			addFunction(classname, name, isStatic, args);
+			if (name == 'equals') addFunction(classname, name, true, ['a', 'b']);
+			continue;
+		}
+
+		var subMatch = line.match(/^sub ([a-zA-Z0-9]*);/);
+		if (subMatch) {
+			addPublicValue(classname, subMatch[1]);
+			continue;
+		}
+
+		var subMatch = line.match(/^sub ([a-zA-Z0-9]*) {\s*(.*?)\s*}/);
+		if (subMatch) {
+			addConstant(classname, subMatch[1], subMatch[2]);
+			continue;
+		}
+
+		var extendMatch = line.match(/^# EXTEND ([a-zA-Z0-9:]*)/);
+		if (extendMatch) {
+			classname = extendMatch[1].replace(/::/g, '/');
+		}
+	}
+}
+
+function addFunction(classname, name, isStatic, args) {
+	functions.push(classname + '\t' + (isStatic ? 'STATIC METHOD' : 'METHOD') + '\t' + name + '\t' + args.join(', '));
+
+	var packageName = classname.replace(/\//g, '::');
+	var call = (isStatic ? packageName : '$o') + '-&gt;' + name + (args.length ? '(' + args.map(name => '$' + name).join(', ') + ')' : '');
+	calls.push({order: classname + ' ' + (isStatic ? 'B' : 'D') + ' ' + name + ' '+ args.length, classname: classname, call: call});
+}
+
+function addPublicValue(classname, name) {
+	functions.push(classname + '\t' + 'VALUE' + '\t' + name);
+
+	var call = '$o-&gt;' + name;
+	calls.push({order: classname + ' C ' + name + ' 0', classname: classname, call: call});
+}
+
+function addConstant(classname, name, value) {
+	functions.push(classname + '\t' + 'CONSTANT' + '\t' + name);
+
+	var packageName = classname.replace(/\//g, '::');
+	var displayValue = value.match(/^\$/) ? '' : '   # = ' + value;
+	var call = packageName + '-&gt;' + name + displayValue;
+	calls.push({order: classname + ' A ' + name + ' 0', classname: classname, call: call});
+}
+
+function writeFunctions() {
+	functions.sort();
+
+	var fd = fs.openSync('interface', 'w');
+	for (var i = 0; i < functions.length; i++)
+		fs.writeSync(fd, functions[i] + '\n');
+	fs.closeSync(fd);
+}
+
+function writeCalls() {
+	calls.sort((a, b) => a.order < b.order ? -1 : a.order > b.order ? 1 : 0);
+	var fd = fs.openSync('perl-calls.inc.html', 'w');
+	var currentClassname = '';
+	for (var i = 0; i < calls.length; i++) {
+		var call = calls[i];
+		if (currentClassname != call.classname) {
+			currentClassname = call.classname;
+			fs.writeSync(fd, '\n');
+		}
+		fs.writeSync(fd, call.call + '\n');
+	}
+	fs.closeSync(fd);
+
+	console.log('Move the file "perl-calls.inc.html" to the website folder /api/all.');
+}
+
+function error(file, text) {
+	console.log('  ' + text);
+	return false;
+}

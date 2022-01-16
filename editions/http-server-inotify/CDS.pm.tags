@@ -1,0 +1,487 @@
+# format=pipe
+CDS|package||
+CheckSignatureStore|package||
+Configuration|package||
+DAY||in CDS|
+ErrorHandlingStore|package||
+FolderStore|package||
+Group|package||
+HOUR||in CDS|
+HTTPServer|package||
+HTTPStore|package||
+HashAndKey|package||
+Hash|package||
+HexDump|package||
+ISODate|package||
+IdentificationHandler|package||
+InMemoryStore|package||
+KeyPair|package||
+LogStore|package||
+Logger|package||
+MINUTE||in CDS|
+MONTH||in CDS|
+MessageGatewayHandler|package||
+MissingObject|package||
+ObjectCache|package||
+Object|package||
+PosixPermissions|package||
+PublicKey|package||
+PutTree|package||
+RecordReader|package||
+RecordWriter|package||
+Record|package||
+Request|package||
+SECOND||in CDS|
+Span|package||
+SplitStore|package||
+StaticContentHandler|package||
+StaticFilesHandler|package||
+StoreHandler|package||
+StoreModifications|package||
+Store|package||
+UI|package||
+UNKNOWN|package||
+User|package||
+WEEK||in CDS|
+Watcher|package||
+World|package||
+YEAR||in CDS|
+accountFolderMode||in CDS::FolderStore::PosixPermissions::Group|
+accountFolderMode||in CDS::FolderStore::PosixPermissions::User|
+accountFolderMode||in CDS::FolderStore::PosixPermissions::World|
+accountForWriting||($hash) in CDS::InMemoryStore|
+accountStore||($index) in CDS::SplitStore|
+accounts||($request) in CDS::HTTPServer::StoreHandler|
+accounts||() in CDS::FolderStore|
+addAccount||($accountHash) in CDS::FolderStore|
+addBoolean||($value, $hash) in CDS::Record|
+addEntriesToRecord||($unsortedEntries, $record) in CDS::StoreModifications|
+addFromObject||($object // return) in CDS::Record|
+addHandler||($handler) in CDS::HTTPServer|
+addHashAndKey||($hashAndKey) in CDS::Record|
+addHash||($hash) in CDS::RecordWriter|
+addHash||($hash) in CDS::Record|
+addInteger||($value, $hash) in CDS::Record|
+addRecord||() in CDS::Record|
+addText||($value, $hash) in CDS::Record|
+addUnsigned||($value, $hash) in CDS::Record|
+additions||in CDS::StoreModifications|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::CheckSignatureStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::ErrorHandlingStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::FolderStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::HTTPStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::InMemoryStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::LogStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::SplitStore|
+add||($accountHash, $boxLabel, $hash, $object) in CDS::StoreModifications|
+add||($boxLabel, $hash, $keyPair) in CDS::ObjectCache|
+add||($bytes, $hash) in CDS::Record|
+asBoolean||() in CDS::Record|
+asHashAndKey||() in CDS::Record|
+asInteger||() in CDS::Record|
+asText||() in CDS::Record|
+asUnsigned||() in CDS::Record|
+assignAccounts||($fromIndex, $toIndex, $store) in CDS::SplitStore|
+assignObjects||($fromIndex, $toIndex, $store) in CDS::SplitStore|
+a||() in CDS::UI|
+backend||in CDS::ObjectCache|
+background||($background; @text) in CDS::UI|
+bad_request||() in CDS::HTTPServer|
+baseFolderMode||in CDS::FolderStore::PosixPermissions::Group|
+baseFolderMode||in CDS::FolderStore::PosixPermissions::User|
+baseFolderMode||in CDS::FolderStore::PosixPermissions::World|
+blue||() in CDS::UI|
+bold||() in CDS::UI|
+book||($hash, $keyPair) in CDS::CheckSignatureStore|
+book||($hash, $keyPair) in CDS::ErrorHandlingStore|
+book||($hash, $keyPair) in CDS::FolderStore|
+book||($hash, $keyPair) in CDS::HTTPStore|
+book||($hash, $keyPair) in CDS::InMemoryStore|
+book||($hash, $keyPair) in CDS::LogStore|
+book||($hash, $keyPair) in CDS::SplitStore|
+book||($keyPair) in CDS::ObjectCache|
+booleanCompare||($a, $b) in CDS STATIC|
+booleanFromBytes||($bytes) in CDS STATIC|
+booleanValue||() in CDS::Record|
+boxEntry||($request, $accountHash, $boxLabel, $hash) in CDS::HTTPServer::StoreHandler|
+boxFileMode||($boxLabel) in CDS::FolderStore::PosixPermissions::Group|
+boxFileMode||($boxLabel) in CDS::FolderStore::PosixPermissions::User|
+boxFileMode||in CDS::FolderStore::PosixPermissions::World|
+boxFolderMode||($boxLabel) in CDS::FolderStore::PosixPermissions::Group|
+boxFolderMode||($boxLabel) in CDS::FolderStore::PosixPermissions::User|
+boxFolderMode||in CDS::FolderStore::PosixPermissions::World|
+box||($request, $accountHash, $boxLabel) in CDS::HTTPServer::StoreHandler|
+byteLength||() in CDS::Object|
+bytesFromBoolean||($value) in CDS STATIC|
+bytesFromInteger||($value) in CDS STATIC|
+bytesFromUnsigned||($value) in CDS STATIC|
+bytesValue||() in CDS::Record|
+bytes||() in CDS::Hash|
+bytes||() in CDS::PublicKey|
+bytes||in CDS::Object|
+bytes||in CDS::Record|
+cache||in CDS::ObjectCache|
+calculateFor||($bytes) in CDS::Hash STATIC|
+calculateHash||() in CDS::Object|
+calculateSizeContribution||() in CDS::Record|
+calculateSize||() in CDS::Record|
+changeStyle||() in CDS::UI::HexDump|
+checkPermissions||($item, $expectedMode, $logger) in CDS::FolderStore::PosixPermissions|
+checkPermissions||($logger) in CDS::FolderStore|
+checkSignature||($store, $contentBytesToSign) in CDS::HTTPServer::Request|
+childWithText||($text) in CDS::Record|
+children||() in CDS::Record|
+child||($bytes) in CDS::Record|
+cmp||($this, $that) in CDS::Hash|
+collectGarbage||($graceTime) in CDS::InMemoryStore|
+command||() in CDS::UI|
+containsText||($text) in CDS::Record|
+contains||($bytes) in CDS::Record|
+context||in CDS::MissingObject|
+copyDataAndCalculateHash||($fh) in CDS::HTTPServer::Request|
+corsAllowEverybody||in CDS::HTTPServer|
+countEntries||() in CDS::Record|
+createFolder||($folder) in CDS::Configuration|
+createIfNecessary||() in CDS::Configuration|
+createIfNecessary||() in CDS::FolderStore|
+create||($header, $data) in CDS::Object STATIC|
+create||() in CDS::InMemoryStore STATIC|
+crypt||($key) in CDS::Object|
+darkBold||() in CDS::UI|
+data||in CDS::Object|
+data||in CDS::RecordWriter|
+dateValue||($bytes) in CDS::UI::Record|
+dayString||($time // 1000 * time) in CDS::ISODate STATIC|
+defaultFile||in CDS::HTTPServer::StaticFilesHandler|
+deliverFileForPath||($request, $path) in CDS::HTTPServer::StaticFilesHandler|
+deliverFile||($request, $file, $contentType // $o->guessContentType($file) in CDS::HTTPServer::StaticFilesHandler|
+dependentHashes||() in CDS::Record|
+display||($ui, $record, $storeUrl) in CDS::UI::Record STATIC|
+display||() in CDS::UI::HexDump|
+done||() in CDS::FolderStore::Watcher|
+dropData||() in CDS::HTTPServer::Request|
+emptyBytesHash||in CDS|
+emptyHeader||in CDS::Object|
+encrypt||($bytes) in CDS::PublicKey|
+equals||($this, $that) in CDS::Hash|
+errorHandler||in CDS::ErrorHandlingStore|
+error||() in CDS::UI|
+executeIndividually||($store, $keyPair) in CDS::StoreModifications|
+exists||() in CDS::FolderStore|
+fileHandle||in CDS::LogStore|
+fileHandle||in CDS::UI|
+file||($filename) in CDS::Configuration|
+firstChild||() in CDS::Record|
+folder||in CDS::Configuration|
+folder||in CDS::FolderStore|
+folder||in CDS::HTTPServer::StaticFilesHandler|
+forFolder||($folder) in CDS::FolderStore::PosixPermissions STATIC|
+forUrl||($url) in CDS::FolderStore STATIC|
+forUrl||($url) in CDS::HTTPStore STATIC|
+foreground||($color) in CDS::UI::HexDump|
+foreground||($foreground; @text) in CDS::UI|
+formatByteLength||($byteLength) in CDS::LogStore|
+formatDuration||($elapsed) in CDS::LogStore|
+fromBytes||($bytes // return) in CDS::Object STATIC|
+fromBytes||($bytes) in CDS::StoreModifications STATIC|
+fromBytes||($hashBytes // return) in CDS::Hash STATIC|
+fromFile||($file) in CDS::Object STATIC|
+fromHex||($hashHex // return) in CDS::Hash STATIC|
+fromObject||($object // return) in CDS::Record STATIC|
+fromObject||($object) in CDS::PublicKey STATIC|
+fromRecord||($record) in CDS::StoreModifications STATIC|
+getOrCreateDefault||($ui) in CDS::Configuration STATIC|
+get||($hash, $keyPair) in CDS::CheckSignatureStore|
+get||($hash, $keyPair) in CDS::ErrorHandlingStore|
+get||($hash, $keyPair) in CDS::FolderStore|
+get||($hash, $keyPair) in CDS::HTTPStore|
+get||($hash, $keyPair) in CDS::InMemoryStore|
+get||($hash, $keyPair) in CDS::LogStore|
+get||($hash, $keyPair) in CDS::ObjectCache|
+get||($hash, $keyPair) in CDS::SplitStore|
+get||($request) in CDS::HTTPServer::StaticFilesHandler|
+gid||in CDS::FolderStore::PosixPermissions|
+gold||() in CDS::UI|
+gray||() in CDS::UI|
+green||() in CDS::UI|
+groupedBoxOperations||($operations) in CDS STATIC|
+group||() in CDS::FolderStore::PosixPermissions|
+guessContentType||($file) in CDS::HTTPServer::StaticFilesHandler|
+guessValue||($bytes) in CDS::UI::Record|
+handler||() in CDS::HTTPServer|
+hasError||in CDS::RecordReader|
+hasError||in CDS::UI|
+hasWarning||in CDS::UI|
+hashAndKeyValue||() in CDS::Record|
+hashAtIndex||($index // return) in CDS::Object|
+hashValue||() in CDS::Record|
+hashesCount||in CDS::Object|
+hashes||() in CDS::Object|
+hash||in CDS::HashAndKey|
+hash||in CDS::MissingObject|
+hash||in CDS::PublicKey|
+hash||in CDS::Record|
+headers||($headers) in CDS::HTTPServer|
+headers||in CDS::HTTPServer::Request|
+header||() in CDS::RecordWriter|
+header||in CDS::Object|
+hexDump||($bytes) in CDS::UI|
+hexValue||($bytes) in CDS::UI::Record|
+hex||() in CDS::Hash|
+id||() in CDS::ErrorHandlingStore|
+id||() in CDS::FolderStore|
+id||() in CDS::HTTPStore|
+id||in CDS::CheckSignatureStore|
+id||in CDS::InMemoryStore|
+id||in CDS::LogStore|
+id||in CDS::ObjectCache|
+id||in CDS::SplitStore|
+integerFromBytes||($bytes) in CDS STATIC|
+integerValue||() in CDS::Record|
+intermediateFolders||($path) in CDS STATIC|
+isEmpty||() in CDS::StoreModifications|
+isValidBoxLabel||($label) in CDS STATIC|
+keyPair||() in CDS::Configuration|
+keyValue||($key, $firstLine; @lines) in CDS::UI|
+key||in CDS::HashAndKey|
+left||($width, $text) in CDS::LogStore|
+left||($width, $text) in CDS::UI|
+line||() in CDS::UI|
+listFolder||($boxFolder) in CDS::FolderStore|
+listFolder||($folder) in CDS STATIC|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::CheckSignatureStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::ErrorHandlingStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::FolderStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::HTTPStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::InMemoryStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::LogStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::SplitStore|
+list||($boxLabel, $timeout, $keyPair) in CDS::ObjectCache|
+localSecondString||($time // 1000 * time) in CDS::ISODate STATIC|
+logger||in CDS::HTTPServer|
+log||($cmd, $input, $output, $elapsed) in CDS::LogStore|
+log||() in CDS STATIC|
+looksLikeTimestamp||($integer) in CDS::UI::Record|
+markEntry||($entry) in CDS::InMemoryStore|
+markHash||($hash) in CDS::InMemoryStore|
+max||() in CDS STATIC|
+messagingStoreUrl||() in CDS::Configuration|
+method||in CDS::HTTPServer::Request|
+millisecondString||($time // 1000 * time) in CDS::ISODate STATIC|
+mimeTypesByExtension||in CDS::HTTPServer::StaticFilesHandler|
+min||() in CDS STATIC|
+mkdir||($folder, $mode) in CDS::FolderStore::PosixPermissions|
+modify||($modifications, $keyPair) in CDS::CheckSignatureStore|
+modify||($modifications, $keyPair) in CDS::ErrorHandlingStore|
+modify||($modifications, $keyPair) in CDS::FolderStore|
+modify||($modifications, $keyPair) in CDS::HTTPStore|
+modify||($modifications, $keyPair) in CDS::InMemoryStore|
+modify||($modifications, $keyPair) in CDS::LogStore|
+modify||($modifications, $keyPair) in CDS::SplitStore|
+modify||(@$removals, $keyPair) in CDS::ObjectCache|
+new||($backend, $cache) in CDS::ObjectCache STATIC|
+new||($bytes, $hash) in CDS::Record STATIC|
+new||($fileHandle // *STDOUT, $pure) in CDS::UI STATIC|
+new||($fileHandle) in CDS::HTTPServer::Logger STATIC|
+new||($folder) in CDS::FolderStore STATIC|
+new||($folder) in CDS::FolderStore::Watcher STATIC|
+new||($gid) in CDS::FolderStore::PosixPermissions::Group STATIC|
+new||($hash // return, $key // return) in CDS::HashAndKey STATIC|
+new||($hash, $store) in CDS::MissingObject STATIC|
+new||($id) in CDS::InMemoryStore|
+new||($key) in CDS::SplitStore STATIC|
+new||($object) in CDS::RecordReader STATIC|
+new||($path, $content, $contentType) in CDS::HTTPServer::StaticContentHandler STATIC|
+new||($root) in CDS::HTTPServer::IdentificationHandler STATIC|
+new||($root, $folder, $defaultFile // '') in CDS::HTTPServer::StaticFilesHandler STATIC|
+new||($root, $store, $checkPutHash, $checkSignatures // 1) in CDS::HTTPServer::StoreHandler STATIC|
+new||($server; %parameters) in CDS::HTTPServer::Request STATIC|
+new||($store, $fileHandle // *STDERR, $prefix // '') in CDS::LogStore STATIC|
+new||($store, $keyPair, $commitPool) in CDS::PutTree|
+new||($store, $objects) in CDS::CheckSignatureStore|
+new||($store, $url, $errorHandler) in CDS::ErrorHandlingStore STATIC|
+new||($ui, $bytes) in CDS::UI::HexDump STATIC|
+new||($ui, $folder, $defaultStoreFolder) in CDS::Configuration STATIC|
+new||($uid) in CDS::FolderStore::PosixPermissions::User STATIC|
+new||($url) in CDS::HTTPStore STATIC|
+new||($url, $identity, $recipient) in CDS::HTTPServer::MessageGatewayHandler STATIC|
+new||() in CDS::FolderStore::PosixPermissions::World STATIC|
+new||() in CDS::HTTPServer STATIC|
+new||() in CDS::RecordWriter STATIC|
+new||() in CDS::StoreModifications STATIC|
+new||() in CDS::UI::Span STATIC|
+niceBytes||($bytes, $maxLength) in CDS::UI|
+niceDateTimeLocal||($time // time() in CDS::UI|
+niceDateTime||($time // time() in CDS::UI|
+niceDate||($time // time() in CDS::UI|
+niceFileSize||($fileSize) in CDS::UI|
+niceTime||($time // time() in CDS::UI|
+now||in CDS|
+nthChild||($i) in CDS::Record|
+objectFileMode||in CDS::FolderStore::PosixPermissions::Group|
+objectFileMode||in CDS::FolderStore::PosixPermissions::User|
+objectFileMode||in CDS::FolderStore::PosixPermissions::World|
+objectFolderMode||in CDS::FolderStore::PosixPermissions::Group|
+objectFolderMode||in CDS::FolderStore::PosixPermissions::User|
+objectFolderMode||in CDS::FolderStore::PosixPermissions::World|
+objectStore||($index) in CDS::SplitStore|
+objects||($request, $hash) in CDS::HTTPServer::StoreHandler|
+objects||in CDS::StoreModifications|
+object||in CDS::PublicKey|
+onRequestDone||($request, $responseCode) in CDS::HTTPServer::Logger|
+onRequestError||($request; @text) in CDS::HTTPServer::Logger|
+onRequestStarts||($request) in CDS::HTTPServer::Logger|
+onServerStarts||($port) in CDS::HTTPServer::Logger|
+orange||() in CDS::UI|
+pGreen||() in CDS::UI|
+pOrange||() in CDS::UI|
+pRed||() in CDS::UI|
+parseQueryString||() in CDS::HTTPServer::Request|
+parse||($dateString // return) in CDS::ISODate STATIC|
+pathAbove||($root) in CDS::HTTPServer::Request|
+path||() in CDS::MissingObject|
+path||in CDS::HTTPServer::Request|
+peerAddress||in CDS::HTTPServer::Request|
+peerPort||in CDS::HTTPServer::Request|
+permissions||in CDS::FolderStore|
+popIndent||() in CDS::UI|
+prefix||in CDS::LogStore|
+printTo||($ui, $parent) in CDS::UI::Span|
+print_banner||() in CDS::HTTPServer|
+print||() in CDS::UI|
+process||($request) in CDS::HTTPServer::IdentificationHandler|
+process||($request) in CDS::HTTPServer::MessageGatewayHandler|
+process||($request) in CDS::HTTPServer::StaticContentHandler|
+process||($request) in CDS::HTTPServer::StaticFilesHandler|
+process||($request) in CDS::HTTPServer::StoreHandler|
+process||() in CDS::HTTPServer|
+progress||() in CDS::UI|
+pushIndent||() in CDS::UI|
+put||($hash // return) in CDS::PutTree|
+put||($hash, $object) in CDS::StoreModifications|
+put||($hash, $object, $keyPair) in CDS::CheckSignatureStore|
+put||($hash, $object, $keyPair) in CDS::ErrorHandlingStore|
+put||($hash, $object, $keyPair) in CDS::FolderStore|
+put||($hash, $object, $keyPair) in CDS::HTTPStore|
+put||($hash, $object, $keyPair) in CDS::InMemoryStore|
+put||($hash, $object, $keyPair) in CDS::LogStore|
+put||($hash, $object, $keyPair) in CDS::SplitStore|
+put||($object, $keyPair) in CDS::ObjectCache|
+p||() in CDS::UI|
+queryString||in CDS::HTTPServer::Request|
+randomBytes||($length) in CDS STATIC|
+randomHex||($length) in CDS STATIC|
+randomKey||() in CDS STATIC|
+raw||() in CDS::UI|
+readBytesFromFile||($filename) in CDS STATIC|
+readBytes||($length) in CDS::RecordReader|
+readChildren||($record) in CDS::RecordReader|
+readData||() in CDS::HTTPServer::Request|
+readEntriesFromRecord||($entries, $record) in CDS::StoreModifications|
+readFile||($file) in CDS::HTTPServer::StaticFilesHandler|
+readFirstLine||($file) in CDS::Configuration|
+readTextFromFile||($filename) in CDS STATIC|
+readUnsigned32||() in CDS::RecordReader|
+readUnsigned64||() in CDS::RecordReader|
+readUnsigned8||() in CDS::RecordReader|
+recordChildren||($record, $storeUrl) in CDS::UI|
+record||($record, $context) in CDS::UI::Record|
+record||($record, $storeUrl) in CDS::UI|
+recursiveTransfer||($hash, $sourceStore, $destinationStore, $done) in CDS::KeyPair|
+red||() in CDS::UI|
+remainingData||in CDS::HTTPServer::Request|
+removals||in CDS::StoreModifications|
+removeAccount||($accountHash) in CDS::FolderStore|
+removeProgress||() in CDS::UI|
+remove||($accountHash, $boxLabel, $hash) in CDS::StoreModifications|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::CheckSignatureStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::ErrorHandlingStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::FolderStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::HTTPStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::InMemoryStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::LogStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::SplitStore|
+remove||($boxLabel, $hash, $keyPair) in CDS::ObjectCache|
+reply200Bytes||($content // '') in CDS::HTTPServer::Request|
+reply200HTML||($content // '') in CDS::HTTPServer::Request|
+reply200||($content // '') in CDS::HTTPServer::Request|
+reply303||($location) in CDS::HTTPServer::Request|
+reply400||in CDS::HTTPServer::Request|
+reply403||in CDS::HTTPServer::Request|
+reply404||in CDS::HTTPServer::Request|
+reply405||in CDS::HTTPServer::Request|
+reply500||in CDS::HTTPServer::Request|
+reply503||in CDS::HTTPServer::Request|
+replyFatalError||() in CDS::HTTPServer::Request|
+replyOptions||() in CDS::HTTPServer::Request|
+reply||($responseCode, $responseLabel, $headers // {}, $content // '') in CDS::HTTPServer::Request|
+request||($method, $url, $headers, $keyPair, $data, $signData) in CDS::HTTPStore STATIC|
+reset||in CDS::UI::HexDump|
+revisionValue||($bytes) in CDS::UI::Record|
+right||($width, $text) in CDS::UI|
+secondString||($time // 1000 * time) in CDS::ISODate STATIC|
+selectorChildren||($selector) in CDS::UI|
+selector||($selector, $rootLabel) in CDS::UI|
+server||in CDS::HTTPServer::Request|
+setContentType||($extension, $contentType) in CDS::HTTPServer::StaticFilesHandler|
+setCorsAllowEverybody||($value) in CDS::HTTPServer|
+setHeaders||($newHeaders) in CDS::HTTPServer::Request|
+setKeyPair||($keyPair) in CDS::Configuration|
+setLogger||($logger) in CDS::HTTPServer|
+setMessagingStoreUrl||($storeUrl) in CDS::Configuration|
+setPermissions||($permissions) in CDS::FolderStore|
+setStorageStoreUrl||($storeUrl) in CDS::Configuration|
+setup||() in CDS::HTTPServer|
+set||($bytes, $hash) in CDS::Record|
+shortHex||() in CDS::Hash|
+space||() in CDS::UI|
+span||() in CDS::UI|
+storageStoreUrl||() in CDS::Configuration|
+storeIndex||($hash) in CDS::SplitStore|
+store||in CDS::ErrorHandlingStore|
+store||in CDS::LogStore|
+store||in CDS::MissingObject|
+styleHashList||($offset) in CDS::UI::HexDump|
+styleRecord||($offset) in CDS::UI::HexDump|
+target||() in CDS::FolderStore::PosixPermissions::Group|
+target||() in CDS::FolderStore::PosixPermissions::User|
+target||in CDS::FolderStore::PosixPermissions::World|
+textContentType||in CDS::HTTPServer::Request|
+textValue||() in CDS::Record|
+title||() in CDS::UI|
+toObject||() in CDS::Record|
+toRecord||() in CDS::StoreModifications|
+trailer||() in CDS::RecordReader|
+transfer||($hashes, $sourceStore, $destinationStore) in CDS::KeyPair|
+traverseHashes||($hashes) in CDS::Record|
+uid||in CDS::FolderStore::PosixPermissions|
+ui||in CDS::Configuration|
+underlined||() in CDS::UI|
+unsignedFromBytes||($bytes) in CDS STATIC|
+unsignedValue||() in CDS::Record|
+uri_decode||($encoded) in CDS::HTTPServer::Request|
+url||in CDS::ErrorHandlingStore|
+user||() in CDS::FolderStore::PosixPermissions|
+use||($length) in CDS::RecordReader|
+valueIndent||($width) in CDS::UI|
+verbose||() in CDS::UI|
+verifyAddition||($actorHash, $accountHash, $boxLabel, $hash) in CDS::HTTPServer::StoreHandler|
+verifyHash||($hash, $signature) in CDS::PublicKey|
+verifyModifications||($actorHash, $modifications) in CDS::HTTPServer::StoreHandler|
+verifyRemoval||($actorHash, $accountHash, $boxLabel, $hash) in CDS::HTTPServer::StoreHandler|
+version||in CDS|
+violet||() in CDS::UI|
+wait||($remaining, $until) in CDS::FolderStore::Watcher|
+warning||() in CDS::UI|
+wordWrap||($state) in CDS::UI::Span|
+writeBytesToFile||($filename; @bytes) in CDS STATIC|
+writeBytes||($bytes) in CDS::RecordWriter|
+writeChildren||($record) in CDS::RecordWriter|
+writeNode||($record, $hasMoreSiblings) in CDS::RecordWriter|
+writeTemporaryFile||($folder, $mode) in CDS::FolderStore::PosixPermissions|
+writeTextToFile||($filename; @text) in CDS STATIC|
+writeToFile||($file) in CDS::Object|
+writeUnsigned32||($value) in CDS::RecordWriter|
+writeUnsigned64||($value) in CDS::RecordWriter|
+writeUnsigned8||($value) in CDS::RecordWriter|
+zeroCTR||in CDS|

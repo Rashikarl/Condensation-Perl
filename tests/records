@@ -1,0 +1,76 @@
+#! /usr/bin/perl
+use strict;
+use lib '..';
+use CDS;
+
+if (1) {
+	my $hash1 = CDS::Hash->fromHex('7748b60128324fe517ee53315958882e53305ca3b0b00e6da31deaaef8d03395');
+	my $hash2 = CDS::Hash->fromHex('94babe3b02e0516869e1572ee041934ea86544674a0010947ef1c408ccf40ed2');
+	my $reference1 = CDS::Reference->new($hash1, pack('H*', '0185df04a96035cce120c8de3c00adccb140693382b44ec3f96a7e90231b15cd'));
+	my $r = CDS::Record->new;
+	$r->addText('text')->addText('Condensation 1 for Perl');
+	$r->addText('timestamp')->addUnsigned(1000 * time);
+	my $lists = $r->addText('references and hashes');
+	$lists->addReference($reference1);
+	$lists->addHash($hash2);
+
+	my $root = &addNode($r, 'root', 1000 * time - 3600 * 1000, 0);
+	&addNode($root, 'first name', 0, 1000 * time, 'Thomas');
+	&addNode($root, 'last name', 0, 1000 * time, 'Lochmatter');
+
+	my $obj = $r->toObject;
+	CDS::File->writeBytes('records-test', $obj->bytes);
+}
+
+if (0) {
+	my $r = CDS::Record->new;
+	&addData($r, 'csv-data');
+
+	my $obj = $r->toObject;
+	CDS::File->writeBytes('csv-data-record', $obj->bytes);
+}
+
+if (1) {
+	my $bytes = CDS::File->readBytes('records-test');
+	my $obj = CDS::Object->fromBytes($bytes);
+	my $r = CDS::Record->fromObject($obj);
+	my $ui = CDS::Output->new;
+	$ui->record($r);
+}
+
+
+sub addNode {
+	my $parent = shift;
+	my $label = shift;
+	my $broom = shift;
+	my $revision = shift;
+	my $value = shift;
+
+	my $node = $parent->addText($label);
+	my $rev = $node->addUnsigned($broom)->addUnsigned($revision);
+	$rev->addText($value) if defined $value;
+	return $node;
+}
+
+sub addData {
+	my $record = shift;
+	my $file = shift;
+
+	open(F, '<', $file);
+	while (my $line = <F>) {
+		while (chomp $line) {}
+		$line = $1 if $line =~ /^\s*(.*?)\s*$/;
+		next if ! length $line;
+		my @args = split(/\t/, $line);
+		my $line = $record->addText(shift @args);
+		for my $arg (@args) {
+			if ($arg =~ /^[0-9\.,]+$/) {
+				$arg =~ s/,//g;
+				$line->addInteger($arg * 1000);
+			} else {
+				$line->addText($arg);
+			}
+		}
+	}
+	close F;
+}

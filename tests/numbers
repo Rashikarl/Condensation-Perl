@@ -1,0 +1,131 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use lib '..';
+use Carp::Always;
+use CDS;
+
+# This could become cds test numbers
+
+print "\n";
+print 'Unsigned', "\n";
+print 'small --- ', &testUnsignedSmall, "\n";
+for my $bits (4..80) {
+	print $bits, ' bits --- ', &testUnsignedNumber($bits), ' --- ', &testUnsignedBytes($bits), "\n";
+}
+
+sub testUnsignedSmall {
+	for my $value (0..7) {
+		my $converted = CDS->unsignedFromBytes(CDS->bytesFromUnsigned($value));
+		return $converted.' != '.$value if $converted != $value;
+	}
+
+	return 'OK';
+}
+
+sub testUnsignedNumber($bits) {
+	for my $r (1..$bits) {
+		my $value = &randomNumber($bits);
+		my $converted = CDS->unsignedFromBytes(CDS->bytesFromUnsigned($value));
+		return $converted.' != '.$value if $converted != $value;
+	}
+
+	return 'OK';
+}
+
+sub testUnsignedBytes($bits) {
+	for my $r (1..$bits) {
+		my $bytes = &randomBytes($bits);
+		my $converted = CDS->bytesFromUnsigned(CDS->unsignedFromBytes($bytes));
+		return '0x'.unpack('H*', $converted).' != 0x'.unpack('H*', $bytes) if $converted ne $bytes;
+	}
+
+	return 'OK';
+}
+
+print "\n";
+print 'Signed', "\n";
+print 'small --- ', &testSignedSmall, "\n";
+for my $bits (4..80) {
+	print $bits, ' bits --- ', &testPositiveNumber($bits), ' --- ', &testPositiveBytes($bits), ' --- ', &testNegativeNumber($bits), ' --- ', &testNegativeBytes($bits), "\n";
+}
+
+sub testSignedSmall {
+	for my $value (-7..7) {
+		my $converted = CDS->integerFromBytes(CDS->bytesFromInteger($value));
+		return $converted.' != '.$value if $converted != $value;
+	}
+
+	return 'OK';
+}
+
+sub testPositiveNumber($bits) {
+	for my $r (1..$bits) {
+		my $value = &randomNumber($bits);
+		my $converted = CDS->integerFromBytes(CDS->bytesFromInteger($value));
+		return $converted.' != '.$value if $converted != $value;
+	}
+
+	return 'OK';
+}
+
+sub testNegativeNumber($bits) {
+	for my $r (1..$bits) {
+		my $value = -&randomNumber($bits);
+		my $converted = CDS->integerFromBytes(CDS->bytesFromInteger($value));
+		return $converted.' != '.$value if $converted != $value;
+	}
+
+	return 'OK';
+}
+
+sub testPositiveBytes($bits) {
+	for my $r (1..$bits) {
+		my $bytes = &positiveBytes(&randomBytes($bits));
+		my $converted = CDS->bytesFromInteger(CDS->integerFromBytes($bytes));
+		return '0x'.unpack('H*', $converted).' != 0x'.unpack('H*', $bytes) if $converted ne $bytes;
+	}
+
+	return 'OK';
+}
+
+sub testNegativeBytes($bits) {
+	for my $r (1..$bits) {
+		my $bytes = &negativeBytes(&randomBytes($bits));
+		my $converted = CDS->bytesFromInteger(CDS->integerFromBytes($bytes));
+		return '0x'.unpack('H*', $converted).' != 0x'.unpack('H*', $bytes) if $converted ne $bytes;
+	}
+
+	return 'OK';
+}
+
+print "\n";
+
+sub randomNumber($bits) {
+	my $mask = 1;
+	my $value = 0;
+	while ($bits > 1) {
+		$value += $mask if rand() < 0.5;
+		$mask *= 2;
+		$bits -= 1;
+	}
+	return $value + $mask;
+}
+
+sub randomBytes($bits) {
+	my $byteLength = int(($bits + 7) / 8);
+	my @bytes = map { int(rand() * 256) } 1 .. $byteLength;
+	$bytes[0] &= 0xff >> ($byteLength * 8 - $bits);
+	$bytes[0] |= 0x80 >> ($byteLength * 8 - $bits);
+	return pack('C*', @bytes);
+}
+
+sub positiveBytes($bytes) {
+	return $bytes if ord(substr($bytes, 0, 1)) < 128;
+	return "\0".$bytes;
+}
+
+sub negativeBytes($bytes) {
+	my $positive = &positiveBytes($bytes);
+	return $positive ^ ("\xff" x length $positive);
+}

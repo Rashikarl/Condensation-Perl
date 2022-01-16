@@ -1,0 +1,34 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use CDS;
+
+my $e = pack('H*', '000000010001');
+my $p = pack('H*', 'c269f608f7e92ce1152959b6255235afeb82558806dcf28b14a3d36713bbd8a2d038c3095ea1b905d33a0a435b5f6928aacae0b864e779ed8c7df9e55af9b18ef16c1fd96a4fcf014f7b449d13e22829ef677008882b9840dd56ccf43f1f7eee6ae6e65020cd2742081bdf672f0f8bc35d17c70f0e6c46f99117a52934402221');
+my $q = pack('H*', 'c211c7e0e9233ea4f02e122f15d3a8a0a5f6e476c14d3ed79e2309e5c209b4052c85ad31932c5465c5cc8e627ca872020f8bd423c5d4bfb6e6a645c0dcf28bf25c882a01f52937e008b5b75b6e8e710310cb2d2ba057afb758e68ece3475e0b54d382e59b403a2f65be40b915bcd14a4f6a52483844197db4ee6e61f3a4c5383');
+
+# Create private and public key
+my $privateKey = CDS::C::privateKeyNew($e, $p, $q);
+my $publicKey = CDS::C::publicKeyFromPrivateKey($privateKey);
+
+# Create encrypted blob and signature
+my $digest = pack('H*', 'd949b50787072150ce6858daf3496580eec72216c4c6c83d763442f63af6cc73');
+my $signature = CDS::C::privateKeySign($privateKey, $digest);
+my $encrypted = CDS::C::publicKeyEncrypt($publicKey, $digest);
+print 'Signature:    ', unpack('H*', $signature), "\n";
+print 'Encrypted:    ', unpack('H*', $encrypted), "\n";
+
+# Test run
+my $ok = CDS::C::publicKeyVerify($publicKey, $digest, $signature);
+my $decrypted = CDS::C::privateKeyDecrypt($privateKey, $encrypted);
+print 'Verification: ', $ok ? 'OK' : 'wrong', "\n";
+print 'Decrypted:    ', unpack('H*', $decrypted), "\n";
+
+# Decrypt and verify many
+for my $i (1..1000) {
+	CDS::C::publicKeyVerify($publicKey, $digest, $signature);
+	CDS::C::privateKeyDecrypt($privateKey, $encrypted);
+}
+
+# On a good desktop computer from 2015:
+# 100 in ~0.65 seconds, or 153 per second

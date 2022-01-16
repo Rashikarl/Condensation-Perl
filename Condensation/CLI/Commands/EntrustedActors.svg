@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="1000"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="EntrustedActors.svg">
+  <defs
+     id="defs4">
+    <marker
+       id="arrow000000"
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000"
+         d="M -6,2.5 2,0 -6,-2.5 -5,0 Z"
+         id="path2" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="-223.66294"
+     inkscape:cy="789.49878"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="3747"
+     inkscape:window-height="2125"
+     inkscape:window-x="81"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       rx="4"
+       y="260"
+       x="20"
+       height="30"
+       width="60"
+       id="rect1153"
+       style="fill:#cccccc" />
+    <rect
+       width="20"
+       rx="4"
+       y="260"
+       x="300"
+       height="30"
+       id="rect1157"
+       style="fill:#999999">
+      <title
+         id="title1155">doNotEntrust</title>
+    </rect>
+    <rect
+       width="20"
+       rx="4"
+       y="260"
+       x="200"
+       height="30"
+       id="rect1159"
+       style="fill:#cccccc" />
+    <rect
+       style="fill:#999999"
+       id="rect3098"
+       height="30"
+       x="260"
+       y="20"
+       rx="4"
+       width="20">
+      <title
+         id="title4141">help</title>
+    </rect>
+    <rect
+       rx="4"
+       y="20"
+       x="20"
+       height="30"
+       width="60"
+       id="rect3086"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       x="50"
+       y="40"
+       id="text3088"><tspan
+         sodipodi:role="line"
+         id="tspan3090"
+         x="50"
+         y="40">help</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="280"
+       id="text4352"><tspan
+         sodipodi:role="line"
+         id="tspan4354"
+         x="50"
+         y="280">cds</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4356"
+       d="M 83,279.5 H 197"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4358"
+       y="276"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="276"
+         x="87"
+         id="tspan4362"
+         sodipodi:role="line">do not entrust</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 223,279.5 h 74"
+       id="path4370"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="227"
+       y="276"
+       id="text4372"><desc
+         id="desc4374">push @$o:actorHashes, $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan4376"
+         x="227"
+         y="276">ACTOR*</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect4215"
+       height="90"
+       x="400"
+       y="160"
+       rx="4"
+       width="20">
+      <title
+         id="title4281">entrust</title>
+    </rect>
+    <rect
+       rx="4"
+       y="160"
+       x="20"
+       height="70"
+       width="60"
+       id="rect4217"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="180"
+       id="text4219"><tspan
+         sodipodi:role="line"
+         id="tspan4221"
+         x="50"
+         y="180">cds</tspan></text>
+    <rect
+       width="20"
+       rx="4"
+       y="160"
+       x="200"
+       height="90"
+       id="rect4245"
+       style="fill:#cccccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)"
+       d="m 490.5,157 v -13.5 h -280 V 157"
+       id="path4255"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 223,179.5 H 397"
+       id="path4257"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="227"
+       y="176"
+       id="text4259"><desc
+         id="desc4261">WEIGHT 1
+push @$o:accountTokens, $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan4263"
+         x="227"
+         y="176">ACCOUNT*</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4265"
+       d="m 223,239.5 h 74"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4267"
+       y="236"
+       x="227"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc4269">$o:actorHash = $value;</desc><tspan
+         y="236"
+         x="227"
+         id="tspan4271"
+         sodipodi:role="line">ACTOR</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,179.5 H 197"
+       id="path4273"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="176"
+       id="text4275"><tspan
+         sodipodi:role="line"
+         id="tspan4279"
+         x="87"
+         y="176">entrust</tspan></text>
+    <rect
+       style="fill:#cccccc"
+       id="rect901"
+       height="30"
+       x="300"
+       y="220"
+       rx="4"
+       width="20" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 323,239.5 h 74"
+       id="path903"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="327"
+       y="236"
+       id="text909"><desc
+         id="desc905">push @$o:accountTokens, CDS::AccountToken-&gt;new($value, $o:actorHash);
+delete $o:actorHash;</desc><tspan
+         sodipodi:role="line"
+         id="tspan907"
+         x="327"
+         y="236">on STORE</tspan></text>
+    <rect
+       width="20"
+       rx="4"
+       y="160"
+       x="480"
+       height="30"
+       id="rect917"
+       style="fill:#cccccc" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path919"
+       d="m 423,179.5 h 54"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text925"
+       y="176"
+       x="427"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="176"
+         x="427"
+         id="tspan923"
+         sodipodi:role="line">and</tspan></text>
+    <rect
+       style="fill:#cccccc"
+       id="rect961"
+       width="60"
+       height="30"
+       x="20"
+       y="80"
+       rx="4" />
+    <text
+       id="text965"
+       y="100"
+       x="50"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       xml:space="preserve"><tspan
+         y="100"
+         x="50"
+         id="tspan963"
+         sodipodi:role="line">cds</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,99.5 H 257"
+       id="path967"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="96"
+       id="text971"><tspan
+         sodipodi:role="line"
+         id="tspan969"
+         x="87"
+         y="96">show entrusted actors</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect975"
+       height="30"
+       x="260"
+       y="80"
+       rx="4"
+       width="20">
+      <title
+         id="title973">show</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path1221"
+       d="M 83,39.5 H 257"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text1225"
+       y="36"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="36"
+         x="87"
+         id="tspan1223"
+         sodipodi:role="line">entrusted actors</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path876"
+       d="M 223,199.5 H 397"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text882"
+       y="196"
+       x="227"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc878">push @$o:accountTokens, CDS::AccountToken-&gt;new($o:actor-&gt;preferredStore, $value);</desc><tspan
+         y="196"
+         x="227"
+         id="tspan880"
+         sodipodi:role="line">ACTOR*</tspan></text>
+  </g>
+</svg>

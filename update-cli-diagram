@@ -1,0 +1,447 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use Carp::Always;
+use ViereckFilter;
+
+my $someIgnored = 0;
+my $newerOnly = 1;
+for my $arg (@ARGV) {
+	if ($arg eq '-f') {
+		$newerOnly = 0;
+	} else {
+		&process($arg);
+	}
+}
+
+if ($someIgnored) {
+	print 'Some CLI diagrams were up to date. Use -f to force updating all.', "\n";
+}
+
+sub process($file) {
+	# Derive the *.pm file
+	$file =~ /^(.*)\.svg$/ || die 'File does not end with *.svg.';
+	my $pmFile = $1.'.pm';
+
+	if ($newerOnly) {
+		my @statSvg = stat $file;
+		my @statPm = stat $pmFile;
+		my $modifiedSvg = $statSvg[9] // 0;
+		my $modifiedPm = $statPm[9] // 0;
+		if ($modifiedSvg < $modifiedPm) {
+			$someIgnored = 1;
+			return;
+		}
+	}
+
+	# Read the file
+	print 'Processing ', $file, "\n";
+	my $content = &readTextFile($file) // die 'Unable to read "', $file, '".';
+
+	# Parse all SVG elements
+	my $root = Tag->new;
+	my $current = $root;
+	for my $token (split /(<.*?>)/s, $content) {
+		if ($token =~ /<([a-zA-Z0-9]+)\s+(.*?)\s*(\/?)>/s) {
+			my $tag = $1;
+			my $isClosed = $3;
+			my %args = $2 =~ /([a-zA-Z0-9:]+)="(.*?)"/sg;
+			my $child = $current->open($tag, \%args);
+			$current = $child if ! $isClosed;
+		} elsif ($token =~ /<([a-zA-Z0-9]+)\s*(\/?)>/s) {
+			my $tag = $1;
+			my $isClosed = $2;
+			my $child = $current->open($tag);
+			$current = $child if ! $isClosed;
+		} elsif ($token =~ /<\/([a-zA-Z0-9]+)>/s) {
+			$current = $current->close($1);
+		} else {
+			#$token =~ s/\s+/ /sg;
+			$current->open('', {text => $token});
+		}
+	}
+
+	# Main layer
+	#print $current, ' ', $root, "\n";
+	my $g = $root->first('svg')->first('g');
+
+	# Check if there are groups
+	die 'Groups are not supported' if scalar $g->all('g');
+
+	# Find all rectangles
+	my $rects = [];
+	for my $rect ($g->all('rect')) {
+		my $isDark = ($rect->get('style') // '') =~ /fill:#999999/;
+		push @$rects, {
+			svgId => $rect->get('id'),
+			x => ($rect->get('x') // 0) - 5,
+			y => ($rect->get('y') // 0) - 5,
+			width => ($rect->get('width') // 0) + 10,
+			height => ($rect->get('height') // 0) + 10,
+			handler => &trim($rect->firstOrEmpty('title')->innerText),
+			isDark => $isDark
+			};
+	}
+
+	# Find all paths
+	my $paths = [];
+	for my $path ($g->all('path')) {
+		#print $path->get('d'), "\n";
+		my $x = 0;
+		my $y = 0;
+		my $state = '';
+		my $points = [];
+		for my $d (split /[\s,]+/, $path->get('d')) {
+			if ($d eq 'm') {
+				$state = 'mx';
+			} elsif ($d eq 'M') {
+				$state = 'Mx';
+			} elsif ($d eq 'H' || $d eq 'h' || $d eq 'V' || $d eq 'v') {
+				$state = $d;
+			} elsif ($state eq 'mx') {
+				$x += $d * 1.0;
+				$state = 'my';
+			} elsif ($state eq 'my') {
+				$y += $d * 1.0;
+				$state = 'mx';
+				push @$points, [$x, $y];
+			} elsif ($state eq 'Mx') {
+				$x = $d * 1.0;
+				$state = 'My';
+			} elsif ($state eq 'My') {
+				$y = $d * 1.0;
+				$state = 'Mx';
+				push @$points, [$x, $y];
+			} elsif ($state eq 'H') {
+				$x = $d * 1.0;
+				push @$points, [$x, $y];
+			} elsif ($state eq 'h') {
+				$x += $d * 1.0;
+				push @$points, [$x, $y];
+			} elsif ($state eq 'V') {
+				$y = $d * 1.0;
+				push @$points, [$x, $y];
+			} elsif ($state eq 'v') {
+				$y += $d * 1.0;
+				push @$points, [$x, $y];
+			} else {
+				die 'Unparsable path';
+			}
+		}
+
+		die 'Path with no points' if ! scalar @$points;
+		my $isDotted = ($path->get('style') // '') =~ /stroke-dasharray:1,\s*1/;
+		warn 'Ignoring description of path "', $path->get('id'), '".' if $path->first('desc');
+
+		push @$paths, {
+			svgId => $path->get('id'),
+			points => $points,
+			from => &findRectangle($rects, $points->[0]->[0], $points->[0]->[1]),
+			to => &findRectangle($rects, $points->[-1]->[0], $points->[-1]->[1]),
+			isDotted => $isDotted,
+			official => 1,
+			weight => 0,
+			};
+	}
+
+	# Match texts
+	for my $text ($g->all('text')) {
+		my $x = $text->get('x') // 0;
+		my $y = $text->get('y') // 0;
+		my $tspan = &trim($text->first('tspan')->innerText);
+		my $fill = $text->get('style') =~ /fill:#([0-9a-fA-F]+)/ ? $1 : '000';
+
+		my $opacity = $text->get('style') =~ /opacity:([\d\.]+)/ ? $1 : 1.0;
+		die 'Use fill, not opacity to mark inofficial text "', $text->get('id'), '"' if $opacity < 1.0;
+
+		my $rect = &findRectangle($rects, $x, $y);
+		if ($rect) {
+			$rect:id = $tspan;
+			warn 'Ignoring description of rectangle text "', $tspan, '".' if $text->first('desc');
+			next;
+		}
+
+		my $path = &findPath($paths, $x, $y);
+		if ($path) {
+			my $desc = $text->firstOrEmpty('desc')->innerText;
+			my @code;
+			for my $line (split /\n/, $desc) {
+				if ($line =~ /^\s*WEIGHT\s*([0-9\.]+)\s*/) {
+					$path:weight = $1 * 1;
+				} else {
+					push @code, &trim($line);
+				}
+			}
+
+			$path:label = $tspan;
+			$path:code = join("\n", @code);
+			$path:official = substr($fill, 0, 1) eq '0' ? 1 : 0;
+			next;
+		}
+
+		die 'Unmatched text "', $text->get('id'), '".';
+	}
+
+	# Dotted paths must have no label, and vice versa
+	for my $path (@$paths) {
+		die 'Dotted path "', $path:label, '" has a label.' if $path:isDotted && defined $path:label;
+		die 'Path "', $path:svgId, '" should be dotted.' if ! $path:isDotted && ! defined $path:label;
+	}
+
+	# Create arrows along paths
+	my $arrows = [];
+	for my $path (@$paths) {
+		# Cut the path, and insert an empty step at the beginning if the first argument is repetitive
+		my @steps = split(/\s+/, $path:label // '');
+		unshift @steps, '' if scalar @steps && $steps[0] =~ /\*$/;
+		my $lastStep = pop(@steps) // '';
+
+		# Intermediate arrows
+		my $y = $path:from:y;
+		my $hasCode = 0;
+		my $current = $path:from;
+		for my $step (@steps) {
+			$y += 0.01;
+			my $rect = {handler => '', isDark => 0, x => $path:from:x, y => $y};
+			push @$rects, $rect;
+			$hasCode |= &addStep($arrows, $path, $current, $rect, $step);
+			$current = $rect;
+		}
+
+		# Last arrow
+		&addStep($arrows, $path, $current, $path:to, $lastStep, ! $hasCode);
+	}
+
+	# Assign ids to rects
+	my $nodeNumber = 0;
+	for my $rect (sort { $a:x <=> $b:x || $a:y <=> $b:y } @$rects) {
+		next if $rect:id;
+		$rect:id = sprintf 'node%03d', $nodeNumber;
+		$nodeNumber += 1;
+	}
+
+	# Sort the arrows
+	my @arrows = sort { $a:from:id cmp $b:from:id || $a:to:id cmp $b:to:id || $a:label cmp $b:label } @$arrows;
+
+	# Assign ids to arrows with code
+	my %subsByName;
+	my %subsByCode;
+	for my $arrow (@arrows) {
+		next if ! defined $arrow:code;
+		next if ! length $arrow:code;
+
+		# Check if we have a sub with the same code already
+		$arrow:subName = $subsByCode{$arrow:code};
+		next if $arrow:subName;
+
+		# Create a new sub with a unique name
+		my $sub = $arrow:label;
+		$sub =~ s/[^A-Za-z0-9]//g;
+		my $subName = 'collect'.(length $sub ? uc(substr($sub, 0, 1)).lc(substr($sub, 1)) : '');
+		my $suffix = '';
+		$suffix = ($suffix || 0) + 1 while $subsByName{$subName.$suffix};
+		$arrow:subName = $subName.$suffix;
+
+		$subsByName{$subName.$suffix} = $arrow:code;
+		$subsByCode{$arrow:code} = $subName.$suffix;
+	}
+
+	# Read the current file
+	my $pmContent = &readTextFile($pmFile) // die 'Unable to read "', $pmFile, '".';
+	my @lines = split(/\n/, $pmContent);
+	rename $pmFile, $pmFile.'.orig';
+
+	# Keep the header
+	open(F, '>:utf8', $pmFile) || die 'Unable to write "', $pmFile, '".';
+	while (scalar @lines) {
+		my $line = shift @lines;
+		last if $line =~ /^\s*#\s*BEGIN\s+AUTOGENERATED/;
+		print F $line, "\n";
+	}
+	print F '# BEGIN AUTOGENERATED', "\n\n";
+
+	# Print the header
+	print F 'sub register($class, $cds, $help) {', "\n";
+
+	# Print all nodes
+	for my $rect (sort { $a:id cmp $b:id } @$rects) {
+		next if $rect:id eq 'cds';
+		next if $rect:id eq 'help';
+		print F "\t", 'my $', $rect:id, ' = CDS::Parser::Node->new(', $rect:isDark ? '1' : '0', length $rect:handler ? ', {constructor => \&new, function => \\&'.$rect:handler.'}' : '', ');', "\n";
+	}
+
+	# Print all arrows
+	for my $arrow (@arrows) {
+		print F "\t", '$', $arrow:from:id, '->addArrow($', $arrow:to:id, ', ', $arrow:official, ', ', $arrow:weight, ', \'', $arrow:label, '\'', defined $arrow:subName ? ', \\&'.$arrow:subName : '', ');', "\n" if length $arrow:label;
+		print F "\t", '$', $arrow:from:id, '->addDefault($', $arrow:to:id, ');', "\n" if ! length $arrow:label;
+	}
+
+	print F '}', "\n";
+
+	# Print all collect functions
+	for my $subName (sort keys %subsByName) {
+		print F "\n";
+		print F 'sub ', $subName, '($o, $label, $value) {', "\n";
+		my $code = $subsByName{$subName};
+		$code =~ s/\n/\n\t/g;
+		print F "\t", $code, "\n";
+		print F '}', "\n";
+	}
+
+	# Print the constructor
+	print F "\n";
+	print F 'sub new($class, $actor) { bless {actor => $actor, ui => $actor->ui} }', "\n";
+
+	# Print the footer, and check for existing functions
+	while (scalar @lines) {
+		my $line = shift @lines;
+		last if $line =~ /^\s*#\s*END\s+AUTOGENERATED/;
+	}
+	while (scalar @lines) {
+		my $line = shift @lines;
+		last if $line =~ /^\s*$/;
+	}
+	print F "\n";
+	print F '# END AUTOGENERATED', "\n\n";
+	my %printedHandlers;
+	while (scalar @lines) {
+		my $line = shift @lines;
+		print F $line, "\n";
+		$line =~ /^\s*sub\s+([a-zA-Z0-9_]*)/ || next;
+		$printedHandlers{$1} = 1;
+	}
+
+	# Print the prototypes of the handler functions
+	for my $rect (sort { $a:id cmp $b:id } @$rects) {
+		next if ! $rect:handler;
+		next if $printedHandlers{$rect:handler};
+		$printedHandlers{$rect:handler} = 1;
+		print F "\n";
+		print F 'sub ', $rect:handler, '($o, $cmd) {', "\n";
+		print F "\t", '$cmd->collect($o);', "\n";
+		print F "\t", '...', "\n";
+		print F '}', "\n";
+	}
+
+	close F;
+}
+
+sub readTextFile($filename) {
+	open(my $fh, '<:utf8', $filename) || return;
+	local $/;
+	my $content = <$fh>;
+	close $fh;
+	return $content;
+}
+
+sub addStep($arrows, $path, $from, $to, $step, $forceCode) {
+	my $useCode = $forceCode || $step =~ /^[A-Z]/;
+	my $code = $useCode ? $path:code // '' : '';
+	my $weight = $useCode ? $path:weight // 0 : 0;
+
+	if ($step =~ /^(.*)\*$/) {
+		$step = $1;
+		push @$arrows, {from => $from, to => $from, label => $step, official => $path:official, weight => 0, code => $code};
+	}
+
+	push @$arrows, {from => $from, to => $to, label => $step, official => $path:official, weight => $weight, code => $code};
+	return $code ne '';
+}
+
+sub findRectangle($rects, $x, $y) {
+	for my $rect (@$rects) {
+		next if $x < $rect->{x};
+		next if $x > $rect->{x} + $rect->{width};
+		next if $y < $rect->{y};
+		next if $y > $rect->{y} + $rect->{height};
+		return $rect;
+	}
+	return undef;
+}
+
+sub findPath($paths, $x, $y) {
+	for my $path (@$paths) {
+		for my $i (0 .. scalar(@$path:points) - 2) {
+			my $p = $path:points->[$i];
+			my $q = $path:points->[$i + 1];
+			my $distance = &projectOnLine($x, $y, $p->[0], $p->[1], $q->[0], $q->[1]);
+			return $path if $distance < 5;
+		}
+	}
+	return undef;
+}
+
+sub projectOnLine($x, $y, $x0, $y0, $x1, $y1) {
+	my $dx0 = $x - $x0;
+	my $dy0 = $y - $y0;
+	my $dx1 = $x - $x1;
+	my $dy1 = $y - $y1;
+
+	my $dx = $x1 - $x0;
+	my $dy = $y1 - $y0;
+	my $d = sqrt($dx * $dx + $dy * $dy);
+	return sqrt($dx0 * $dx0 + $dy0 * $dy0) if $d < 1.0;
+
+	$dx /= $d;
+	$dy /= $d;
+	my $p = $dx0 * $dx + $dy0 * $dy;
+	return sqrt($dx0 * $dx0 + $dy0 * $dy0) if $p < 0;
+	return sqrt($dx1 * $dx1 + $dy1 * $dy1) if $p > $d;
+
+	my $sx = $dx0 - $dx * $p;
+	my $sy = $dy0 - $dy * $p;
+	return sqrt($sx * $sx + $sy * $sy);
+}
+
+sub trim($text) {
+	$text =~ /^\s*(.*?)\s*$/s;
+	return $1;
+}
+
+package Tag;
+
+sub new($o, $tag, $args, $parent) { bless {tag => $tag // '', args => $args // {}, children => [], parent => $parent} }
+
+sub open($o, $tag, $args) {
+	#print 'OPEN TAG  ', $tag, "\n";
+	my $child = $o->new($tag, $args, $o);
+	push @$o:children, $child;
+	return $child;
+}
+
+sub close($o, $tagName) {
+	die 'Tag mismatch '.$tagName.' != '.$o:tag if $tagName ne $o:tag;
+	return $o:parent;
+}
+
+sub first($o, $tag) {
+	for my $child (@$o:children) {
+		return $child if $child:tag eq $tag;
+	}
+	return;
+}
+
+sub firstOrEmpty($o, $tag) { $o->first($tag) // $o->new }
+
+sub all($o, $tag) { grep { $_:tag eq $tag } @$o:children }
+
+sub get($o, $key) {
+	my $value = $o:args->{$key} // return;
+	$value =~ s/&lt;/</g;
+	$value =~ s/&gt;/>/g;
+	$value =~ s/&amp;/&/g;
+	$value =~ s/&quot;/"/g;
+	return $value;
+}
+
+sub innerText($o) {
+	my $text = '';
+	for my $child (@$o:children) {
+		if ($child:tag eq '') {
+			$text .= $child->get('text');
+		} else {
+			$text .= $child->innerText;
+		}
+	}
+	return $text;
+}

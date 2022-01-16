@@ -1,0 +1,868 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="1000"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="FolderStore.svg">
+  <defs
+     id="defs4">
+    <marker
+       id="arrow000000"
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000"
+         d="M -6,2.5 2,0 -6,-2.5 -5,0 Z"
+         id="path2" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="403"
+     inkscape:cy="718"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1519"
+     inkscape:window-height="871"
+     inkscape:window-x="81"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#999999"
+       id="rect3149"
+       width="20"
+       height="30"
+       x="360"
+       y="320"
+       rx="4">
+      <title
+         id="title3151">showPermissions</title>
+    </rect>
+    <rect
+       rx="4"
+       y="380"
+       x="540"
+       height="70"
+       width="20"
+       id="rect3081"
+       style="fill:#999999" />
+    <rect
+       rx="4"
+       y="80"
+       x="360"
+       height="90"
+       width="20"
+       id="rect3032"
+       style="fill:#999999" />
+    <rect
+       rx="4"
+       y="80"
+       x="20"
+       height="30"
+       width="60"
+       id="rect4433"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       x="50"
+       y="100"
+       id="text4435"><tspan
+         sodipodi:role="line"
+         id="tspan4437"
+         x="50"
+         y="100">cds</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4447"
+       d="M 83,99.5 H 357"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4449"
+       y="96"
+       x="87"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       xml:space="preserve"><desc
+         id="desc4541">$o:foldername = $value;</desc><tspan
+         y="96"
+         x="87"
+         id="tspan4451"
+         sodipodi:role="line">create store FOLDERNAME</tspan></text>
+    <rect
+       style="fill:#cccccc"
+       id="rect3022"
+       width="60"
+       height="30"
+       x="20"
+       y="20"
+       rx="4" />
+    <text
+       id="text3024"
+       y="40"
+       x="50"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       xml:space="preserve"><tspan
+         y="40"
+         x="50"
+         id="tspan3026"
+         sodipodi:role="line">help</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3028"
+       width="20"
+       height="30"
+       x="360"
+       y="20"
+       rx="4">
+      <title
+         id="title3016">help</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,39.5 H 357"
+       id="path3030"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       x="87"
+       y="36"
+       id="text3032"><tspan
+         sodipodi:role="line"
+         id="tspan3036"
+         x="87"
+         y="36">create store</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3017"
+       width="20"
+       height="90"
+       x="540"
+       y="80"
+       rx="4" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 383,99.5 H 537"
+       id="path3021"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="387"
+       y="96"
+       id="text3023"><desc
+         id="desc3025">$o:permissions = CDS::FolderStore::PosixPermissions::User-&gt;new($value);</desc><tspan
+         sodipodi:role="line"
+         id="tspan3027"
+         x="387"
+         y="96">for user USER</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3033"
+       d="M 383,119.5 H 537"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3035"
+       y="116"
+       x="387"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3037">$o:permissions = CDS::FolderStore::PosixPermissions::Group-&gt;new($o:group);</desc><tspan
+         y="116"
+         x="387"
+         id="tspan3039"
+         sodipodi:role="line">for group GROUP</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 383,139.5 H 537"
+       id="path3045"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="387"
+       y="136"
+       id="text3047"><desc
+         id="desc3049">$o:permissions = CDS::FolderStore::PosixPermissions::World-&gt;new;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3051"
+         x="387"
+         y="136">for everybody</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3053"
+       d="M 383,159.5 H 537"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)" />
+    <rect
+       rx="4"
+       y="80"
+       x="760"
+       height="50"
+       width="20"
+       id="rect3829"
+       style="fill:#999999">
+      <title
+         id="title3831">createStore</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3833"
+       d="M 563,99.5 H 757"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3835"
+       y="96"
+       x="567"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3837">$o:label = $value;</desc><tspan
+         y="96"
+         x="567"
+         id="tspan3839"
+         sodipodi:role="line">and remember it as TEXT</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)"
+       d="M 563,119.5 H 757"
+       id="path3841"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <rect
+       rx="4"
+       y="380"
+       x="720"
+       height="70"
+       width="20"
+       id="rect3039"
+       style="fill:#999999">
+      <title
+         id="title3133">setPermissions</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3041"
+       d="M 563,399.5 H 717"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3043"
+       y="396"
+       x="567"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3045">$o:permissions = CDS::FolderStore::PosixPermissions::User-&gt;new($value);</desc><tspan
+         y="396"
+         x="567"
+         id="tspan3047"
+         sodipodi:role="line">to user USER</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 563,419.5 H 717"
+       id="path3049"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="567"
+       y="416"
+       id="text3051"><desc
+         id="desc3053">$o:permissions = CDS::FolderStore::PosixPermissions::Group-&gt;new($o:group);</desc><tspan
+         sodipodi:role="line"
+         id="tspan3055"
+         x="567"
+         y="416">to group GROUP</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3057"
+       d="M 563,439.5 H 717"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3059"
+       y="436"
+       x="567"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3061">$o:permissions = CDS::FolderStore::PosixPermissions::World-&gt;new;</desc><tspan
+         y="436"
+         x="567"
+         id="tspan3063"
+         sodipodi:role="line">to everybody</tspan></text>
+    <rect
+       rx="4"
+       y="380"
+       x="20"
+       height="30"
+       width="60"
+       id="rect3083"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       x="50"
+       y="400"
+       id="text3085"><tspan
+         sodipodi:role="line"
+         id="tspan3087"
+         x="50"
+         y="400">cds</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3089"
+       d="M 83,399.5 H 357"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3091"
+       y="396"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="396"
+         x="87"
+         id="tspan3095"
+         sodipodi:role="line">set permission scheme</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3097"
+       width="20"
+       height="30"
+       x="360"
+       y="200"
+       rx="4">
+      <title
+         id="title3129">checkPermissions</title>
+    </rect>
+    <rect
+       style="fill:#cccccc"
+       id="rect3099"
+       width="60"
+       height="30"
+       x="20"
+       y="200"
+       rx="4" />
+    <text
+       id="text3101"
+       y="220"
+       x="50"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       xml:space="preserve"><tspan
+         y="220"
+         x="50"
+         id="tspan3103"
+         sodipodi:role="line">cds</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,219.5 H 357"
+       id="path3105"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="216"
+       id="text3107"><tspan
+         sodipodi:role="line"
+         id="tspan3111"
+         x="87"
+         y="216">check permissions</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3113"
+       width="20"
+       height="30"
+       x="360"
+       y="260"
+       rx="4">
+      <title
+         id="title3131">fixPermissions</title>
+    </rect>
+    <rect
+       style="fill:#cccccc"
+       id="rect3115"
+       width="60"
+       height="30"
+       x="20"
+       y="260"
+       rx="4" />
+    <text
+       id="text3117"
+       y="280"
+       x="50"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       xml:space="preserve"><tspan
+         y="280"
+         x="50"
+         id="tspan3119"
+         sodipodi:role="line">cds</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,279.5 H 357"
+       id="path3121"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="276"
+       id="text3123"><tspan
+         sodipodi:role="line"
+         id="tspan3127"
+         x="87"
+         y="276">fix permissions</tspan></text>
+    <rect
+       style="fill:#cccccc"
+       id="rect3135"
+       width="60"
+       height="30"
+       x="20"
+       y="320"
+       rx="4" />
+    <text
+       id="text3137"
+       y="340"
+       x="50"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       xml:space="preserve"><tspan
+         y="340"
+         x="50"
+         id="tspan3139"
+         sodipodi:role="line">cds</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,339.5 H 357"
+       id="path3141"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="336"
+       id="text3143"><tspan
+         sodipodi:role="line"
+         id="tspan3147"
+         x="87"
+         y="336">show permission scheme</tspan></text>
+    <rect
+       rx="4"
+       y="480"
+       x="360"
+       height="150"
+       width="20"
+       id="rect3070"
+       style="fill:#999999">
+      <title
+         id="title1017">addAccount</title>
+    </rect>
+    <rect
+       rx="4"
+       y="480"
+       x="20"
+       height="150"
+       width="60"
+       id="rect3074"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       x="50"
+       y="500"
+       id="text3076"><tspan
+         sodipodi:role="line"
+         id="tspan3078"
+         x="50"
+         y="500">cds</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3080"
+       d="M 83,499.5 H 357"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3082"
+       y="496"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3084">$o:file = $value;</desc><tspan
+         y="496"
+         x="87"
+         id="tspan3086"
+         sodipodi:role="line">add account for OBJECTFILE</tspan></text>
+    <rect
+       rx="4"
+       y="480"
+       x="540"
+       height="30"
+       width="20"
+       id="rect3088"
+       style="fill:#999999">
+      <title
+         id="title3090">addAccount</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3092"
+       d="M 383,499.5 H 537"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3094"
+       y="496"
+       x="387"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3096">$o:store = $value;</desc><tspan
+         y="496"
+         x="387"
+         id="tspan3098"
+         sodipodi:role="line">to STORE</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3131"
+       width="20"
+       height="30"
+       x="360"
+       y="660"
+       rx="4">
+      <title
+         id="title1015">removeAccount</title>
+    </rect>
+    <rect
+       style="fill:#cccccc"
+       id="rect3136"
+       width="60"
+       height="30"
+       x="20"
+       y="660"
+       rx="4" />
+    <text
+       id="text3138"
+       y="680"
+       x="50"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       xml:space="preserve"><tspan
+         y="680"
+         x="50"
+         id="tspan3140"
+         sodipodi:role="line">cds</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,679.5 H 357"
+       id="path3142"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="676"
+       id="text3144"><desc
+         id="desc3146">$o:hash = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3148"
+         x="87"
+         y="676">remove account HASH</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3150"
+       width="20"
+       height="30"
+       x="540"
+       y="660"
+       rx="4">
+      <title
+         id="title3152">removeAccount</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 383,679.5 H 537"
+       id="path3154"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="387"
+       y="676"
+       id="text3156"><desc
+         id="desc3158">$o:store = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3160"
+         x="387"
+         y="676">from STORE</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,519.5 H 357"
+       id="path934"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="516"
+       id="text940"><desc
+         id="desc936">$o:keyPairToken = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan938"
+         x="87"
+         y="516">add account for KEYPAIR</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path942"
+       d="M 83,599.5 H 237"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text948"
+       y="596"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc944">$o:actorHash = $value;</desc><tspan
+         y="596"
+         x="87"
+         id="tspan946"
+         sodipodi:role="line">add account for ACTOR</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect950"
+       width="20"
+       height="50"
+       x="240"
+       y="580"
+       rx="4" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 263,599.5 h 94"
+       id="path952"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="267"
+       y="596"
+       id="text958"><desc
+         id="desc954">$o:accountToken = CDS::AccountToken-&gt;new($value, $o:actorHash);</desc><tspan
+         sodipodi:role="line"
+         id="tspan956"
+         x="267"
+         y="596">on STORE</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path960"
+       d="m 263,619.5 h 94"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text966"
+       y="616"
+       x="267"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#b3b3b3"
+       xml:space="preserve"><desc
+         id="desc962">$o:accountToken = CDS::AccountToken-&gt;new($value, $o:actorHash);</desc><tspan
+         y="616"
+         x="267"
+         id="tspan964"
+         sodipodi:role="line">from STORE</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path968"
+       d="M 83,539.5 H 357"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text974"
+       y="536"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc970">WEIGHT 1
+$o:accountToken = $value;</desc><tspan
+         y="536"
+         x="87"
+         id="tspan972"
+         sodipodi:role="line">add account ACCOUNT</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,559.5 H 357"
+       id="path976"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="556"
+       id="text982"><desc
+         id="desc978">$o:accountToken = CDS::AccountToken-&gt;new($value-&gt;cliStore, $value-&gt;hash);</desc><tspan
+         sodipodi:role="line"
+         id="tspan980"
+         x="87"
+         y="556">add account for OBJECT</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path963"
+       d="M 383,219.5 H 537"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text969"
+       y="216"
+       x="387"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc965">$o:store = $value;</desc><tspan
+         y="216"
+         x="387"
+         id="tspan967"
+         sodipodi:role="line">of STORE</tspan></text>
+    <rect
+       rx="4"
+       y="200"
+       x="540"
+       height="30"
+       width="20"
+       id="rect977"
+       style="fill:#999999">
+      <title
+         id="title975">checkPermissions</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 383,279.5 H 537"
+       id="path979"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="387"
+       y="276"
+       id="text985"><desc
+         id="desc981">$o:store = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan983"
+         x="387"
+         y="276">of STORE</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path987"
+       d="M 383,339.5 H 537"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text993"
+       y="336"
+       x="387"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc989">$o:store = $value;</desc><tspan
+         y="336"
+         x="387"
+         id="tspan991"
+         sodipodi:role="line">of STORE</tspan></text>
+    <rect
+       rx="4"
+       y="320"
+       x="540"
+       height="30"
+       width="20"
+       id="rect997"
+       style="fill:#999999">
+      <title
+         id="title995">showPermissions</title>
+    </rect>
+    <rect
+       rx="4"
+       y="260"
+       x="540"
+       height="30"
+       width="20"
+       id="rect1001"
+       style="fill:#999999">
+      <title
+         id="title999">fixPermissions</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 383,399.5 H 537"
+       id="path1003"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="387"
+       y="396"
+       id="text1009"><desc
+         id="desc1005">$o:store = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan1007"
+         x="387"
+         y="396">of STORE</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)"
+       d="M 383,419.5 H 537"
+       id="path1011"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <rect
+       style="fill:#999999"
+       id="rect1013"
+       width="20"
+       height="70"
+       x="360"
+       y="380"
+       rx="4" />
+  </g>
+</svg>

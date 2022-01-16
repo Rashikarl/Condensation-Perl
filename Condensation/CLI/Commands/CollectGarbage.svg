@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="1000"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="CollectGarbage.svg">
+  <defs
+     id="defs4">
+    <marker
+       id="arrow000000"
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000"
+         d="M -6,2.5 2,0 -6,-2.5 -5,0 Z"
+         id="path2" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="-525"
+     inkscape:cy="761"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="3747"
+     inkscape:window-height="2125"
+     inkscape:window-x="81"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#cccccc"
+       id="rect3022"
+       width="60"
+       height="30"
+       x="20"
+       y="20"
+       rx="4" />
+    <text
+       id="text3024"
+       y="40"
+       x="50"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       xml:space="preserve"><tspan
+         y="40"
+         x="50"
+         id="tspan3026"
+         sodipodi:role="line">help</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3028"
+       width="20"
+       height="30"
+       x="220"
+       y="20"
+       rx="4">
+      <title
+         id="title3016">help</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,39.5 H 217"
+       id="path3030"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       x="87"
+       y="36"
+       id="text3032"><tspan
+         sodipodi:role="line"
+         id="tspan3036"
+         x="87"
+         y="36">collect garbage</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3097"
+       width="20"
+       height="50"
+       x="380"
+       y="80"
+       rx="4">
+      <title
+         id="title3129">collectGarbage</title>
+    </rect>
+    <rect
+       style="fill:#cccccc"
+       id="rect3099"
+       width="60"
+       height="110"
+       x="20"
+       y="80"
+       rx="4" />
+    <text
+       id="text3101"
+       y="100"
+       x="50"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       xml:space="preserve"><tspan
+         y="100"
+         x="50"
+         id="tspan3103"
+         sodipodi:role="line">cds</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 243,99.5 H 377"
+       id="path3105"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="247"
+       y="96"
+       id="text3107"><desc
+         id="desc3109">$o:store = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3111"
+         x="247"
+         y="96">of STORE</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3113"
+       width="20"
+       height="50"
+       x="380"
+       y="140"
+       rx="4">
+      <title
+         id="title3131">reportGarbage</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 243,159.5 H 377"
+       id="path3121"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="247"
+       y="156"
+       id="text3123"><desc
+         id="desc3125">$o:store = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3127"
+         x="247"
+         y="156">of STORE</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path870"
+       d="M 83,159.5 H 217"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text876"
+       y="156"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="156"
+         x="87"
+         id="tspan874"
+         sodipodi:role="line">report garbage</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path878"
+       d="M 83,99.5 H 217"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text884"
+       y="96"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="96"
+         x="87"
+         id="tspan882"
+         sodipodi:role="line">collect garbage</tspan></text>
+    <rect
+       rx="4"
+       y="80"
+       x="220"
+       height="50"
+       width="20"
+       id="rect888"
+       style="fill:#cccccc;fill-opacity:1">
+      <title
+         id="title886">collectGarbage</title>
+    </rect>
+    <rect
+       rx="4"
+       y="140"
+       x="220"
+       height="50"
+       width="20"
+       id="rect892"
+       style="fill:#cccccc;fill-opacity:1">
+      <title
+         id="title890">reportGarbage</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path894"
+       d="M 243,179.5 H 377"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path896"
+       d="M 243,119.5 H 377"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)" />
+  </g>
+</svg>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="1000"
+   id="svg2"
+   version="1.1"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
+   sodipodi:docname="CheckKeyPair.svg">
+  <defs
+     id="defs4">
+    <marker
+       id="arrow000000"
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000"
+         d="M -6,2.5 2,0 -6,-2.5 -5,0 Z"
+         id="path2" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="141"
+     inkscape:cy="771"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="3759"
+     inkscape:window-height="2131"
+     inkscape:window-x="81"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       rx="4"
+       y="80"
+       x="280"
+       height="30"
+       width="20"
+       id="rect3061"
+       style="fill:#999999">
+      <title
+         id="title3065">checkKeyPair</title>
+    </rect>
+    <rect
+       rx="4"
+       y="80"
+       x="20"
+       height="30"
+       width="60"
+       id="rect4433"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="100"
+       id="text4435"><tspan
+         sodipodi:role="line"
+         id="tspan4437"
+         x="50"
+         y="100">cds</tspan></text>
+    <rect
+       style="fill:#cccccc"
+       id="rect3022"
+       width="60"
+       height="30"
+       x="20"
+       y="20"
+       rx="4" />
+    <text
+       id="text3024"
+       y="40"
+       x="50"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       xml:space="preserve"><tspan
+         y="40"
+         x="50"
+         id="tspan3026"
+         sodipodi:role="line">help</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3028"
+       width="20"
+       height="30"
+       x="200"
+       y="20"
+       rx="4">
+      <title
+         id="title3031">help</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3033"
+       d="m 83,39.5 114,0"
+       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px" />
+    <text
+       id="text3035"
+       y="36"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="36"
+         x="87"
+         id="tspan3037"
+         sodipodi:role="line">check key pair</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,99.5 H 277"
+       id="path3045"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="96"
+       id="text3047"><desc
+         id="desc3049">$o:file = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3051"
+         x="87"
+         y="96">check key pair FILE</tspan></text>
+  </g>
+</svg>

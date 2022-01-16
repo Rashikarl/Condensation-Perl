@@ -1,0 +1,23 @@
+--
+Clips (clipboard-like)
+
+cds clip FILE* [as NAME]
+cds unclip [NAME]
+cds show clips
+cds show clip [NAME]
+
+--
+Backup
+
+cds backup
+cds backup show configuration
+cds backup include FOLDER
+cds backup exclude FOLDER
+cds backup ignore PATTERN
+cds backup regard PATTERN
+
+cds backup list PATTERN [of VERSION] [of MACHINE]
+cds backup restore PATTERN [of VERSION] [of MACHINE]
+cds backup restore VERSION [of MACHINE]
+cds backup compare PATTERN [of VERSION] [of MACHINE] to PATTERN [of VERSION] [of MACHINE]
+cds backup compare VERSION [of MACHINE] to VERSION [of MACHINE]

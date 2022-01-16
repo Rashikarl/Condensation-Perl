@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="1000"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="Select.svg">
+  <defs
+     id="defs4">
+    <marker
+       id="arrow000000"
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000"
+         d="M -6,2.5 2,0 -6,-2.5 -5,0 Z"
+         id="path2" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="78.92127"
+     inkscape:cy="750.99878"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="3747"
+     inkscape:window-height="2125"
+     inkscape:window-x="81"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       width="20"
+       rx="4"
+       y="320"
+       x="200"
+       height="30"
+       id="rect4133"
+       style="fill:#cccccc;fill-opacity:1" />
+    <rect
+       style="fill:#999999"
+       id="rect3098"
+       height="30"
+       x="260"
+       y="20"
+       rx="4"
+       width="20">
+      <title
+         id="title4141">help</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4269"
+       d="M 83,159.5 H 317"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4271"
+       y="156"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;display:inline;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3144">$o:keyPairToken = $value;
+$o:actorHash = $value-&gt;keyPair-&gt;publicKey-&gt;hash;</desc><tspan
+         y="156"
+         x="87"
+         id="tspan4273"
+         sodipodi:role="line">select KEYPAIR</tspan></text>
+    <rect
+       rx="4"
+       y="20"
+       x="20"
+       height="30"
+       width="60"
+       id="rect3086"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="40"
+       id="text3088"><tspan
+         sodipodi:role="line"
+         id="tspan3090"
+         x="50"
+         y="40">help</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,39.5 H 257"
+       id="path3092"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="36"
+       id="text3094"><tspan
+         sodipodi:role="line"
+         id="tspan3096"
+         x="87"
+         y="36">select</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,399.5 H 257"
+       id="path3112"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="396"
+       id="text3114"><tspan
+         sodipodi:role="line"
+         id="tspan3116"
+         x="87"
+         y="396">unselect key pair</tspan></text>
+    <rect
+       width="20"
+       rx="4"
+       y="140"
+       x="320"
+       height="210"
+       id="rect4526"
+       style="fill:#999999">
+      <title
+         id="title4524">select</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4528"
+       d="M 83,199.5 H 317"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4532"
+       y="196"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc4538">$o:store = $value;</desc><tspan
+         y="196"
+         x="87"
+         id="tspan4530"
+         sodipodi:role="line">select STORE</tspan></text>
+    <rect
+       rx="4"
+       y="140"
+       x="20"
+       height="210"
+       width="60"
+       id="rect4524"
+       style="fill:#cccccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,439.5 H 257"
+       id="path4530"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="436"
+       id="text4537"><tspan
+         sodipodi:role="line"
+         id="tspan4535"
+         x="87"
+         y="436">unselect store</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="160"
+       id="text4541"><tspan
+         sodipodi:role="line"
+         id="tspan4539"
+         x="50"
+         y="160">cds</tspan></text>
+    <rect
+       rx="4"
+       y="380"
+       x="20"
+       height="150"
+       width="60"
+       id="rect4543"
+       style="fill:#cccccc" />
+    <rect
+       style="fill:#999999"
+       id="rect4547"
+       height="30"
+       x="260"
+       y="380"
+       rx="4"
+       width="20">
+      <title
+         id="title4545">unselectKeyPair</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,339.5 H 197"
+       id="path4549"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="336"
+       id="text4555"><desc
+         id="desc4551">$o:actorHash = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan4553"
+         x="87"
+         y="336">select ACTOR</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="400"
+       id="text4559"><tspan
+         sodipodi:role="line"
+         id="tspan4557"
+         x="50"
+         y="400">cds</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4567"
+       d="M 83,479.5 H 257"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4571"
+       y="476"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="476"
+         x="87"
+         id="tspan4569"
+         sodipodi:role="line">unselect actor</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect881"
+       height="30"
+       x="260"
+       y="80"
+       rx="4"
+       width="20">
+      <title
+         id="title879">showSelectionCmd</title>
+    </rect>
+    <rect
+       rx="4"
+       y="80"
+       x="20"
+       height="30"
+       width="60"
+       id="rect883"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="100"
+       id="text887"><tspan
+         sodipodi:role="line"
+         id="tspan885"
+         x="50"
+         y="100">cds</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,99.5 H 257"
+       id="path889"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="96"
+       id="text895"><tspan
+         sodipodi:role="line"
+         id="tspan893"
+         x="87"
+         y="96">select</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect901"
+       height="30"
+       x="260"
+       y="500"
+       rx="4"
+       width="20">
+      <title
+         id="title899">unselectAll</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,519.5 H 257"
+       id="path903"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="516"
+       id="text907"><tspan
+         sodipodi:role="line"
+         id="tspan905"
+         x="87"
+         y="516">unselect all</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,239.5 H 317"
+       id="path904"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="236"
+       id="text910"><desc
+         id="desc906">$o:store = $o:actor-&gt;storageStore;</desc><tspan
+         sodipodi:role="line"
+         id="tspan908"
+         x="87"
+         y="236">select storage store</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path912"
+       d="M 83,219.5 H 317"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text918"
+       y="216"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc914">$o:store = $o:actor-&gt;messagingStore;</desc><tspan
+         y="216"
+         x="87"
+         id="tspan916"
+         sodipodi:role="line">select messaging store</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 223,339.5 h 94"
+       id="path908"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="227"
+       y="336"
+       id="text912"><desc
+         id="desc915">$o:store = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan910"
+         x="227"
+         y="336">on STORE</tspan></text>
+    <rect
+       width="20"
+       rx="4"
+       y="420"
+       x="260"
+       height="30"
+       id="rect902"
+       style="fill:#999999">
+      <title
+         id="title900">unselectStore</title>
+    </rect>
+    <rect
+       style="fill:#999999"
+       id="rect907"
+       height="30"
+       x="260"
+       y="460"
+       rx="4"
+       width="20">
+      <title
+         id="title905">unselectActor</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path909"
+       d="M 83,279.5 H 317"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text915"
+       y="276"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc911">$o:actorHash = $value;</desc><tspan
+         y="276"
+         x="87"
+         id="tspan913"
+         sodipodi:role="line">select ACTOR</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,299.5 H 317"
+       id="path896"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="296"
+       id="text902"><desc
+         id="desc898">WEIGHT 1
+$o:store = $value-&gt;cliStore;
+$o:actorHash = $value-&gt;actorHash;</desc><tspan
+         sodipodi:role="line"
+         id="tspan900"
+         x="87"
+         y="296">select ACCOUNT</tspan></text>
+  </g>
+</svg>

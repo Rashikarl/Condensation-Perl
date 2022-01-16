@@ -1,0 +1,29 @@
+#! /usr/bin/perl
+use strict;
+use lib '..';
+use CDS;
+
+my $success = 0;
+my $total = 0;
+for my $r (0..1000000) {
+	$total += 1;
+	#my $bytes = CDS->randomBytes(8);
+	my $bytes = CDS->bytesFromUnsigned($r);
+	next if ! &seemsValid($bytes);
+
+	eval {
+		Encode::decode('utf-8', $bytes, Encode::FB_CROAK);
+		$success += 1;
+		};
+}
+
+print $success, '/', $total, "\n";
+
+sub seemsValid {
+	my $bytes = shift;
+	for my $i (0 .. length($bytes) - 1) {
+		my $c = ord(substr($bytes, $i, 1));
+		return if $c < 32 && $c != 9 && $c != 10 && $c != 13 && $c != 27;
+	}
+	return 1;
+}

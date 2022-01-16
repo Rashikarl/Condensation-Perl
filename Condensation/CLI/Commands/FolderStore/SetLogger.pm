@@ -1,0 +1,11 @@
+use parent 'CDS::Commands::FolderStore::Logger';
+
+sub finalizeWrong($o) {
+	return 1;
+}
+
+sub summary($o) {
+	$o:ui->p(($o:correct + $o:wrong).' files and folders traversed.');
+	$o:ui->p('The permissions of ', $o:wrong, ' files and folders have been adjusted.') if $o:wrong > 0;
+	$o:ui->pGreen('All permissions are OK.');
+}

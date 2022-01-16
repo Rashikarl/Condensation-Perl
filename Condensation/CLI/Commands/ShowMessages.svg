@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="1000"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="ShowMessages.svg">
+  <defs
+     id="defs4">
+    <marker
+       id="arrow000000"
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000"
+         d="M -6,2.5 2,0 -6,-2.5 -5,0 Z"
+         id="path2" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="-301.94513"
+     inkscape:cy="874.49878"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="3747"
+     inkscape:window-height="2125"
+     inkscape:window-x="81"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       y="300"
+       x="340"
+       height="50"
+       width="20"
+       id="rect4123"
+       style="fill:#cccccc"
+       rx="4" />
+    <rect
+       style="fill:#999999"
+       id="rect3098"
+       height="30"
+       x="240"
+       y="20"
+       rx="4"
+       width="20">
+      <title
+         id="title4141">help</title>
+    </rect>
+    <rect
+       rx="4"
+       y="200"
+       x="480"
+       height="150"
+       width="20"
+       id="rect4405"
+       style="fill:#999999">
+      <title
+         id="title4139">showMessages</title>
+    </rect>
+    <rect
+       style="fill:#cccccc"
+       id="rect4261"
+       width="60"
+       height="150"
+       x="20"
+       y="80"
+       rx="4" />
+    <text
+       id="text4263"
+       y="100"
+       x="50"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       xml:space="preserve"><tspan
+         y="100"
+         x="50"
+         id="tspan4265"
+         sodipodi:role="line"
+         style="font-size:13px;line-height:1.25">cds</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 263,219.5 H 477"
+       id="path4283"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="267"
+       y="216"
+       id="text4285"><desc
+         id="desc4569">WEIGHT 1
+push @$o:accountTokens, $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan4287"
+         x="267"
+         y="216"
+         style="font-size:13px;line-height:1.25">ACCOUNT</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4289"
+       d="M 263,239.5 H 477"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4291"
+       y="236"
+       x="267"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc4127">for my $member ($value-&gt;actorGroup-&gt;members) {
+	push @$o:accountTokens, CDS::AccountToken-&gt;new($member-&gt;actorOnStore-&gt;store, $member-&gt;actorOnStore-&gt;publicKey-&gt;hash);
+}</desc><tspan
+         y="236"
+         x="267"
+         id="tspan4293"
+         sodipodi:role="line"
+         style="font-size:13px;line-height:1.25">ACTORGROUP</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 263,259.5 H 477"
+       id="path4295"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="267"
+       y="256"
+       id="text4297"><desc
+         id="desc4129">$o:keyPairToken = $value;
+push @$o:accountTokens, CDS::AccountToken-&gt;new($o:actor-&gt;preferredStore, $value-&gt;publicKey-&gt;hash);</desc><tspan
+         sodipodi:role="line"
+         id="tspan4299"
+         x="267"
+         y="256"
+         style="font-size:13px;line-height:1.25">KEYPAIR</tspan></text>
+    <text
+       id="text4303"
+       y="316"
+       x="267"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3122">$o:keyPairToken = $value;
+$o:actorHash = $value-&gt;keyPair-&gt;publicKey-&gt;hash;</desc><tspan
+         y="316"
+         x="267"
+         id="tspan4305"
+         sodipodi:role="line"
+         style="font-size:13px;line-height:1.25">KEYPAIR</tspan></text>
+    <rect
+       rx="4"
+       y="20"
+       x="20"
+       height="30"
+       width="60"
+       id="rect3086"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="40"
+       id="text3088"><tspan
+         sodipodi:role="line"
+         id="tspan3090"
+         x="50"
+         y="40"
+         style="font-size:13px;line-height:1.25">help</tspan></text>
+    <path
+       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px"
+       d="m 83,39.5 154,0"
+       id="path3092"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="36"
+       id="text3094"><tspan
+         sodipodi:role="line"
+         id="tspan3096"
+         x="87"
+         y="36"
+         style="font-size:13px;line-height:1.25">show messages</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3142"
+       d="M 363,319.5 H 477"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="367"
+       y="316"
+       id="text4103"><desc
+         id="desc4105">push @$o:accountTokens, CDS::AccountToken-&gt;new($value, $o:actorHash);
+delete $o:actorHash;</desc><tspan
+         sodipodi:role="line"
+         id="tspan4107"
+         x="367"
+         y="316"
+         style="font-size:13px;line-height:1.25">on STORE</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4109"
+       d="m 263,319.5 h 74"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <rect
+       width="20"
+       rx="4"
+       y="200"
+       x="240"
+       height="150"
+       id="rect4133"
+       style="fill:#999999" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,219.5 H 237"
+       id="path4270"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="216"
+       id="text4272"><tspan
+         sodipodi:role="line"
+         id="tspan4274"
+         x="87"
+         y="216"
+         style="font-size:13px;line-height:1.25">show messages of</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4282"
+       d="M 83,139.5 H 237"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4284"
+       y="136"
+       x="87"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="136"
+         x="87"
+         id="tspan4286"
+         sodipodi:role="line"
+         style="font-size:13px;line-height:1.25">show my messages</tspan></text>
+    <rect
+       width="20"
+       rx="4"
+       y="120"
+       x="240"
+       height="30"
+       id="rect4288"
+       style="fill:#999999">
+      <title
+         id="title4290">showMyMessages</title>
+    </rect>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path864"
+       d="M 263,279.5 H 477"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text870"
+       y="276"
+       x="267"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc866">push @$o:accountTokens, CDS::AccountToken-&gt;new($o:actor-&gt;preferredStore, $value);</desc><tspan
+         style="font-size:13px;line-height:1.25"
+         y="276"
+         x="267"
+         id="tspan868"
+         sodipodi:role="line">ACTOR</tspan></text>
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="267"
+       y="336"
+       id="text876"><desc
+         id="desc872">$o:actorHash = $value;</desc><tspan
+         style="font-size:13px;line-height:1.25"
+         sodipodi:role="line"
+         id="tspan874"
+         x="267"
+         y="336">ACTOR</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 263,339.5 h 74"
+       id="path878"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,99.5 H 237"
+       id="path4541"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="96"
+       id="text4545"><tspan
+         style="font-size:13px;line-height:1.25"
+         sodipodi:role="line"
+         id="tspan4543"
+         x="87"
+         y="96">show messages</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect4549"
+       height="30"
+       x="240"
+       y="80"
+       rx="4"
+       width="20">
+      <title
+         id="title4547">showMessagesOfSelected</title>
+    </rect>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,179.5 H 237"
+       id="path876"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="line-height:0%;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="176"
+       id="text880"><tspan
+         style="font-size:13px;line-height:1.25"
+         sodipodi:role="line"
+         id="tspan878"
+         x="87"
+         y="176">show our messages</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect884"
+       height="30"
+       x="240"
+       y="160"
+       rx="4"
+       width="20">
+      <title
+         id="title882">showOurMessages</title>
+    </rect>
+  </g>
+</svg>

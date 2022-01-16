@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="1000"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="Put.svg">
+  <defs
+     id="defs4">
+    <marker
+       id="arrow000000"
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000"
+         d="M -6,2.5 2,0 -6,-2.5 -5,0 Z"
+         id="path2" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="-116.5"
+     inkscape:cy="891.5"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="3747"
+     inkscape:window-height="2125"
+     inkscape:window-x="81"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       rx="4"
+       y="140"
+       x="360"
+       height="50"
+       width="20"
+       id="rect3053"
+       style="fill:#cccccc" />
+    <rect
+       rx="4"
+       y="80"
+       x="820"
+       height="50"
+       width="20"
+       id="rect3066"
+       style="fill:#999999">
+      <title
+         id="title3063">put</title>
+    </rect>
+    <rect
+       style="fill:#cccccc"
+       id="rect3040"
+       width="20"
+       height="50"
+       x="680"
+       y="80"
+       rx="4" />
+    <rect
+       style="fill:#999999"
+       id="rect4467"
+       width="20"
+       height="110"
+       x="460"
+       y="80"
+       rx="4" />
+    <rect
+       rx="4"
+       y="80"
+       x="20"
+       height="110"
+       width="60"
+       id="rect4433"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       x="50"
+       y="100"
+       id="text4435"><tspan
+         sodipodi:role="line"
+         id="tspan4437"
+         x="50"
+         y="100">cds</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4447"
+       d="m 83,99.5 374,0"
+       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px" />
+    <text
+       id="text4449"
+       y="96"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc4541">$o:objectFile = $value;</desc><tspan
+         y="96"
+         x="87"
+         id="tspan4451"
+         sodipodi:role="line">put OBJECTFILE</tspan></text>
+    <path
+       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px"
+       d="m 483,99.5 194,0"
+       id="path4453"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       x="487"
+       y="96"
+       id="text4477"><desc
+         id="desc4547">$o:aesKey = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan4479"
+         x="487"
+         y="96">encrypted with AESKEY</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4535"
+       d="m 483,119.5 194,0"
+       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-width:1" />
+    <rect
+       style="fill:#cccccc"
+       id="rect3022"
+       width="60"
+       height="30"
+       x="20"
+       y="20"
+       rx="4" />
+    <text
+       id="text3024"
+       y="40"
+       x="50"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       xml:space="preserve"><tspan
+         y="40"
+         x="50"
+         id="tspan3026"
+         sodipodi:role="line">help</tspan></text>
+    <rect
+       style="fill:#999999"
+       id="rect3028"
+       width="20"
+       height="30"
+       x="160"
+       y="20"
+       rx="4">
+      <title
+         id="title3065">help</title>
+    </rect>
+    <path
+       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px"
+       d="m 83,39.5 74,0"
+       id="path3030"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       x="87"
+       y="36"
+       id="text3032"><tspan
+         sodipodi:role="line"
+         id="tspan3036"
+         x="87"
+         y="36">put</tspan></text>
+    <path
+       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px"
+       d="m 703,99.5 114,0"
+       id="path3044"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       x="707"
+       y="96"
+       id="text3046"><desc
+         id="desc3048">push @$o:stores, $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3050"
+         x="707"
+         y="96">onto STORE*</tspan></text>
+    <path
+       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-width:1"
+       d="m 703,119.5 114,0"
+       id="path3062"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,159.5 H 217"
+       id="path3032"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="156"
+       id="text3034"><tspan
+         sodipodi:role="line"
+         id="tspan3038"
+         x="87"
+         y="156">put object with</tspan></text>
+    <rect
+       style="fill:#cccccc"
+       id="rect3041"
+       width="20"
+       height="50"
+       x="220"
+       y="140"
+       rx="4" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3043"
+       d="M 243,159.5 H 357"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3045"
+       y="156"
+       x="247"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3047">push @$o:hashes, $value;</desc><tspan
+         y="156"
+         x="247"
+         id="tspan3049"
+         sodipodi:role="line">HASH* and</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3051"
+       d="M 243,179.5 H 357"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 383,159.5 h 74"
+       id="path3055"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="387"
+       y="156"
+       id="text3057"><desc
+         id="desc3059">$o:dataFile = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3061"
+         x="387"
+         y="156">FILE</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 83,119.5 H 457"
+       id="path872"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="116"
+       id="text878"><desc
+         id="desc874">$o:object = $value-&gt;keyPair-&gt;publicKey-&gt;object;</desc><tspan
+         sodipodi:role="line"
+         id="tspan876"
+         x="87"
+         y="116">put public key of KEYPAIR</tspan></text>
+  </g>
+</svg>

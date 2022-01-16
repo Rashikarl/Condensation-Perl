@@ -1,0 +1,12 @@
+#! /usr/bin/perl
+use strict;
+use lib '..';
+use lib '../Condensation';
+use CDS;
+
+my $start = CDS::C::performanceStart();
+for my $r (0..100) {
+	my $diff = CDS::C::performanceElapsed($start);
+	print $diff, "\n";
+	#sleep 1;
+}

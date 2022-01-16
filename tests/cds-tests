@@ -1,0 +1,119 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+
+# Prepare
+my $testObjectHash = 'df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119';
+open(F, '>', 'test-object');
+print F "\0\0\0\0";
+close F;
+
+# Key pairs
+&runOrFail('cds create key pair test-key-pair');
+&runOrFail('cds check key pair test-key-pair');
+&runOrFail('cds select test-key-pair');
+
+# Folder store
+&runOrFail('cds create store test-store and remember it as test-store-folder');
+&runOrFail('cds add account for test-key-pair to test-store-folder');
+&runOrFail('cds put public key of test-key-pair onto test-store-folder');
+&runOrFail('cds collect garbage of test-store-folder');
+
+# HTTP Server
+my $serverPID = &forkOrFail('cds start http server for test-store-folder on port 18000');
+
+# Remember
+&runOrFail('cds remember http://localhost:18000 as test-store-http');
+&runOrFail('cds remember '.$testObjectHash.' as test-account');
+
+# Stores
+&runOrFail('cds put test-object onto test-store-http');
+&runOrFail('cds put test-object onto test-store-folder');
+&runOrFail('cds book '.$testObjectHash.' on test-store-http');
+&runOrFail('cds book '.$testObjectHash.' on test-store-folder');
+&runOrFail('cds get '.$testObjectHash.' from test-store-http');
+&runOrFail('cds get '.$testObjectHash.' from test-store-folder');
+&runOrFail('cds add '.$testObjectHash.' to in-queue of '.$testObjectHash.' on test-store-http');
+&runOrFail('cds add '.$testObjectHash.' to in-queue of '.$testObjectHash.' on test-store-folder');
+&runOrFail('cds list in-queue of '.$testObjectHash.' on test-store-http');
+&runOrFail('cds list in-queue of '.$testObjectHash.' on test-store-folder');
+&runOrFail('cds remove '.$testObjectHash.' from in-queue of '.$testObjectHash.' on test-store-http');
+&runOrFail('cds remove '.$testObjectHash.' from in-queue of '.$testObjectHash.' on test-store-folder');
+
+# Select
+&runOrFail('cds select test-store-folder');
+&runOrFail('cds select '.$testObjectHash);
+&runOrFail('cds select');
+&runOrFail('cds unselect store');
+&runOrFail('cds unselect actor');
+
+# CURL
+&runOrFail('cds curl book http://localhost:18000/objects/'.$testObjectHash);
+
+&separator('All test completed, cleaning up now');
+&cleanup;
+
+sub cleanup {
+	&run('cds forget test-store-http');
+	&run('cds forget test-store-folder');
+	&run('cds forget test-account');
+	&run('cds unselect all');
+	&run('rm -r test-store');
+	&run('rm test-object');
+	&run('rm test-key-pair');
+	&run('rm .cds-curl-*');
+	kill 'SIGTERM', $serverPID if $serverPID;
+	return 1;
+}
+
+print 'All tests completed.', "\n";
+
+sub run {
+	my $cmd = shift;
+	my $comment = shift;
+	my @cmd = split(/ /, $cmd);
+	print "\n";
+	print '###', "\n";
+	print $comment, "\n" if defined $comment;
+	print $cmd, "\n";
+	return system(@cmd);
+}
+
+sub runOrFail {
+	&run(@_) || return;
+	&separator('Test failed, press any key to clean up');
+	<>;
+	&cleanup;
+	exit(1);
+}
+
+sub forkOrFail {
+	my $cmd = shift;
+	my $comment = shift;
+	my @cmd = split(/ /, $cmd);
+	print "\n";
+	print '###', "\n";
+	print $comment, "\n" if defined $comment;
+	print $cmd, "\n\n";
+
+	my $pid = fork;
+	return $pid if $pid;			# parent
+	exec(@cmd) if defined $pid;		# child
+
+	&separator('Fork failed, cleaning up now');
+	&cleanup;
+	exit(1);
+}
+
+sub separator {
+	my $title = shift;
+	my $dashes = 120 - length($title);
+	$dashes = 3 if $dashes < 3;
+	print "\n";
+	print '=== ', $title, ' ', '=' x $dashes, "\n";
+}
+
+sub info {
+	print "\n";
+	print @_, "\n";
+}

@@ -1,0 +1,827 @@
+# format=pipe
+ActorGroupBuilder|package||
+ActorGroup|package||
+ActorOnStore|package||
+ActorWithDataTree|package||
+CDS|package||
+Card|package||
+CheckSignatureStore|package||
+Configuration|package||
+DAY||in CDS|
+DataTree|package||
+DetachedDataTree|package||
+DiscoverActorGroup|package||
+EntrustedActor|package||
+Entry|package||
+ErrorHandlingStore|package||
+FolderStore|package||
+GroupDataSharer|package||
+Group|package||
+HOUR||in CDS|
+HTTPStore|package||
+HashAndKey|package||
+Hash|package||
+HexDump|package||
+ISODate|package||
+InMemoryStore|package||
+Item|package||
+KeyPair|package||
+Link|package||
+LoadActorGroup|package||
+LogStore|package||
+MINUTE||in CDS|
+MONTH||in CDS|
+Member|package||
+MessageBoxReaderPool|package||
+MessageBoxReader|package||
+MessageChannel|package||
+MissingObject|package||
+NewAnnounce|package||
+NewMessagingStore|package||
+Node|package||
+ObjectCache|package||
+Object|package||
+Part|package||
+PosixPermissions|package||
+PrivateBoxReader|package||
+PrivateRoot|package||
+PublicKeyCache|package||
+PublicKey|package||
+PutTree|package||
+ReceivedMessage|package||
+RecordReader|package||
+RecordWriter|package||
+Record|package||
+RootDataTree|package||
+SECOND||in CDS|
+Selector|package||
+SentItem|package||
+SentList|package||
+Source|package||
+Span|package||
+SplitStore|package||
+State|package||
+StoreModifications|package||
+Store|package||
+StreamCache|package||
+StreamHead|package||
+SubDataTree|package||
+Submission|package||
+UI|package||
+UNKNOWN|package||
+UnionList|package||
+Unsaved|package||
+User|package||
+WEEK||in CDS|
+Watcher|package||
+World|package||
+YEAR||in CDS|
+accountFolderMode||in CDS::FolderStore::PosixPermissions::Group|
+accountFolderMode||in CDS::FolderStore::PosixPermissions::User|
+accountFolderMode||in CDS::FolderStore::PosixPermissions::World|
+accountForWriting||($hash) in CDS::InMemoryStore|
+accountStore||($index) in CDS::SplitStore|
+accounts||() in CDS::FolderStore|
+actorGroupSelector||in CDS::ActorWithDataTree|
+actorHash||in CDS::DiscoverActorGroup::Node|
+actorOnStore||in CDS::ActorGroup::EntrustedActor|
+actorOnStore||in CDS::ActorGroup::Member|
+actorOnStore||in CDS::DiscoverActorGroup::Card|
+actorOnStore||in CDS::MessageBoxReader|
+actorOnStore||in CDS::PrivateBoxReader|
+actorOnStore||in CDS::Source|
+actorSelector||in CDS::ActorWithDataTree|
+actor||in CDS::MessageChannel|
+actor||in CDS::NewMessagingStore|
+addAccount||($accountHash) in CDS::FolderStore|
+addActorGroup||($actorGroupBuilder) in CDS::NewAnnounce|
+addBoolean||($value, $hash) in CDS::Record|
+addDataHandler||($label, $dataHandler) in CDS::GroupDataSharer|
+addDataHandler||($label, $dataHandler) in CDS::PrivateRoot|
+addDataSavedHandler||() in CDS::Unsaved::State|
+addDataTo||($record) in CDS::GroupDataSharer|
+addDataTo||($record) in CDS::RootDataTree|
+addDataTo||($record) in CDS::UnionList|
+addEntriesToRecord||($unsortedEntries, $record) in CDS::StoreModifications|
+addEntrustedActor||($hash, $storeUrl) in CDS::ActorGroupBuilder|
+addFromObject||($object // return) in CDS::Record|
+addHashAndKey||($hashAndKey) in CDS::Record|
+addHash||($hash) in CDS::RecordWriter|
+addHash||($hash) in CDS::Record|
+addInteger||($value, $hash) in CDS::Record|
+addKnownPublicKey||($publicKey) in CDS::ActorGroupBuilder|
+addMember||($hash, $storeUrl, $revision // 0, $status // 'active') in CDS::ActorGroupBuilder|
+addMergedSource||($hash) in CDS::Selector|
+addMergedSource||() in CDS::Unsaved::State|
+addObject||($hash, $object) in CDS::MessageChannel|
+addObject||($hash, $object) in CDS::NewAnnounce|
+addObject||($hash, $object) in CDS::Selector|
+addObject||($hash, $object) in CDS::Unsaved::State|
+addRecipientsToEnvelope||($envelope, $key, $recipientPublicKeys) in CDS::KeyPair|
+addRecord||() in CDS::Record|
+addText||($value, $hash) in CDS::Record|
+addToRecord||($record) in CDS::SentItem|
+addToRecord||($record, $linkedPublicKeys) in CDS::ActorGroupBuilder|
+addTransfer||($hashes, $sourceStore, $context) in CDS::MessageChannel|
+addTransfer||($hashes, $sourceStore, $context) in CDS::NewAnnounce|
+addUnsigned||($value, $hash) in CDS::Record|
+additions||in CDS::StoreModifications|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::CheckSignatureStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::ErrorHandlingStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::FolderStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::HTTPStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::InMemoryStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::LogStore|
+add||($accountHash, $boxLabel, $hash, $keyPair) in CDS::SplitStore|
+add||($accountHash, $boxLabel, $hash, $object) in CDS::StoreModifications|
+add||($boxLabel, $hash, $keyPair) in CDS::ObjectCache|
+add||($bytes, $hash) in CDS::Record|
+add||($publicKey) in CDS::PublicKeyCache|
+announceOnAllStores||() in CDS::ActorWithDataTree|
+announce||($store) in CDS::ActorWithDataTree|
+asBoolean||() in CDS::Record|
+asHashAndKey||() in CDS::Record|
+asInteger||() in CDS::Record|
+asText||() in CDS::Record|
+asUnsigned||() in CDS::Record|
+assignAccounts||($fromIndex, $toIndex, $store) in CDS::SplitStore|
+assignObjects||($fromIndex, $toIndex, $store) in CDS::SplitStore|
+attachedToUs||in CDS::DiscoverActorGroup::Node|
+attach||() in CDS::DiscoverActorGroup::Node|
+a||() in CDS::UI|
+backend||in CDS::ObjectCache|
+background||($background; @text) in CDS::UI|
+baseFolderMode||in CDS::FolderStore::PosixPermissions::Group|
+baseFolderMode||in CDS::FolderStore::PosixPermissions::User|
+baseFolderMode||in CDS::FolderStore::PosixPermissions::World|
+blue||() in CDS::UI|
+bold||() in CDS::UI|
+book||($hash, $keyPair) in CDS::CheckSignatureStore|
+book||($hash, $keyPair) in CDS::ErrorHandlingStore|
+book||($hash, $keyPair) in CDS::FolderStore|
+book||($hash, $keyPair) in CDS::HTTPStore|
+book||($hash, $keyPair) in CDS::InMemoryStore|
+book||($hash, $keyPair) in CDS::LogStore|
+book||($hash, $keyPair) in CDS::SplitStore|
+book||($hash, $keyPair) in CDS::Unsaved|
+book||($keyPair) in CDS::ObjectCache|
+booleanCompare||($a, $b) in CDS STATIC|
+booleanFromBytes||($bytes) in CDS STATIC|
+booleanValue||() in CDS::Record|
+booleanValue||() in CDS::Selector|
+boxFileMode||($boxLabel) in CDS::FolderStore::PosixPermissions::Group|
+boxFileMode||($boxLabel) in CDS::FolderStore::PosixPermissions::User|
+boxFileMode||in CDS::FolderStore::PosixPermissions::World|
+boxFolderMode||($boxLabel) in CDS::FolderStore::PosixPermissions::Group|
+boxFolderMode||($boxLabel) in CDS::FolderStore::PosixPermissions::User|
+boxFolderMode||in CDS::FolderStore::PosixPermissions::World|
+boxLabel||in CDS::Source|
+byteLength||() in CDS::Object|
+bytesFromBoolean||($value) in CDS STATIC|
+bytesFromInteger||($value) in CDS STATIC|
+bytesFromUnsigned||($value) in CDS STATIC|
+bytesValue||() in CDS::Record|
+bytesValue||() in CDS::Selector|
+bytes||() in CDS::Hash|
+bytes||() in CDS::PublicKey|
+bytes||in CDS::Object|
+bytes||in CDS::Record|
+cache||in CDS::ObjectCache|
+calculateFor||($bytes) in CDS::Hash STATIC|
+calculateHash||() in CDS::Object|
+calculateSizeContribution||() in CDS::Record|
+calculateSize||() in CDS::Record|
+cardHash||in CDS::DiscoverActorGroup::Card|
+cards||() in CDS::DiscoverActorGroup::Node|
+card||in CDS::DiscoverActorGroup::Card|
+card||in CDS::NewAnnounce|
+changeStyle||() in CDS::UI::HexDump|
+channel||in CDS::MessageChannel::Submission|
+checkPermissions||($item, $expectedMode, $logger) in CDS::FolderStore::PosixPermissions|
+checkPermissions||($logger) in CDS::FolderStore|
+childWithText||($label) in CDS::Selector|
+childWithText||($text) in CDS::Record|
+children||() in CDS::Record|
+children||() in CDS::Selector|
+child||($bytes) in CDS::Record|
+child||($label) in CDS::Selector|
+clearInThePast||() in CDS::Selector|
+clear||($validUntil) in CDS::SentItem|
+clear||() in CDS::MessageChannel|
+clear||() in CDS::Selector|
+cmp||($this, $that) in CDS::Hash|
+collectGarbage||($graceTime) in CDS::InMemoryStore|
+command||() in CDS::UI|
+containsText||($text) in CDS::Record|
+contains||($actorHash) in CDS::ActorGroup|
+contains||($bytes) in CDS::Record|
+content||in CDS::ReceivedMessage|
+content||in CDS::StreamHead|
+context||in CDS::MissingObject|
+countEntries||() in CDS::Record|
+covers||($hash) in CDS::DiscoverActorGroup|
+createFolder||($folder) in CDS::Configuration|
+createIfNecessary||() in CDS::Configuration|
+createIfNecessary||() in CDS::FolderStore|
+createItem||($id) in CDS::SentList|
+createMessageEnvelope||($storeUrl, $messageRecord, $recipientPublicKeys, $expires) in CDS::KeyPair|
+createMessage||() in CDS::GroupDataSharer|
+createPrivateEnvelope||($contentHashAndKey, $recipientPublicKeys) in CDS::KeyPair|
+createPublicEnvelope||($contentHash) in CDS::KeyPair|
+createSaveRecord||() in CDS::DataTree::Item|
+create||($header, $data) in CDS::Object STATIC|
+create||() in CDS::InMemoryStore STATIC|
+crypt||($key) in CDS::Object|
+darkBold||() in CDS::UI|
+dataChanged||() in CDS::DataTree|
+dataChanged||() in CDS::PrivateRoot|
+dataSavedHandlers||() in CDS::Unsaved::State|
+dataTree||in CDS::Selector|
+data||in CDS::Object|
+data||in CDS::RecordWriter|
+dateValue||($bytes) in CDS::UI::Record|
+dayString||($time // 1000 * time) in CDS::ISODate STATIC|
+decryptKeyOnEnvelope||($envelope) in CDS::KeyPair|
+decrypt||($bytes) in CDS::KeyPair|
+delegate||in CDS::PrivateBoxReader|
+delegate||in CDS::PrivateRoot|
+deleteOldest||() in CDS::PublicKeyCache|
+dependentHashes||() in CDS::Record|
+detachSaveRecord||() in CDS::DataTree::Item|
+discard||() in CDS::Source|
+discover||($builder, $keyPair, $delegate) in CDS::DiscoverActorGroup STATIC|
+discover||($keyPair, $delegate) in CDS::ActorGroupBuilder|
+discover||() in CDS::DiscoverActorGroup::Node|
+display||($ui, $record, $storeUrl) in CDS::UI::Record STATIC|
+display||() in CDS::UI::HexDump|
+doNotEntrust||($hash) in CDS::ActorWithDataTree|
+done||() in CDS::FolderStore::Watcher|
+emptyBytesHash||in CDS|
+emptyHeader||in CDS::Object|
+encrypt||($bytes) in CDS::PublicKey|
+entrustedActorListToRecord||($linkedPublicKeys) in CDS::ActorGroupBuilder|
+entrustedActorsRevision||in CDS::ActorGroupBuilder|
+entrustedActorsRevision||in CDS::ActorGroup|
+entrustedActorsSelector||in CDS::ActorWithDataTree|
+entrustedActors||() in CDS::ActorGroupBuilder|
+entrustedActors||() in CDS::ActorGroup|
+entrustedKeys||() in CDS::MessageChannel::Submission|
+entrustedKeys||() in CDS::MessageChannel|
+entrusts||($actorHash) in CDS::ActorGroup|
+entrust||($storeUrl, $publicKey) in CDS::ActorWithDataTree|
+envelopeHashBytes||() in CDS::SentItem|
+envelopeHash||() in CDS::SentItem|
+envelopeHash||in CDS::DiscoverActorGroup::Card|
+envelopeHash||in CDS::MessageChannel::Submission|
+envelopeObject||in CDS::MessageChannel::Submission|
+envelope||in CDS::DiscoverActorGroup::Card|
+envelope||in CDS::ReceivedMessage|
+envelope||in CDS::StreamHead|
+equals||($this, $that) in CDS::ActorOnStore|
+equals||($this, $that) in CDS::Hash|
+equals||($this, $that) in CDS::KeyPair|
+errorHandler||in CDS::ErrorHandlingStore|
+error||() in CDS::UI|
+error||in CDS::StreamHead|
+executeIndividually||($store, $keyPair) in CDS::StoreModifications|
+exists||() in CDS::FolderStore|
+expires||in CDS::MessageChannel::Submission|
+extend||() in CDS::DiscoverActorGroup|
+fileHandle||in CDS::LogStore|
+fileHandle||in CDS::UI|
+file||($filename) in CDS::Configuration|
+findMember||($memberHash) in CDS::ActorWithDataTree|
+firstChild||() in CDS::Record|
+firstValue||() in CDS::Selector|
+folder||in CDS::Configuration|
+folder||in CDS::FolderStore|
+forFolder||($folder) in CDS::FolderStore::PosixPermissions STATIC|
+forUrl||($url) in CDS::FolderStore STATIC|
+forUrl||($url) in CDS::HTTPStore STATIC|
+foreground||($color) in CDS::UI::HexDump|
+foreground||($foreground; @text) in CDS::UI|
+forgetBranch||() in CDS::Selector|
+forgetItem||($item) in CDS::UnionList|
+forgetObsoleteItems||() in CDS::SentList|
+forgetOldIdleActors||($limit) in CDS::ActorWithDataTree|
+forget||($id) in CDS::UnionList|
+forget||() in CDS::DataTree::Item|
+forget||() in CDS::Selector|
+formatByteLength||($byteLength) in CDS::LogStore|
+formatDuration||($elapsed) in CDS::LogStore|
+fromBytes||($bytes // return) in CDS::Object STATIC|
+fromBytes||($bytes) in CDS::StoreModifications STATIC|
+fromBytes||($hashBytes // return) in CDS::Hash STATIC|
+fromFile||($file) in CDS::KeyPair STATIC|
+fromFile||($file) in CDS::Object STATIC|
+fromHex||($hashHex // return) in CDS::Hash STATIC|
+fromHex||($hex) in CDS::KeyPair STATIC|
+fromObject||($object // return) in CDS::Record STATIC|
+fromObject||($object) in CDS::PublicKey STATIC|
+fromRecord||($record // return) in CDS::KeyPair STATIC|
+fromRecord||($record) in CDS::StoreModifications STATIC|
+generate||() in CDS::KeyPair STATIC|
+getAndDecryptRecord||($hashAndKey, $store) in CDS::KeyPair|
+getAndDecrypt||($hashAndKey, $store) in CDS::KeyPair|
+getEntrustedKeys||() in CDS::ActorWithDataTree|
+getEntrustedKey||($hash) in CDS::ActorWithDataTree|
+getGroupDataMembers||() in CDS::ActorWithDataTree|
+getName||() in CDS::ActorWithDataTree|
+getOrCreateDefault||($ui) in CDS::Configuration STATIC|
+getOrCreate||($id) in CDS::UnionList|
+getOrCreate||($selector) in CDS::DataTree|
+getPublicKey||($hash) in CDS::LoadActorGroup|
+getPublicKey||($hash, $store) in CDS::KeyPair|
+getPublicKey||($senderHash, $senderStore, $senderStoreUrl) in CDS::MessageBoxReader|
+getRecord||($hash, $store) in CDS::KeyPair|
+get||($hash) in CDS::PublicKeyCache|
+get||($hash, $keyPair) in CDS::CheckSignatureStore|
+get||($hash, $keyPair) in CDS::ErrorHandlingStore|
+get||($hash, $keyPair) in CDS::FolderStore|
+get||($hash, $keyPair) in CDS::HTTPStore|
+get||($hash, $keyPair) in CDS::InMemoryStore|
+get||($hash, $keyPair) in CDS::LogStore|
+get||($hash, $keyPair) in CDS::ObjectCache|
+get||($hash, $keyPair) in CDS::SplitStore|
+get||($hash, $keyPair) in CDS::Unsaved|
+get||($id) in CDS::UnionList|
+get||($selector) in CDS::DataTree|
+gid||in CDS::FolderStore::PosixPermissions|
+gold||() in CDS::UI|
+gray||() in CDS::UI|
+green||() in CDS::UI|
+groupDataSharer||in CDS::ActorWithDataTree|
+groupDataTree||in CDS::ActorWithDataTree|
+groupRoot||in CDS::ActorWithDataTree|
+groupedBoxOperations||($operations) in CDS STATIC|
+group||() in CDS::FolderStore::PosixPermissions|
+guessValue||($bytes) in CDS::UI::Record|
+hasChanges||() in CDS::UnionList|
+hasChanges||in CDS::PrivateRoot|
+hasError||in CDS::RecordReader|
+hasError||in CDS::UI|
+hasLinkToUs||() in CDS::DiscoverActorGroup::Node|
+hasPartsToMerge||in CDS::DataTree|
+hasWarning||in CDS::UI|
+hashAndKeyValue||() in CDS::Record|
+hashAndKeyValue||() in CDS::Selector|
+hashAtIndex||($index // return) in CDS::Object|
+hashValue||() in CDS::Record|
+hashValue||() in CDS::Selector|
+hashesCount||in CDS::Object|
+hashes||() in CDS::Object|
+hash||in CDS::ActorGroupBuilder::EntrustedActor|
+hash||in CDS::ActorGroupBuilder::Member|
+hash||in CDS::HashAndKey|
+hash||in CDS::MissingObject|
+hash||in CDS::PublicKey|
+hash||in CDS::Record|
+hash||in CDS::Source|
+hash||in CDS::StreamHead|
+header||() in CDS::RecordWriter|
+header||in CDS::Object|
+hexDump||($bytes) in CDS::UI|
+hexValue||($bytes) in CDS::UI::Record|
+hex||() in CDS::Hash|
+id||() in CDS::ErrorHandlingStore|
+id||() in CDS::FolderStore|
+id||() in CDS::HTTPStore|
+id||() in CDS::Unsaved|
+id||in CDS::CheckSignatureStore|
+id||in CDS::InMemoryStore|
+id||in CDS::LogStore|
+id||in CDS::ObjectCache|
+id||in CDS::SplitStore|
+id||in CDS::UnionList::Item|
+integerFromBytes||($bytes) in CDS STATIC|
+integerValue||() in CDS::Record|
+integerValue||() in CDS::Selector|
+intermediateFolders||($path) in CDS STATIC|
+invalid||($entry, $reason) in CDS::MessageBoxReader|
+invalid||($entry, $reason) in CDS::PrivateBoxReader|
+invalid||($head, $reason) in CDS::StreamCache|
+isActiveOrIdle||() in CDS::DiscoverActorGroup::Node|
+isActive||() in CDS::ActorGroup|
+isActive||() in CDS::DiscoverActorGroup::Node|
+isActive||in CDS::ActorGroup::Member|
+isEmpty||() in CDS::StoreModifications|
+isGroupMember||($actorHash) in CDS::ActorWithDataTree|
+isMe||($actorHash) in CDS::ActorWithDataTree|
+isSaving||() in CDS::Unsaved|
+isSet||() in CDS::Selector|
+isValidBoxLabel||($label) in CDS STATIC|
+isValid||() in CDS::StreamHead|
+items||() in CDS::UnionList|
+item||() in CDS::MessageChannel|
+keep||() in CDS::Source|
+keyPair||() in CDS::Configuration|
+keyPair||in CDS::ActorWithDataTree|
+keyPair||in CDS::DataTree|
+keyPair||in CDS::MessageBoxReaderPool|
+keyPair||in CDS::PrivateBoxReader|
+keyPair||in CDS::Source|
+keyValue||($key, $firstLine; @lines) in CDS::UI|
+key||in CDS::HashAndKey|
+knownPublicKeys||in CDS::ActorGroupBuilder|
+label||in CDS::MessageChannel|
+label||in CDS::RootDataTree|
+label||in CDS::Selector|
+lastUsed||in CDS::StreamHead|
+leader||() in CDS::ActorGroup|
+left||($width, $text) in CDS::LogStore|
+left||($width, $text) in CDS::UI|
+line||() in CDS::UI|
+links||() in CDS::DiscoverActorGroup::Node|
+listFolder||($boxFolder) in CDS::FolderStore|
+listFolder||($folder) in CDS STATIC|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::CheckSignatureStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::ErrorHandlingStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::FolderStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::HTTPStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::InMemoryStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::LogStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::SplitStore|
+list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::Unsaved|
+list||($boxLabel, $timeout, $keyPair) in CDS::ObjectCache|
+load||($builder, $store, $keyPair, $delegate) in CDS::LoadActorGroup STATIC|
+load||($store, $keyPair, $delegate) in CDS::ActorGroupBuilder|
+localDataTree||in CDS::ActorWithDataTree|
+localRoot||in CDS::ActorWithDataTree|
+localSecondString||($time // 1000 * time) in CDS::ISODate STATIC|
+log||($cmd, $input, $output, $elapsed) in CDS::LogStore|
+log||() in CDS STATIC|
+looksLikeTimestamp||($integer) in CDS::UI::Record|
+markEntry||($entry) in CDS::InMemoryStore|
+markHash||($hash) in CDS::InMemoryStore|
+max||() in CDS STATIC|
+members||() in CDS::ActorGroupBuilder|
+members||() in CDS::ActorGroup|
+mergeData||($record) in CDS::GroupDataSharer|
+mergeData||($record) in CDS::RootDataTree|
+mergeData||($record) in CDS::UnionList|
+mergeEntrustedActors||($revision) in CDS::ActorGroupBuilder|
+mergeExternalData||($store, $record, $source) in CDS::GroupDataSharer|
+mergeExternalData||($store, $record, $source) in CDS::RootDataTree|
+mergeExternalData||($store, $record, $source) in CDS::UnionList|
+mergeNode||($part, $selector, $record, $oldFormat) in CDS::DataTree|
+mergeRecord||($part, $record) in CDS::SentList|
+mergeValue||($part, $revision, $record) in CDS::DataTree::Item|
+mergedSources||() in CDS::Unsaved::State|
+merge||($part, $validUntil, $message) in CDS::SentItem|
+merge||($revision, $record // return) in CDS::Selector|
+merge||($revision, $status) in CDS::DiscoverActorGroup::Node|
+merge||($state) in CDS::Unsaved::State|
+merge||() in CDS::DataTree|
+merge||() in CDS::UnionList|
+messageBoxReader||in CDS::StreamCache|
+message||in CDS::MessageChannel::Submission|
+message||in CDS::SentItem|
+messagingPrivateRoot||in CDS::ActorWithDataTree|
+messagingStoreUrl||() in CDS::Configuration|
+messagingStoreUrl||in CDS::ActorWithDataTree|
+messagingStore||in CDS::ActorWithDataTree|
+messagingStore||in CDS::NewAnnounce|
+millisecondString||($time // 1000 * time) in CDS::ISODate STATIC|
+min||() in CDS STATIC|
+mkdir||($folder, $mode) in CDS::FolderStore::PosixPermissions|
+modify||($additions, $removals, $keyPair) in CDS::Unsaved|
+modify||($modifications, $keyPair) in CDS::CheckSignatureStore|
+modify||($modifications, $keyPair) in CDS::ErrorHandlingStore|
+modify||($modifications, $keyPair) in CDS::FolderStore|
+modify||($modifications, $keyPair) in CDS::HTTPStore|
+modify||($modifications, $keyPair) in CDS::InMemoryStore|
+modify||($modifications, $keyPair) in CDS::LogStore|
+modify||($modifications, $keyPair) in CDS::SplitStore|
+modify||(@$removals, $keyPair) in CDS::ObjectCache|
+new||($actor) in CDS::GroupDataSharer STATIC|
+new||($actor, $label, $validity) in CDS::MessageChannel STATIC|
+new||($actor, $store) in CDS::NewMessagingStore STATIC|
+new||($actorOnStore, $storeUrl) in CDS::ActorGroup::EntrustedActor STATIC|
+new||($actorOnStore, $storeUrl, $revision, $isActive) in CDS::ActorGroup::Member STATIC|
+new||($backend, $cache) in CDS::ObjectCache STATIC|
+new||($bytes, $hash) in CDS::Record STATIC|
+new||($channel, $message, $done) in CDS::MessageChannel::Submission STATIC|
+new||($discoverer, $actorHash, $storeUrl) in CDS::DiscoverActorGroup::Node STATIC|
+new||($fileHandle // *STDOUT, $pure) in CDS::UI STATIC|
+new||($folder) in CDS::FolderStore STATIC|
+new||($folder) in CDS::FolderStore::Watcher STATIC|
+new||($gid) in CDS::FolderStore::PosixPermissions::Group STATIC|
+new||($hash // return, $key // return) in CDS::HashAndKey STATIC|
+new||($hash) in CDS::MessageBoxReader::Entry STATIC|
+new||($hash, $envelope, $senderStoreUrl, $sender, $content, $error) in CDS::StreamHead STATIC|
+new||($hash, $store) in CDS::MissingObject STATIC|
+new||($hash, $storeUrl) in CDS::ActorGroupBuilder::EntrustedActor STATIC|
+new||($hash, $storeUrl, $revision, $status) in CDS::ActorGroupBuilder::Member STATIC|
+new||($id) in CDS::InMemoryStore|
+new||($key) in CDS::SplitStore STATIC|
+new||($keyPair) in CDS::DetachedDataTree STATIC|
+new||($keyPair, $actorOnStore, $boxLabel, $hash) in CDS::Source STATIC|
+new||($keyPair, $publicKeyCache, $delegate) in CDS::MessageBoxReaderPool STATIC|
+new||($keyPair, $storageStore, $messagingStore, $messagingStoreUrl, $publicKeyCache) in CDS::ActorWithDataTree STATIC|
+new||($keyPair, $store) in CDS::DataTree STATIC|
+new||($keyPair, $store, $delegate) in CDS::PrivateBoxReader STATIC|
+new||($keyPair, $store, $delegate) in CDS::PrivateRoot STATIC|
+new||($maxSize) in CDS::PublicKeyCache STATIC|
+new||($members, $entrustedActorsRevision, $entrustedActors) in CDS::ActorGroup STATIC|
+new||($messageBoxReader, $entry, $source, $envelope, $senderStoreUrl, $sender, $content, $streamHead) in CDS::ReceivedMessage STATIC|
+new||($messagingStore) in CDS::NewAnnounce STATIC|
+new||($node, $revision, $status) in CDS::DiscoverActorGroup::Link STATIC|
+new||($object) in CDS::RecordReader STATIC|
+new||($parentSelector) in CDS::SubDataTree STATIC|
+new||($pool, $actorOnStore, $streamTimeout) in CDS::MessageBoxReader STATIC|
+new||($pool, $actorOnStore, $timeout) in CDS::StreamCache STATIC|
+new||($privateRoot) in CDS::SentList STATIC|
+new||($privateRoot, $label) in CDS::RootDataTree STATIC|
+new||($privateRoot, $label) in CDS::UnionList STATIC|
+new||($publicKey, $rsaPrivateKey) in CDS::KeyPair STATIC|
+new||($publicKey, $store) in CDS::ActorOnStore STATIC|
+new||($selector) in CDS::DataTree::Item STATIC|
+new||($store) in CDS::Unsaved STATIC|
+new||($store, $fileHandle // *STDERR, $prefix // '') in CDS::LogStore STATIC|
+new||($store, $keyPair, $commitPool) in CDS::PutTree|
+new||($store, $objects) in CDS::CheckSignatureStore|
+new||($store, $url, $errorHandler) in CDS::ErrorHandlingStore STATIC|
+new||($storeUrl, $actorOnStore, $envelopeHash, $envelope, $cardHash, $card) in CDS::DiscoverActorGroup::Card STATIC|
+new||($ui, $bytes) in CDS::UI::HexDump STATIC|
+new||($ui, $folder, $defaultStoreFolder) in CDS::Configuration STATIC|
+new||($uid) in CDS::FolderStore::PosixPermissions::User STATIC|
+new||($unionList, $id) in CDS::SentItem STATIC|
+new||($unionList, $id) in CDS::UnionList::Item STATIC|
+new||($url) in CDS::HTTPStore STATIC|
+new||() in CDS::ActorGroupBuilder STATIC|
+new||() in CDS::DataTree::Part STATIC|
+new||() in CDS::FolderStore::PosixPermissions::World STATIC|
+new||() in CDS::RecordWriter STATIC|
+new||() in CDS::StoreModifications STATIC|
+new||() in CDS::UI::Span STATIC|
+new||() in CDS::UnionList::Part STATIC|
+new||() in CDS::Unsaved::State STATIC|
+niceBytes||($bytes, $maxLength) in CDS::UI|
+niceDateTimeLocal||($time // time() in CDS::UI|
+niceDateTime||($time // time() in CDS::UI|
+niceDate||($time // time() in CDS::UI|
+niceFileSize||($fileSize) in CDS::UI|
+niceTime||($time // time() in CDS::UI|
+node||($actorHash, $storeUrl) in CDS::DiscoverActorGroup|
+node||in CDS::DiscoverActorGroup::Link|
+now||in CDS|
+nthChild||($i) in CDS::Record|
+objectFileMode||in CDS::FolderStore::PosixPermissions::Group|
+objectFileMode||in CDS::FolderStore::PosixPermissions::User|
+objectFileMode||in CDS::FolderStore::PosixPermissions::World|
+objectFolderMode||in CDS::FolderStore::PosixPermissions::Group|
+objectFolderMode||in CDS::FolderStore::PosixPermissions::User|
+objectFolderMode||in CDS::FolderStore::PosixPermissions::World|
+objectStore||($index) in CDS::SplitStore|
+objects||in CDS::StoreModifications|
+objects||in CDS::Unsaved::State|
+object||in CDS::PublicKey|
+onDataSaved||() in CDS::MessageChannel::Submission|
+onMessageChannelSubmissionCancelled||() in CDS::GroupDataSharer|
+onMessageChannelSubmissionDone||($succeeded, $failed) in CDS::GroupDataSharer|
+onMessageChannelSubmissionRecipientDone||($recipientActorOnStore) in CDS::GroupDataSharer|
+onMessageChannelSubmissionRecipientFailed||($recipientActorOnStore) in CDS::GroupDataSharer|
+onPrivateBoxEntry||($source, $envelope, $contentHashAndKey, $content) in CDS::PrivateRoot|
+onPrivateBoxInvalidEntry||($source, $reason) in CDS::PrivateRoot|
+openMessageChannel||($label, $validity) in CDS::ActorWithDataTree|
+orange||() in CDS::UI|
+pGreen||() in CDS::UI|
+pOrange||() in CDS::UI|
+pRed||() in CDS::UI|
+parentSelector||in CDS::SubDataTree|
+parent||in CDS::Selector|
+parseEntrustedActorList||($record, $linkedPublicKeys) in CDS::ActorGroupBuilder|
+parseEntrustedActors||($record, $linkedPublicKeys) in CDS::ActorGroupBuilder|
+parseMembers||($record, $linkedPublicKeys) in CDS::ActorGroupBuilder|
+parse||($dateString // return) in CDS::ISODate STATIC|
+parse||($record, $linkedPublicKeys) in CDS::ActorGroupBuilder|
+partSelector||($hashAndKey) in CDS::SubDataTree|
+parts||() in CDS::DataTree|
+parts||() in CDS::UnionList|
+path||() in CDS::MissingObject|
+permissions||in CDS::FolderStore|
+pool||in CDS::MessageBoxReader|
+popIndent||() in CDS::UI|
+prefix||in CDS::LogStore|
+printTo||($ui, $parent) in CDS::UI::Span|
+print||() in CDS::UI|
+privateBoxReader||in CDS::PrivateRoot|
+privateRoot||in CDS::RootDataTree|
+privateRoot||in CDS::UnionList|
+processGroupDataMessage||($message, $section) in CDS::GroupDataSharer|
+procurePrivateData||($interval // CDS->DAY) in CDS::ActorWithDataTree|
+procureSentList||($interval // CDS->DAY) in CDS::ActorWithDataTree|
+procured||in CDS::PrivateRoot|
+procure||($interval) in CDS::PrivateRoot|
+progress||() in CDS::UI|
+pruneTree||() in CDS::DataTree::Item|
+prune||() in CDS::DataTree|
+publicDataSelector||in CDS::ActorWithDataTree|
+publicKeyCache||in CDS::MessageBoxReaderPool|
+publicKeys||() in CDS::ActorGroup|
+publicKey||in CDS::ActorOnStore|
+publicKey||in CDS::KeyPair|
+pushIndent||() in CDS::UI|
+put||($hash // return) in CDS::PutTree|
+put||($hash, $object) in CDS::StoreModifications|
+put||($hash, $object, $keyPair) in CDS::CheckSignatureStore|
+put||($hash, $object, $keyPair) in CDS::ErrorHandlingStore|
+put||($hash, $object, $keyPair) in CDS::FolderStore|
+put||($hash, $object, $keyPair) in CDS::HTTPStore|
+put||($hash, $object, $keyPair) in CDS::InMemoryStore|
+put||($hash, $object, $keyPair) in CDS::LogStore|
+put||($hash, $object, $keyPair) in CDS::SplitStore|
+put||($hash, $object, $keyPair) in CDS::Unsaved|
+put||($object, $keyPair) in CDS::ObjectCache|
+p||() in CDS::UI|
+randomBytes||($length) in CDS STATIC|
+randomHex||($length) in CDS STATIC|
+randomKey||() in CDS STATIC|
+raw||() in CDS::UI|
+readBytesFromFile||($filename) in CDS STATIC|
+readBytes||($length) in CDS::RecordReader|
+readCards||() in CDS::DiscoverActorGroup::Node|
+readChildren||($record) in CDS::RecordReader|
+readEntriesFromRecord||($entries, $record) in CDS::StoreModifications|
+readFirstLine||($file) in CDS::Configuration|
+readNormalMessage||($entry, $envelope) in CDS::MessageBoxReader|
+readStreamHead||($head) in CDS::StreamCache|
+readStreamMessage||($entry, $envelope) in CDS::MessageBoxReader|
+readTextFromFile||($filename) in CDS STATIC|
+readUnsigned32||() in CDS::RecordReader|
+readUnsigned64||() in CDS::RecordReader|
+readUnsigned8||() in CDS::RecordReader|
+read||($timeout // 0) in CDS::MessageBoxReader|
+read||() in CDS::DataTree|
+read||() in CDS::PrivateBoxReader|
+read||() in CDS::SubDataTree|
+read||() in CDS::UnionList|
+recipients||() in CDS::MessageChannel::Submission|
+recipients||() in CDS::MessageChannel|
+recordChildren||($record, $storeUrl) in CDS::UI|
+record||($record, $context) in CDS::UI::Record|
+record||($record, $storeUrl) in CDS::UI|
+record||() in CDS::Selector|
+recursiveTransfer||($hash, $sourceStore, $destinationStore, $done) in CDS::KeyPair|
+red||() in CDS::UI|
+referenceCount||in CDS::Source|
+removals||in CDS::StoreModifications|
+removeAccount||($accountHash) in CDS::FolderStore|
+removeDataHandler||($label, $dataHandler) in CDS::GroupDataSharer|
+removeDataHandler||($label, $dataHandler) in CDS::PrivateRoot|
+removeEntrustedActor||($hash) in CDS::ActorGroupBuilder|
+removeMember||($hash, $storeUrl) in CDS::ActorGroupBuilder|
+removeObsolete||() in CDS::StreamCache|
+removeProgress||() in CDS::UI|
+remove||($accountHash, $boxLabel, $hash) in CDS::StoreModifications|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::CheckSignatureStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::ErrorHandlingStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::FolderStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::HTTPStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::InMemoryStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::LogStore|
+remove||($accountHash, $boxLabel, $hash, $keyPair) in CDS::SplitStore|
+remove||($boxLabel, $hash, $keyPair) in CDS::ObjectCache|
+request||($method, $url, $headers, $keyPair, $data, $signData) in CDS::HTTPStore STATIC|
+reset||in CDS::UI::HexDump|
+revisionValue||($bytes) in CDS::UI::Record|
+revision||() in CDS::Selector|
+revision||in CDS::ActorGroup::Member|
+revision||in CDS::ActorGroupBuilder::Member|
+revision||in CDS::DiscoverActorGroup::Link|
+revision||in CDS::DiscoverActorGroup::Node|
+right||($width, $text) in CDS::UI|
+rootItem||() in CDS::DataTree|
+root||($dataTree) in CDS::Selector STATIC|
+root||in CDS::DataTree|
+rsaPrivateKey||in CDS::KeyPair|
+savePrivateDataAndShareGroupData||() in CDS::ActorWithDataTree|
+save||($entrustedKeys) in CDS::PrivateRoot|
+save||() in CDS::DataTree|
+save||() in CDS::UnionList|
+savingDone||($revision, $newPart, $obsoleteParts) in CDS::DetachedDataTree|
+savingDone||($revision, $newPart, $obsoleteParts) in CDS::RootDataTree|
+savingDone||($revision, $newPart, $obsoleteParts) in CDS::SubDataTree|
+savingDone||() in CDS::Unsaved|
+savingFailed||($missing) in CDS::PrivateRoot|
+savingFailed||() in CDS::Unsaved|
+savingState||in CDS::Unsaved|
+savingSucceeded||() in CDS::PrivateRoot|
+secondString||($time // 1000 * time) in CDS::ISODate STATIC|
+selectorChildren||($selector) in CDS::UI|
+selector||($selector, $rootLabel) in CDS::UI|
+sendMessages||() in CDS::ActorWithDataTree|
+senderStoreUrl||in CDS::ReceivedMessage|
+senderStoreUrl||in CDS::StreamHead|
+sender||in CDS::ReceivedMessage|
+sender||in CDS::StreamHead|
+sentListReady||in CDS::ActorWithDataTree|
+sentList||in CDS::ActorWithDataTree|
+setBoolean||($value, $hash) in CDS::Selector|
+setBytes||($bytes, $hash) in CDS::Selector|
+setHashAndKey||($hashAndKey) in CDS::Selector|
+setHash||($hash) in CDS::Selector|
+setInteger||($value, $hash) in CDS::Selector|
+setKeyPair||($keyPair) in CDS::Configuration|
+setMessagingStoreUrl||($storeUrl) in CDS::Configuration|
+setMyActiveFlag||($flag) in CDS::ActorWithDataTree|
+setMyGroupDataFlag||($flag) in CDS::ActorWithDataTree|
+setName||($name) in CDS::ActorWithDataTree|
+setPart||($part) in CDS::DataTree::Item|
+setPart||($part) in CDS::UnionList::Item|
+setPermissions||($permissions) in CDS::FolderStore|
+setRecipientActorGroup||($actorGroup) in CDS::MessageChannel|
+setRecipients||($recipients, $entrustedKeys) in CDS::MessageChannel|
+setStorageStoreUrl||($storeUrl) in CDS::Configuration|
+setText||($value, $hash) in CDS::Selector|
+setUnsigned||($value, $hash) in CDS::Selector|
+set||($bytes, $hash) in CDS::Record|
+set||($record // return) in CDS::Selector|
+set||($validUntil, $envelopeHash, $messageRecord) in CDS::SentItem|
+share||() in CDS::GroupDataSharer|
+shortHex||() in CDS::Hash|
+signHash||($hash) in CDS::KeyPair|
+sign||($digest) in CDS::KeyPair|
+skip||() in CDS::ReceivedMessage|
+source||in CDS::ReceivedMessage|
+space||() in CDS::UI|
+span||() in CDS::UI|
+startSaving||() in CDS::Unsaved|
+state||in CDS::Unsaved|
+status||in CDS::ActorGroupBuilder::Member|
+status||in CDS::DiscoverActorGroup::Link|
+status||in CDS::DiscoverActorGroup::Node|
+stillInUse||() in CDS::StreamHead|
+storagePrivateRoot||in CDS::ActorWithDataTree|
+storageStoreUrl||() in CDS::Configuration|
+storageStore||in CDS::ActorWithDataTree|
+storeIndex||($hash) in CDS::SplitStore|
+storeUrl||in CDS::ActorGroup::EntrustedActor|
+storeUrl||in CDS::ActorGroup::Member|
+storeUrl||in CDS::ActorGroupBuilder::EntrustedActor|
+storeUrl||in CDS::ActorGroupBuilder::Member|
+storeUrl||in CDS::DiscoverActorGroup::Card|
+storeUrl||in CDS::DiscoverActorGroup::Node|
+store||in CDS::ActorOnStore|
+store||in CDS::ErrorHandlingStore|
+store||in CDS::LogStore|
+store||in CDS::MissingObject|
+store||in CDS::NewMessagingStore|
+styleHashList||($offset) in CDS::UI::HexDump|
+styleRecord||($offset) in CDS::UI::HexDump|
+submit||($message, $done) in CDS::MessageChannel|
+submit||() in CDS::NewAnnounce|
+target||() in CDS::FolderStore::PosixPermissions::Group|
+target||() in CDS::FolderStore::PosixPermissions::User|
+target||in CDS::FolderStore::PosixPermissions::World|
+textValue||() in CDS::Record|
+textValue||() in CDS::Selector|
+title||() in CDS::UI|
+toBuilder||() in CDS::ActorGroup|
+toHex||() in CDS::KeyPair|
+toObject||() in CDS::Record|
+toRecord||($linkedPublicKeys) in CDS::ActorGroupBuilder|
+toRecord||() in CDS::KeyPair|
+toRecord||() in CDS::StoreModifications|
+trailer||() in CDS::RecordReader|
+transfer||($hashes, $sourceStore, $destinationStore) in CDS::KeyPair|
+traverseHashes||($hashes) in CDS::Record|
+uid||in CDS::FolderStore::PosixPermissions|
+ui||in CDS::Configuration|
+underlined||() in CDS::UI|
+unionList||in CDS::UnionList::Item|
+unsaved||in CDS::DataTree|
+unsaved||in CDS::MessageChannel|
+unsaved||in CDS::PrivateRoot|
+unsaved||in CDS::UnionList|
+unsignedFromBytes||($bytes) in CDS STATIC|
+unsignedValue||() in CDS::Record|
+unsignedValue||() in CDS::Selector|
+updateMyRegistration||() in CDS::ActorWithDataTree|
+url||in CDS::ErrorHandlingStore|
+user||() in CDS::FolderStore::PosixPermissions|
+use||($length) in CDS::RecordReader|
+validUntil||in CDS::SentItem|
+validity||in CDS::MessageChannel|
+valueIndent||($width) in CDS::UI|
+verbose||() in CDS::UI|
+verifyEnvelopeSignature||($envelope, $publicKey, $hash) in CDS STATIC|
+verifyHash||($hash, $signature) in CDS::PublicKey|
+version||in CDS|
+violet||() in CDS::UI|
+waitForSenderStore||() in CDS::ReceivedMessage|
+wait||($remaining, $until) in CDS::FolderStore::Watcher|
+warning||() in CDS::UI|
+wordWrap||($state) in CDS::UI::Span|
+writeBytesToFile||($filename; @bytes) in CDS STATIC|
+writeBytes||($bytes) in CDS::RecordWriter|
+writeChildren||($record) in CDS::RecordWriter|
+writeNode||($record, $hasMoreSiblings) in CDS::RecordWriter|
+writeTemporaryFile||($folder, $mode) in CDS::FolderStore::PosixPermissions|
+writeTextToFile||($filename; @text) in CDS STATIC|
+writeToFile||($file) in CDS::KeyPair|
+writeToFile||($file) in CDS::Object|
+writeUnsigned32||($value) in CDS::RecordWriter|
+writeUnsigned64||($value) in CDS::RecordWriter|
+writeUnsigned8||($value) in CDS::RecordWriter|
+zeroCTR||in CDS|

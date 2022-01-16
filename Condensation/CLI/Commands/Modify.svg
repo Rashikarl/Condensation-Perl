@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="1000"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="Modify.svg">
+  <defs
+     id="defs4">
+    <marker
+       id="arrow000000"
+       refX="0"
+       refY="0"
+       orient="auto"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000"
+         d="M -6,2.5 2,0 -6,-2.5 -5,0 Z"
+         id="path2" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="-53"
+     inkscape:cy="863.5"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="3747"
+     inkscape:window-height="2125"
+     inkscape:window-x="81"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       width="20"
+       rx="4"
+       y="140"
+       x="120"
+       height="90"
+       id="rect4133"
+       style="fill:#cccccc" />
+    <rect
+       rx="4"
+       style="fill:#cccccc"
+       id="rect4113"
+       width="20"
+       height="50"
+       x="640"
+       y="220" />
+    <rect
+       style="fill:#999999"
+       id="rect3098"
+       height="70"
+       x="160"
+       y="20"
+       rx="4"
+       width="20">
+      <title
+         id="title4141">help</title>
+    </rect>
+    <rect
+       rx="4"
+       y="140"
+       x="760"
+       height="130"
+       width="20"
+       id="rect4405"
+       style="fill:#999999">
+      <title
+         id="title4139">modify</title>
+    </rect>
+    <rect
+       style="fill:#999999"
+       id="rect4259"
+       width="20"
+       height="170"
+       x="320"
+       y="140"
+       rx="4" />
+    <rect
+       rx="4"
+       y="180"
+       x="460"
+       height="130"
+       width="20"
+       id="rect4329"
+       style="fill:#cccccc" />
+    <rect
+       style="fill:#cccccc"
+       id="rect4261"
+       width="60"
+       height="70"
+       x="20"
+       y="140"
+       rx="4" />
+    <text
+       id="text4263"
+       y="160"
+       x="50"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       xml:space="preserve"><tspan
+         y="160"
+         x="50"
+         id="tspan4265"
+         sodipodi:role="line">cds</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4323"
+       d="M 343,199.5 H 457"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4325"
+       y="196"
+       x="347"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#b3b3b3;"
+       xml:space="preserve"><desc
+         id="desc4553">$o:boxLabel = 'messages';</desc><tspan
+         y="196"
+         x="347"
+         id="tspan4327"
+         sodipodi:role="line">messages</tspan></text>
+    <rect
+       style="fill:#cccccc"
+       id="rect4331"
+       width="20"
+       height="90"
+       x="540"
+       y="180"
+       rx="4" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4333"
+       d="m 483,199.5 h 54"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4335"
+       y="196"
+       x="487"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="196"
+         x="487"
+         id="tspan4337"
+         sodipodi:role="line">of</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4341"
+       d="M 343,159.5 H 757"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4343"
+       y="156"
+       x="347"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc4567">$o:boxToken = $value;</desc><tspan
+         y="156"
+         x="347"
+         id="tspan4345"
+         sodipodi:role="line">BOX</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4351"
+       d="M 563,199.5 H 757"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4353"
+       y="196"
+       x="567"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc4565">WEIGHT 1
+$o:boxToken = CDS::BoxToken-&gt;new($value, $o:boxLabel);
+delete $o:boxLabel;</desc><tspan
+         y="196"
+         x="567"
+         id="tspan4355"
+         sodipodi:role="line">ACCOUNT</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 663,239.5 h 94"
+       id="path4369"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="567"
+       y="236"
+       id="text4371"><desc
+         id="desc3104">$o:actorHash = $value-&gt;publicKey-&gt;hash;
+$o:keyPairToken = $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan4373"
+         x="567"
+         y="236">KEYPAIR</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 343,219.5 H 457"
+       id="path4375"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000;"
+       x="347"
+       y="216"
+       id="text4377"><desc
+         id="desc4555">$o:boxLabel = 'messages';</desc><tspan
+         sodipodi:role="line"
+         id="tspan4379"
+         x="347"
+         y="216">message box</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4381"
+       d="M 343,239.5 H 457"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text4383"
+       y="236"
+       x="347"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#b3b3b3"
+       xml:space="preserve"><desc
+         id="desc4557">$o:boxLabel = 'private';</desc><tspan
+         y="236"
+         x="347"
+         id="tspan4385"
+         sodipodi:role="line">private</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 343,259.5 H 457"
+       id="path4387"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="347"
+       y="256"
+       id="text4389"><desc
+         id="desc4559">$o:boxLabel = 'private';</desc><tspan
+         sodipodi:role="line"
+         id="tspan4391"
+         x="347"
+         y="256">private box</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4393"
+       d="M 343,279.5 H 457"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 343,299.5 H 457"
+       id="path4399"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="347"
+       y="296"
+       id="text4401"><desc
+         id="desc4563">$o:boxLabel = 'public';</desc><tspan
+         sodipodi:role="line"
+         id="tspan4403"
+         x="347"
+         y="296">public box</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="285"
+       y="120"
+       id="text4425"><tspan
+         sodipodi:role="line"
+         id="tspan4427"
+         x="285"
+         y="120">and</tspan></text>
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path4431"
+       d="m 330.5,137 v -13.5 h -200 V 137"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;marker-end:url(#arrow000000)" />
+    <text
+       id="text4395"
+       y="276"
+       x="347"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#b3b3b3"
+       xml:space="preserve"><desc
+         id="desc4561">$o:boxLabel = 'public';</desc><tspan
+         y="276"
+         x="347"
+         id="tspan4397"
+         sodipodi:role="line">public</tspan></text>
+    <rect
+       rx="4"
+       y="20"
+       x="20"
+       height="70"
+       width="60"
+       id="rect3086"
+       style="fill:#cccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
+       x="50"
+       y="40"
+       id="text3088"><tspan
+         sodipodi:role="line"
+         id="tspan3090"
+         x="50"
+         y="40">help</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 83,39.5 h 74"
+       id="path3092"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="36"
+       id="text3094"><tspan
+         sodipodi:role="line"
+         id="tspan3096"
+         x="87"
+         y="36">add</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 563,239.5 h 74"
+       id="path4115"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       id="text4117"
+       y="236"
+       x="667"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc4119">$o:boxToken = CDS::BoxToken-&gt;new(CDS::AccountToken-&gt;new($value, $o:actorHash), $o:boxLabel);
+delete $o:boxLabel;
+delete $o:actorHash;</desc><tspan
+         y="236"
+         x="667"
+         id="tspan4121"
+         sodipodi:role="line">on STORE</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4135"
+       d="m 83,159.5 h 34"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 143,159.5 H 317"
+       id="path3113"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="147"
+       y="156"
+       id="text3115"><desc
+         id="desc3133">push @$o:additions, $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3117"
+         x="147"
+         y="156">add HASH* to</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3119"
+       d="M 143,199.5 H 317"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text3121"
+       y="196"
+       x="147"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc3135">push @$o:removals, $value;</desc><tspan
+         y="196"
+         x="147"
+         id="tspan3123"
+         sodipodi:role="line">remove HASH* from</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 143,219.5 H 317"
+       id="path3125"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="147"
+       y="216"
+       id="text3127"><desc
+         id="desc3137">$o:purge = 1;</desc><tspan
+         sodipodi:role="line"
+         id="tspan3129"
+         x="147"
+         y="216">purge</tspan></text>
+    <text
+       id="text4573"
+       y="256"
+       x="567"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc4569">$o:actorHash = $value;</desc><tspan
+         y="256"
+         x="567"
+         id="tspan4571"
+         sodipodi:role="line">ACTOR</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4575"
+       d="m 563,259.5 h 74"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4577"
+       d="m 663,259.5 h 94"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;marker-end:url(#arrow000000)" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path905"
+       d="M 143,179.5 H 317"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text911"
+       y="176"
+       x="147"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc907">push @$o:fileAdditions, $value;</desc><tspan
+         y="176"
+         x="147"
+         id="tspan909"
+         sodipodi:role="line">add FILE* to</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path906"
+       d="m 83,59.5 h 74"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text910"
+       y="56"
+       x="87"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><tspan
+         y="56"
+         x="87"
+         id="tspan908"
+         sodipodi:role="line">remove</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="m 83,79.5 h 74"
+       id="path912"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="87"
+       y="76"
+       id="text916"><tspan
+         sodipodi:role="line"
+         id="tspan914"
+         x="87"
+         y="76">purge</tspan></text>
+  </g>
+</svg>

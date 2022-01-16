@@ -1,0 +1,292 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use lib '.';
+use File::Basename;
+use SourceFilter;
+
+# Sections
+my %sections;
+
+sub section($name) {
+	$sections{$name} = [] if ! $sections{$name};
+	return $sections{$name};
+}
+
+# Prepare
+my @releaseDate = gmtime(time);
+my $releaseDate = sprintf('%04d-%02d-%02d', $releaseDate[5] + 1900, $releaseDate[4] + 1, $releaseDate[3]);
+my $version = shift // die 'Usage: ./build-edition VERSION FLAGS*';
+
+my %flags;
+my @edition;
+while (scalar @ARGV) {
+	my $flag = shift;
+	$flags{$flag} = 1;
+	push @edition, $flag;
+}
+
+my $staticCode = &section('CDS');
+push @$staticCode, 'our $VERSION = \''.$version.'\';';
+push @$staticCode, 'our $edition = \''.join(' ', @edition).'\';';
+push @$staticCode, 'our $releaseDate = \''.$releaseDate.'\';';
+
+# Read the perl code
+my %use;
+my %includedFiles;
+my %cdsUse;
+my %geanyTags;
+&includePerl('Condensation.pm');
+
+sub includePerl($file) {
+	$file = $1.$2 while $file =~ /^(.*)\.\/(.*)$/;
+	$file = $1.$2 while $file =~ /^(.*)[^\/]+\/\.\.\/(.*)$/;
+	return if $includedFiles{$file};
+	$includedFiles{$file} = 1;
+
+	# Read
+	my @lines = &readLines($file);
+	die 'File "'.$file.'" not found.' if ! scalar @lines;
+
+	# Determine where to add the code by default
+	my $packageName = &derivePackageName($file);
+	my $section = &section($packageName);
+	my $folder = dirname($file);
+
+	# Perl code
+	my $selected = 1;
+	my $lineNumber = 0;
+	my $emptyLineBefore = 1;
+	for my $line (@lines) {
+		$lineNumber += 1;
+
+		if ($line =~ /^#\s*IF\s+(.*?)\s*$/) {
+			$selected = &orFlags($1);
+			next;
+		}
+
+		next if ! $selected;
+
+		if ($line =~ /^#\s*INCLUDE\s+(.*?)\s*$/) {
+			&includePerl($folder.'/'.$1);
+			next;
+		} elsif ($line =~ /^#\s*EXTEND\s+(.*?)\s*$/) {
+			$packageName = $1;
+			$section = &section($packageName);
+			next;
+		} elsif ($line =~ /^use parent (.*);$/) {
+			$line = 'use parent -norequire, '.$1.';';
+		} elsif ($line =~ /^use .*;$/) {
+			$use{$line} = 1;
+			next;
+		} elsif ($line =~ /^sub\s+([A-Za-z0-9_]+)\s*\((.*?)\)/) {
+			my $name = $1;
+			my $args = $2;
+			if ($args =~ /^\s*\$(class|o)([^a-zA-Z0-9_]|$)/) {
+				my $firstArg = $1;
+				my $allButFirstArg = $args =~ /^.*?,\s*(.*)$/ ? $1 : '';
+				&addGeanyTag($name, '', '('.$allButFirstArg.') in '.$packageName.($firstArg eq 'class' ? ' STATIC' : ''));
+			} else {
+				&addGeanyTag($name, '', '('.$args.') in '.$packageName);
+			}
+		} elsif ($line =~ /^sub\s+([A-Za-z0-9_]+)\s*;/) {
+			&addGeanyTag($1, '', 'in '.$packageName);
+		} elsif ($line =~ /^sub\s+([A-Za-z0-9_]+)/) {
+			&addGeanyTag($1, '', 'in '.$packageName);
+		}
+
+		for my $access ($line =~ /(CDS(?:::[A-Z][a-zA-Z0-9]*)+)/g) {
+			$cdsUse{$access} = 1;
+		}
+
+		my $filteredLine = SourceFilter::filterLine($line, 0);
+		my @lines = $filteredLine eq '' ? '' : split(/\n/, $filteredLine);
+		for my $line (@lines) {
+			if ($line =~ /^\s*$/) {
+				$emptyLineBefore = 1
+			} elsif ($emptyLineBefore) {
+				$emptyLineBefore = 0;
+				push @$section, '#line '.$lineNumber.' "'.$file.'"' if $flags{debug};
+			}
+
+			push @$section, $line;
+		}
+	}
+
+	push @$section, '';
+}
+
+sub derivePackageName($file) {
+	if ($file =~ /^Condensation\/([^\/]*)\/(.*).pm$/) {
+		my $name = $2;
+		$name =~ s/\//::/g;
+		return 'CDS::'.$name;
+	}
+
+	if ($file =~ /^Condensation\/([^\/]*).pm$/) {
+		return 'CDS::'.$1;
+	}
+
+	return 'UNKNOWN';
+}
+
+sub readLines($filename) {
+	open(my $fh, '<:utf8', $filename) || return;
+	my @lines = map { while (chomp $_) {} $_ } <$fh>;
+	close $fh;
+	return @lines;
+}
+
+sub addGeanyTag($symbolName, $returnType, $argumentList) {
+	my $line = $symbolName.'|'.$returnType.'|'.$argumentList.'|';
+	$geanyTags{$line} = 1;
+}
+
+# Flag selection
+
+sub orFlags($text) {
+	for my $part (split(/\|/, $text)) {
+		return 1 if &andFlags($part);
+	}
+
+	return;
+}
+
+sub andFlags($text) {
+	for my $part (split(/&/, $text)) {
+		return if ! &notFlags($part);
+	}
+
+	return 1;
+}
+
+sub notFlags($text) {
+	return $text =~ /^\s*!(.*)$/ ? ! &notFlags($1) : &flags($text);
+}
+
+sub flags($text) {
+	return &orFlags($1) if $text =~ /^\s*\((.*)\)\s*$/;
+	$text = $1 if $text =~ /^\s*(.*?)\s*$/;
+	die 'Missing flag expression' if ! length $text;
+	return 1 if $text eq 'all';
+	return $flags{$text} if $text =~ /^[a-zA-Z0-9_-]*$/;
+	die 'Invalid flag "'.$text.'"';
+}
+
+# Read the C code
+my @cCode;
+&includeC('Condensation/C.inc.c');
+
+sub includeC($file) {
+	my $folder = dirname($file);
+	my @includeLines = &readLines($file);
+	die 'Include file "'.$file.'" not found.' if ! scalar @includeLines;
+
+	my $lineNumber = 0;
+	for my $line (@includeLines) {
+		$lineNumber += 1;
+		if ($line =~ /^\s*#insert\s+"(.*?)"/) {
+			my $includeFile = $folder.'/'.$1;
+			push @cCode, '';
+			push @cCode, '#line 1 "'.$includeFile.'"';
+			&includeC($includeFile);
+			push @cCode, '';
+			push @cCode, '#line '.$lineNumber.' "'.$file.'"';
+		} else {
+			push @cCode, $line;
+		}
+	}
+}
+
+# Prepare the perl code
+my @perlCode;
+for my $packageName (sort keys %sections) {
+	my $code = $sections{$packageName};
+	next if ! scalar @$code;
+
+	push @perlCode, '';
+	my $packageAdded = 0;
+	for my $line (@$code) {
+		if (! $packageAdded && $line !~ /^#/) {
+			push @perlCode, 'package '.$packageName.';';
+			push @perlCode, '';
+			$packageAdded = 1;
+
+			for my $element (split /::/, $packageName) {
+				&addGeanyTag($element, 'package', '');
+			}
+
+			delete $cdsUse{$packageName};
+		}
+		push @perlCode, $line;
+	}
+}
+
+# Prepare the final code
+my @output = (
+	'# This is the Condensation Perl Module '.$version.' ('.join(' ', @edition).') built on '.$releaseDate.'.',
+	'# See https://condensation.io for information about the Condensation Data System.',
+	'',
+	'use strict;',
+	'use warnings;',
+	'use 5.010000;',
+	sort(keys %use),
+	&compressEmptyLines(@perlCode),
+	'',
+	'package CDS::C;',
+	'use Config;',
+	#'use Inline (C => \'DATA\', NAME => \'$package\', VERSION => \''.$version.'\', CCFLAGS => $Config{ccflags}.\' -DNDEBUG -std=gnu99\', OPTIMIZE => \'-O3\');',
+	'use Inline (C => \'DATA\', CCFLAGS => $Config{ccflags}.\' -DNDEBUG -std=gnu99\', OPTIMIZE => \'-O3\', LIBS => \'-lrt\');',
+	'Inline->init;',
+	'',
+	'1;',
+	'',
+	'__DATA__',
+	'__C__',
+	&compressEmptyLines(@cCode)
+	);
+
+sub compressEmptyLines {
+	my @lines;
+	my $isEmpty = 1;
+	for my $line (@_) {
+		$line = $1 if $line =~ /^(.*?)\s*$/;
+		if ($line eq '') {
+			$isEmpty = 1;
+		} else {
+			push @lines, '' if $isEmpty;
+			push @lines, $line;
+			$isEmpty = 0;
+		}
+	}
+	return @lines;
+}
+
+# Create the output folder if necessary
+mkdir 'editions';
+my $editionFolder = 'editions/'.join('-', @edition);
+mkdir $editionFolder;
+
+# Write the CDS.pm file
+open(my $fh, '>:utf8', $editionFolder.'/CDS.pm') || die 'Unable to write CDS.pm.';
+for my $line (@output) {
+	print $fh $line, "\n";
+}
+close $fh;
+
+# Write the geany tags
+open($fh, '>:utf8', $editionFolder.'/CDS.pm.tags') || die 'Unable to write CDS.pm.tags.';
+print $fh '# format=pipe', "\n";
+for my $line (sort keys %geanyTags) {
+	print $fh $line, "\n";
+}
+close $fh;
+
+print 'CDS.pm ', $version, ' ', join(' ', @edition), ' built, ', scalar keys %sections, ' packages', "\n";
+
+# Report missing packages
+delete $cdsUse{'CDS::C'};
+delete $cdsUse{'CDS::VERSION'};
+for my $packageName (sort keys %cdsUse) {
+	print 'Missing package: ', $packageName, "\n";
+}
