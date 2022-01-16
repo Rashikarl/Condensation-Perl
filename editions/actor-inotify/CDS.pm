@@ -720,7 +720,7 @@ sub equals {
 	return $this->{store}->id eq $that->{store}->id && $this->{publicKey}->{hash}->equals($that->{publicKey}->{hash});
 }
 
-package CDS::ActorWithDataTree;
+package CDS::ActorWithDocument;
 
 sub new {
 	my $class = shift;
@@ -740,8 +740,8 @@ sub new {
 
 	# Private data on the storage store
 	$o->{storagePrivateRoot} = CDS::PrivateRoot->new($keyPair, $storageStore, $o);
-	$o->{groupDataTree} = CDS::RootDataTree->new($o->{storagePrivateRoot}, 'group data tree');
-	$o->{localDataTree} = CDS::RootDataTree->new($o->{storagePrivateRoot}, 'local data tree');
+	$o->{groupDocument} = CDS::RootDocument->new($o->{storagePrivateRoot}, 'group data');
+	$o->{localDocument} = CDS::RootDocument->new($o->{storagePrivateRoot}, 'local data');
 
 	# Private data on the messaging store
 	$o->{messagingPrivateRoot} = $storageStore->id eq $messagingStore->id ? $o->{storagePrivateRoot} : CDS::PrivateRoot->new($keyPair, $messagingStore, $o);
@@ -750,11 +750,11 @@ sub new {
 
 	# Group data sharing
 	$o->{groupDataSharer} = CDS::GroupDataSharer->new($o);
-	$o->{groupDataSharer}->addDataHandler($o->{groupDataTree}->label, $o->{groupDataTree});
+	$o->{groupDataSharer}->addDataHandler($o->{groupDocument}->label, $o->{groupDocument});
 
 	# Selectors
-	$o->{groupRoot} = $o->{groupDataTree}->root;
-	$o->{localRoot} = $o->{localDataTree}->root;
+	$o->{groupRoot} = $o->{groupDocument}->root;
+	$o->{localRoot} = $o->{localDocument}->root;
 	$o->{publicDataSelector} = $o->{groupRoot}->child('public data');
 	$o->{actorGroupSelector} = $o->{groupRoot}->child('actor group');
 	$o->{actorSelector} = $o->{actorGroupSelector}->child(substr($keyPair->publicKey->hash->bytes, 0, 16));
@@ -776,8 +776,8 @@ sub messagingStore { shift->{messagingStore} }
 sub messagingStoreUrl { shift->{messagingStoreUrl} }
 
 sub storagePrivateRoot { shift->{storagePrivateRoot} }
-sub groupDataTree { shift->{groupDataTree} }
-sub localDataTree { shift->{localDataTree} }
+sub groupDocument { shift->{groupDocument} }
+sub localDocument { shift->{localDocument} }
 
 sub messagingPrivateRoot { shift->{messagingPrivateRoot} }
 sub sentList { shift->{sentList} }
@@ -913,7 +913,7 @@ sub getGroupDataMembers {
 		}
 
 		# Get the public key and add
-		my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDataTree}->unsaved);
+		my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDocument}->unsaved);
 		return if defined $storeError;
 		if (defined $invalidReason) {
 			delete $o->{cachedGroupDataMembers}->{$child->label};
@@ -982,7 +982,7 @@ sub getEntrustedKey {
 	my $entrustedKey = $o->{cachedEntrustedKeys}->{$hash->bytes};
 	return $entrustedKey if $entrustedKey;
 
-	my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDataTree}->unsaved);
+	my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDocument}->unsaved);
 	return if defined $storeError;
 	return if defined $invalidReason;
 	$o->{cachedEntrustedKeys}->{$hash->bytes} = $publicKey;
@@ -996,16 +996,16 @@ sub procurePrivateData {
 	my $interval = shift // CDS->DAY;
 
 	$o->{storagePrivateRoot}->procure($interval) // return;
-	$o->{groupDataTree}->read // return;
-	$o->{localDataTree}->read // return;
+	$o->{groupDocument}->read // return;
+	$o->{localDocument}->read // return;
 	return 1;
 }
 
 sub savePrivateDataAndShareGroupData {
 	my $o = shift;
 
-	$o->{localDataTree}->save;
-	$o->{groupDataTree}->save;
+	$o->{localDocument}->save;
+	$o->{groupDocument}->save;
 	$o->groupDataSharer->share;
 	my $entrustedKeys = $o->getEntrustedKeys // return;
 	my ($ok, $missingHash) = $o->{storagePrivateRoot}->save($entrustedKeys);
@@ -1103,7 +1103,7 @@ sub announce {
 	}
 
 	# Create an unsaved state
-	my $unsaved = CDS::Unsaved->new($o->publicDataSelector->dataTree->unsaved);
+	my $unsaved = CDS::Unsaved->new($o->publicDataSelector->document->unsaved);
 
 	# Add the public card and the public key
 	my $cardObject = $card->toObject;
@@ -1335,331 +1335,9 @@ sub readFirstLine {
 	return $content;
 }
 
-package CDS::DataTree;
+package CDS::DetachedDocument;
 
-sub new {
-	my $class = shift;
-	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
-	my $store = shift;
-
-	my $o = bless {
-		keyPair => $keyPair,
-		unsaved => CDS::Unsaved->new($store),
-		itemsBySelector => {},
-		parts => {},
-		hasPartsToMerge => 0,
-		}, $class;
-
-	$o->{root} = CDS::Selector->root($o);
-	$o->{changes} = CDS::DataTree::Part->new;
-	return $o;
-}
-
-sub keyPair { shift->{keyPair} }
-sub unsaved { shift->{unsaved} }
-sub parts {
-	my $o = shift;
-	 values %{$o->{parts}} }
-sub hasPartsToMerge { shift->{hasPartsToMerge} }
-
-### Items
-
-sub root { shift->{root} }
-sub rootItem {
-	my $o = shift;
-	 $o->getOrCreate($o->{root}) }
-
-sub get {
-	my $o = shift;
-	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
-	 $o->{itemsBySelector}->{$selector->{id}} }
-
-sub getOrCreate {
-	my $o = shift;
-	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
-
-	my $item = $o->{itemsBySelector}->{$selector->{id}};
-	$o->{itemsBySelector}->{$selector->{id}} = $item = CDS::DataTree::Item->new($selector) if ! $item;
-	return $item;
-}
-
-sub prune {
-	my $o = shift;
-	 $o->rootItem->pruneTree; }
-
-### Merging
-
-sub merge {
-	my $o = shift;
-
-	for my $hashAndKey (@_) {
-		next if ! $hashAndKey;
-		next if $o->{parts}->{$hashAndKey->hash->bytes};
-		my $part = CDS::DataTree::Part->new;
-		$part->{hashAndKey} = $hashAndKey;
-		$o->{parts}->{$hashAndKey->hash->bytes} = $part;
-		$o->{hasPartsToMerge} = 1;
-	}
-}
-
-sub read {
-	my $o = shift;
-
-	return 1 if ! $o->{hasPartsToMerge};
-
-	# Load the parts
-	for my $part (values %{$o->{parts}}) {
-		next if $part->{isMerged};
-		next if $part->{loadedRecord};
-
-		my ($record, $object, $invalidReason, $storeError) = $o->{keyPair}->getAndDecryptRecord($part->{hashAndKey}, $o->{unsaved});
-		return if defined $storeError;
-
-		delete $o->{parts}->{$part->{hashAndKey}->hash->bytes} if defined $invalidReason;
-		$part->{loadedRecord} = $record;
-	}
-
-	# Merge the loaded parts
-	for my $part (values %{$o->{parts}}) {
-		next if $part->{isMerged};
-		next if ! $part->{loadedRecord};
-		my $oldFormat = $part->{loadedRecord}->child('client')->textValue =~ /0.19/ ? 1 : 0;
-		$o->mergeNode($part, $o->{root}, $part->{loadedRecord}->child('root'), $oldFormat);
-		delete $part->{loadedRecord};
-		$part->{isMerged} = 1;
-	}
-
-	$o->{hasPartsToMerge} = 0;
-	return 1;
-}
-
-sub mergeNode {
-	my $o = shift;
-	my $part = shift;
-	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
-	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
-	my $oldFormat = shift;
-
-	# Prepare
-	my @children = $record->children;
-	return if ! scalar @children;
-	my $item = $o->getOrCreate($selector);
-
-	# Merge value
-	my $valueRecord = shift @children;
-	$valueRecord = $valueRecord->firstChild if $oldFormat;
-	$item->mergeValue($part, $valueRecord->asInteger, $valueRecord);
-
-	# Merge children
-	for my $child (@children) { $o->mergeNode($part, $selector->child($child->bytes), $child, $oldFormat); }
-}
-
-# *** Saving
-# Call $dataTree->save at any time to save the current state (if necessary).
-
-# This is called by the items whenever some data changes.
-sub dataChanged {
-	my $o = shift;
-	 }
-
-sub save {
-	my $o = shift;
-
-	$o->{unsaved}->startSaving;
-	my $revision = CDS->now;
-	my $newPart = undef;
-
-	#-- saving ++ $o->{changes}->{count}
-	if ($o->{changes}->{count}) {
-		# Take the changes
-		$newPart = $o->{changes};
-		$o->{changes} = CDS::DataTree::Part->new;
-
-		# Select all parts smaller than 2 * changes
-		$newPart->{selected} = 1;
-		my $count = $newPart->{count};
-		while (1) {
-			my $addedPart = 0;
-			for my $part (values %{$o->{parts}}) {
-				#-- candidate ++ $part->{count} ++ $count
-				next if ! $part->{isMerged} || $part->{selected} || $part->{count} >= $count * 2;
-				$count += $part->{count};
-				$part->{selected} = 1;
-				$addedPart = 1;
-			}
-
-			last if ! $addedPart;
-		}
-
-		# Include the selected items
-		for my $item (values %{$o->{itemsBySelector}}) {
-			next if ! $item->{part}->{selected};
-			$item->setPart($newPart);
-			$item->createSaveRecord;
-		}
-
-		my $record = CDS::Record->new;
-		$record->add('created')->addInteger($revision);
-		$record->add('client')->add(CDS->version);
-		$record->addRecord($o->rootItem->createSaveRecord);
-
-		# Detach the save records
-		for my $item (values %{$o->{itemsBySelector}}) {
-			$item->detachSaveRecord;
-		}
-
-		# Serialize and encrypt the record
-		my $key = CDS->randomKey;
-		my $newObject = $record->toObject->crypt($key);
-		$newPart->{hashAndKey} = CDS::HashAndKey->new($newObject->calculateHash, $key);
-		$newPart->{isMerged} = 1;
-		$newPart->{selected} = 0;
-		$o->{parts}->{$newPart->{hashAndKey}->hash->bytes} = $newPart;
-		#-- added ++ $o->{parts} ++ scalar keys %{$o->{parts}} ++ $newPart->{count}
-		$o->{unsaved}->{savingState}->addObject($newPart->{hashAndKey}->hash, $newObject);
-	}
-
-	# Remove obsolete parts
-	my $obsoleteParts = [];
-	for my $part (values %{$o->{parts}}) {
-		next if ! $part->{isMerged};
-		next if $part->{count};
-		push @$obsoleteParts, $part;
-		delete $o->{parts}->{$part->{hashAndKey}->hash->bytes};
-	}
-
-	# Commit
-	#-- saving done ++ $revision ++ $newPart ++ $obsoleteParts
-	return $o->savingDone($revision, $newPart, $obsoleteParts);
-}
-
-package CDS::DataTree::Item;
-
-sub new {
-	my $class = shift;
-	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
-
-	my $parentSelector = $selector->parent;
-	my $parent = $parentSelector ? $selector->dataTree->getOrCreate($parentSelector) : undef;
-
-	my $o = bless {
-		dataTree => $selector->dataTree,
-		selector => $selector,
-		parent => $parent,
-		children => [],
-		part => undef,
-		revision => 0,
-		record => CDS::Record->new
-		};
-
-	push @{$parent->{children}}, $o if $parent;
-	return $o;
-}
-
-sub pruneTree {
-	my $o = shift;
-
-	# Try to remove children
-	for my $child (@{$o->{children}}) { $child->pruneTree; }
-
-	# Don't remove the root item
-	return if ! $o->{parent};
-
-	# Don't remove if the item has children, or a value
-	return if scalar @{$o->{children}};
-	return if $o->{revision} > 0;
-
-	# Remove this from the tree
-	$o->{parent}->{children} = [grep { $_ != $o } @{$o->{parent}->{children}}];
-
-	# Remove this from the datatree hash
-	delete $o->{dataTree}->{itemsBySelector}->{$o->{selector}->{id}};
-}
-
-# Low-level part change.
-sub setPart {
-	my $o = shift;
-	my $part = shift;
-
-	$o->{part}->{count} -= 1 if $o->{part};
-	$o->{part} = $part;
-	$o->{part}->{count} += 1 if $o->{part};
-}
-
-# Merge a value
-
-sub mergeValue {
-	my $o = shift;
-	my $part = shift;
-	my $revision = shift;
-	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
-
-	return if $revision <= 0;
-	return if $revision < $o->{revision};
-	return if $revision == $o->{revision} && $part->{size} < $o->{part}->{size};
-	$o->setPart($part);
-	$o->{revision} = $revision;
-	$o->{record} = $record;
-	$o->{dataTree}->dataChanged;
-	return 1;
-}
-
-sub forget {
-	my $o = shift;
-
-	return if $o->{revision} <= 0;
-	$o->{revision} = 0;
-	$o->{record} = CDS::Record->new;
-	$o->setPart;
-}
-
-# Saving
-
-sub createSaveRecord {
-	my $o = shift;
-
-	return $o->{saveRecord} if $o->{saveRecord};
-	$o->{saveRecord} = $o->{parent} ? $o->{parent}->createSaveRecord->add($o->{selector}->{label}) : CDS::Record->new('root');
-	if ($o->{part}->{selected}) {
-		CDS->log('Item saving zero revision of ', $o->{selector}->label) if $o->{revision} <= 0;
-		$o->{saveRecord}->addInteger($o->{revision})->addRecord($o->{record}->children);
-	} else {
-		$o->{saveRecord}->add('');
-	}
-	return $o->{saveRecord};
-}
-
-sub detachSaveRecord {
-	my $o = shift;
-
-	return if ! $o->{saveRecord};
-	delete $o->{saveRecord};
-	$o->{parent}->detachSaveRecord if $o->{parent};
-}
-
-package CDS::DataTree::Part;
-
-sub new {
-	my $class = shift;
-
-	return bless {
-		isMerged => 0,
-		hashAndKey => undef,
-		size => 0,
-		count => 0,
-		selected => 0,
-		};
-}
-
-# In this implementation, we only keep track of the number of values of the list, but
-# not of the corresponding items. This saves memory (~100 MiB for 1M items), but takes
-# more time (0.5 s for 1M items) when saving. Since command line programs usually write
-# the data tree only once, this is acceptable. Reading the tree anyway takes about 10
-# times more time.
-
-package CDS::DetachedDataTree;
-
-use parent -norequire, 'CDS::DataTree';
+use parent -norequire, 'CDS::Document';
 
 sub new {
 	my $class = shift;
@@ -2050,6 +1728,328 @@ sub hasLinkToUs {
 	}
 	return;
 }
+
+package CDS::Document;
+
+sub new {
+	my $class = shift;
+	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
+	my $store = shift;
+
+	my $o = bless {
+		keyPair => $keyPair,
+		unsaved => CDS::Unsaved->new($store),
+		itemsBySelector => {},
+		parts => {},
+		hasPartsToMerge => 0,
+		}, $class;
+
+	$o->{root} = CDS::Selector->root($o);
+	$o->{changes} = CDS::Document::Part->new;
+	return $o;
+}
+
+sub keyPair { shift->{keyPair} }
+sub unsaved { shift->{unsaved} }
+sub parts {
+	my $o = shift;
+	 values %{$o->{parts}} }
+sub hasPartsToMerge { shift->{hasPartsToMerge} }
+
+### Items
+
+sub root { shift->{root} }
+sub rootItem {
+	my $o = shift;
+	 $o->getOrCreate($o->{root}) }
+
+sub get {
+	my $o = shift;
+	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
+	 $o->{itemsBySelector}->{$selector->{id}} }
+
+sub getOrCreate {
+	my $o = shift;
+	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
+
+	my $item = $o->{itemsBySelector}->{$selector->{id}};
+	$o->{itemsBySelector}->{$selector->{id}} = $item = CDS::Document::Item->new($selector) if ! $item;
+	return $item;
+}
+
+sub prune {
+	my $o = shift;
+	 $o->rootItem->pruneTree; }
+
+### Merging
+
+sub merge {
+	my $o = shift;
+
+	for my $hashAndKey (@_) {
+		next if ! $hashAndKey;
+		next if $o->{parts}->{$hashAndKey->hash->bytes};
+		my $part = CDS::Document::Part->new;
+		$part->{hashAndKey} = $hashAndKey;
+		$o->{parts}->{$hashAndKey->hash->bytes} = $part;
+		$o->{hasPartsToMerge} = 1;
+	}
+}
+
+sub read {
+	my $o = shift;
+
+	return 1 if ! $o->{hasPartsToMerge};
+
+	# Load the parts
+	for my $part (values %{$o->{parts}}) {
+		next if $part->{isMerged};
+		next if $part->{loadedRecord};
+
+		my ($record, $object, $invalidReason, $storeError) = $o->{keyPair}->getAndDecryptRecord($part->{hashAndKey}, $o->{unsaved});
+		return if defined $storeError;
+
+		delete $o->{parts}->{$part->{hashAndKey}->hash->bytes} if defined $invalidReason;
+		$part->{loadedRecord} = $record;
+	}
+
+	# Merge the loaded parts
+	for my $part (values %{$o->{parts}}) {
+		next if $part->{isMerged};
+		next if ! $part->{loadedRecord};
+		my $oldFormat = $part->{loadedRecord}->child('client')->textValue =~ /0.19/ ? 1 : 0;
+		$o->mergeNode($part, $o->{root}, $part->{loadedRecord}->child('root'), $oldFormat);
+		delete $part->{loadedRecord};
+		$part->{isMerged} = 1;
+	}
+
+	$o->{hasPartsToMerge} = 0;
+	return 1;
+}
+
+sub mergeNode {
+	my $o = shift;
+	my $part = shift;
+	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
+	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
+	my $oldFormat = shift;
+
+	# Prepare
+	my @children = $record->children;
+	return if ! scalar @children;
+	my $item = $o->getOrCreate($selector);
+
+	# Merge value
+	my $valueRecord = shift @children;
+	$valueRecord = $valueRecord->firstChild if $oldFormat;
+	$item->mergeValue($part, $valueRecord->asInteger, $valueRecord);
+
+	# Merge children
+	for my $child (@children) { $o->mergeNode($part, $selector->child($child->bytes), $child, $oldFormat); }
+}
+
+# *** Saving
+# Call $document->save at any time to save the current state (if necessary).
+
+# This is called by the items whenever some data changes.
+sub dataChanged {
+	my $o = shift;
+	 }
+
+sub save {
+	my $o = shift;
+
+	$o->{unsaved}->startSaving;
+	my $revision = CDS->now;
+	my $newPart = undef;
+
+	#-- saving ++ $o->{changes}->{count}
+	if ($o->{changes}->{count}) {
+		# Take the changes
+		$newPart = $o->{changes};
+		$o->{changes} = CDS::Document::Part->new;
+
+		# Select all parts smaller than 2 * changes
+		$newPart->{selected} = 1;
+		my $count = $newPart->{count};
+		while (1) {
+			my $addedPart = 0;
+			for my $part (values %{$o->{parts}}) {
+				#-- candidate ++ $part->{count} ++ $count
+				next if ! $part->{isMerged} || $part->{selected} || $part->{count} >= $count * 2;
+				$count += $part->{count};
+				$part->{selected} = 1;
+				$addedPart = 1;
+			}
+
+			last if ! $addedPart;
+		}
+
+		# Include the selected items
+		for my $item (values %{$o->{itemsBySelector}}) {
+			next if ! $item->{part}->{selected};
+			$item->setPart($newPart);
+			$item->createSaveRecord;
+		}
+
+		my $record = CDS::Record->new;
+		$record->add('created')->addInteger($revision);
+		$record->add('client')->add(CDS->version);
+		$record->addRecord($o->rootItem->createSaveRecord);
+
+		# Detach the save records
+		for my $item (values %{$o->{itemsBySelector}}) {
+			$item->detachSaveRecord;
+		}
+
+		# Serialize and encrypt the record
+		my $key = CDS->randomKey;
+		my $newObject = $record->toObject->crypt($key);
+		$newPart->{hashAndKey} = CDS::HashAndKey->new($newObject->calculateHash, $key);
+		$newPart->{isMerged} = 1;
+		$newPart->{selected} = 0;
+		$o->{parts}->{$newPart->{hashAndKey}->hash->bytes} = $newPart;
+		#-- added ++ $o->{parts} ++ scalar keys %{$o->{parts}} ++ $newPart->{count}
+		$o->{unsaved}->{savingState}->addObject($newPart->{hashAndKey}->hash, $newObject);
+	}
+
+	# Remove obsolete parts
+	my $obsoleteParts = [];
+	for my $part (values %{$o->{parts}}) {
+		next if ! $part->{isMerged};
+		next if $part->{count};
+		push @$obsoleteParts, $part;
+		delete $o->{parts}->{$part->{hashAndKey}->hash->bytes};
+	}
+
+	# Commit
+	#-- saving done ++ $revision ++ $newPart ++ $obsoleteParts
+	return $o->savingDone($revision, $newPart, $obsoleteParts);
+}
+
+package CDS::Document::Item;
+
+sub new {
+	my $class = shift;
+	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
+
+	my $parentSelector = $selector->parent;
+	my $parent = $parentSelector ? $selector->document->getOrCreate($parentSelector) : undef;
+
+	my $o = bless {
+		document => $selector->document,
+		selector => $selector,
+		parent => $parent,
+		children => [],
+		part => undef,
+		revision => 0,
+		record => CDS::Record->new
+		};
+
+	push @{$parent->{children}}, $o if $parent;
+	return $o;
+}
+
+sub pruneTree {
+	my $o = shift;
+
+	# Try to remove children
+	for my $child (@{$o->{children}}) { $child->pruneTree; }
+
+	# Don't remove the root item
+	return if ! $o->{parent};
+
+	# Don't remove if the item has children, or a value
+	return if scalar @{$o->{children}};
+	return if $o->{revision} > 0;
+
+	# Remove this from the tree
+	$o->{parent}->{children} = [grep { $_ != $o } @{$o->{parent}->{children}}];
+
+	# Remove this from the document hash
+	delete $o->{document}->{itemsBySelector}->{$o->{selector}->{id}};
+}
+
+# Low-level part change.
+sub setPart {
+	my $o = shift;
+	my $part = shift;
+
+	$o->{part}->{count} -= 1 if $o->{part};
+	$o->{part} = $part;
+	$o->{part}->{count} += 1 if $o->{part};
+}
+
+# Merge a value
+
+sub mergeValue {
+	my $o = shift;
+	my $part = shift;
+	my $revision = shift;
+	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
+
+	return if $revision <= 0;
+	return if $revision < $o->{revision};
+	return if $revision == $o->{revision} && $part->{size} < $o->{part}->{size};
+	$o->setPart($part);
+	$o->{revision} = $revision;
+	$o->{record} = $record;
+	$o->{document}->dataChanged;
+	return 1;
+}
+
+sub forget {
+	my $o = shift;
+
+	return if $o->{revision} <= 0;
+	$o->{revision} = 0;
+	$o->{record} = CDS::Record->new;
+	$o->setPart;
+}
+
+# Saving
+
+sub createSaveRecord {
+	my $o = shift;
+
+	return $o->{saveRecord} if $o->{saveRecord};
+	$o->{saveRecord} = $o->{parent} ? $o->{parent}->createSaveRecord->add($o->{selector}->{label}) : CDS::Record->new('root');
+	if ($o->{part}->{selected}) {
+		CDS->log('Item saving zero revision of ', $o->{selector}->label) if $o->{revision} <= 0;
+		$o->{saveRecord}->addInteger($o->{revision})->addRecord($o->{record}->children);
+	} else {
+		$o->{saveRecord}->add('');
+	}
+	return $o->{saveRecord};
+}
+
+sub detachSaveRecord {
+	my $o = shift;
+
+	return if ! $o->{saveRecord};
+	delete $o->{saveRecord};
+	$o->{parent}->detachSaveRecord if $o->{parent};
+}
+
+package CDS::Document::Part;
+
+sub new {
+	my $class = shift;
+
+	return bless {
+		isMerged => 0,
+		hashAndKey => undef,
+		size => 0,
+		count => 0,
+		selected => 0,
+		};
+}
+
+# In this implementation, we only keep track of the number of values of the list, but
+# not of the corresponding items. This saves memory (~100 MiB for 1M items), but takes
+# more time (0.5 s for 1M items) when saving. Since command line programs usually write
+# the document only once, this is acceptable. Reading the tree anyway takes about 10
+# times more time.
 
 package CDS::ErrorHandlingStore;
 
@@ -5391,9 +5391,9 @@ sub addHash {
 	return $index;
 }
 
-package CDS::RootDataTree;
+package CDS::RootDocument;
 
-use parent -norequire, 'CDS::DataTree';
+use parent -norequire, 'CDS::Document';
 
 sub new {
 	my $class = shift;
@@ -5476,12 +5476,12 @@ package CDS::Selector;
 
 sub root {
 	my $class = shift;
-	my $dataTree = shift;
+	my $document = shift;
 
-	return bless {dataTree => $dataTree, id => 'ROOT', label => ''};
+	return bless {document => $document, id => 'ROOT', label => ''};
 }
 
-sub dataTree { shift->{dataTree} }
+sub document { shift->{document} }
 sub parent { shift->{parent} }
 sub label { shift->{label} }
 
@@ -5490,7 +5490,7 @@ sub child {
 	my $label = shift;
 
 	return bless {
-		dataTree => $o->{dataTree},
+		document => $o->{document},
 		id => $o->{id}.'/'.unpack('H*', $label),
 		parent => $o,
 		label => $label,
@@ -5507,7 +5507,7 @@ sub childWithText {
 sub children {
 	my $o = shift;
 
-	my $item = $o->{dataTree}->get($o) // return;
+	my $item = $o->{document}->get($o) // return;
 	return map { $_->{selector} } @{$item->{children}};
 }
 
@@ -5516,21 +5516,21 @@ sub children {
 sub revision {
 	my $o = shift;
 
-	my $item = $o->{dataTree}->get($o) // return 0;
+	my $item = $o->{document}->get($o) // return 0;
 	return $item->{revision};
 }
 
 sub isSet {
 	my $o = shift;
 
-	my $item = $o->{dataTree}->get($o) // return;
+	my $item = $o->{document}->get($o) // return;
 	return scalar $item->{record}->children > 0;
 }
 
 sub record {
 	my $o = shift;
 
-	my $item = $o->{dataTree}->get($o) // return CDS::Record->new;
+	my $item = $o->{document}->get($o) // return CDS::Record->new;
 	return $item->{record};
 }
 
@@ -5539,8 +5539,8 @@ sub set {
 	my $record = shift // return; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
 	my $now = CDS->now;
-	my $item = $o->{dataTree}->getOrCreate($o);
-	$item->mergeValue($o->{dataTree}->{changes}, $item->{revision} >= $now ? $item->{revision} + 1 : $now, $record);
+	my $item = $o->{document}->getOrCreate($o);
+	$item->mergeValue($o->{document}->{changes}, $item->{revision} >= $now ? $item->{revision} + 1 : $now, $record);
 }
 
 sub merge {
@@ -5548,8 +5548,8 @@ sub merge {
 	my $revision = shift;
 	my $record = shift // return; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-	my $item = $o->{dataTree}->getOrCreate($o);
-	return $item->mergeValue($o->{dataTree}->{changes}, $revision, $record);
+	my $item = $o->{document}->getOrCreate($o);
+	return $item->mergeValue($o->{document}->{changes}, $revision, $record);
 }
 
 sub clear {
@@ -5565,7 +5565,7 @@ sub clearInThePast {
 sub forget {
 	my $o = shift;
 
-	my $item = $o->{dataTree}->get($o) // return;
+	my $item = $o->{document}->get($o) // return;
 	$item->forget;
 }
 
@@ -5581,7 +5581,7 @@ sub forgetBranch {
 sub firstValue {
 	my $o = shift;
 
-	my $item = $o->{dataTree}->get($o) // return CDS::Record->new;
+	my $item = $o->{document}->get($o) // return CDS::Record->new;
 	return $item->{record}->firstChild;
 }
 
@@ -5654,14 +5654,14 @@ sub addObject {
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $object = shift; die 'wrong type '.ref($object).' for $object' if defined $object && ref $object ne 'CDS::Object';
 
-	$o->{dataTree}->{unsaved}->state->addObject($hash, $object);
+	$o->{document}->{unsaved}->state->addObject($hash, $object);
 }
 
 sub addMergedSource {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-	$o->{dataTree}->{unsaved}->state->addMergedSource($hash);
+	$o->{document}->{unsaved}->state->addMergedSource($hash);
 }
 
 package CDS::SentItem;
@@ -6319,15 +6319,15 @@ sub stillInUse {
 	$o->{lastUsed} = CDS->now;
 }
 
-package CDS::SubDataTree;
+package CDS::SubDocument;
 
-use parent -norequire, 'CDS::DataTree';
+use parent -norequire, 'CDS::Document';
 
 sub new {
 	my $class = shift;
 	my $parentSelector = shift; die 'wrong type '.ref($parentSelector).' for $parentSelector' if defined $parentSelector && ref $parentSelector ne 'CDS::Selector';
 
-	my $o = $class->SUPER::new($parentSelector->dataTree->keyPair, $parentSelector->dataTree->unsaved);
+	my $o = $class->SUPER::new($parentSelector->document->keyPair, $parentSelector->document->unsaved);
 	$o->{parentSelector} = $parentSelector;
 	return $o;
 }
@@ -6354,7 +6354,7 @@ sub savingDone {
 	my $newPart = shift;
 	my $obsoleteParts = shift;
 
-	$o->{parentSelector}->dataTree->unsaved->state->merge($o->{unsaved}->savingState);
+	$o->{parentSelector}->document->unsaved->state->merge($o->{unsaved}->savingState);
 
 	# Remove obsolete parts
 	for my $part (@$obsoleteParts) {
@@ -6751,7 +6751,7 @@ sub selector {
 	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
 	my $rootLabel = shift;
 
-	my $item = $selector->dataTree->get($selector);
+	my $item = $selector->document->get($selector);
 	my $revision = $item->{revision} ? $o->green('  ', $o->niceDateTime($item->{revision})) : '';
 
 	if ($selector->{id} eq 'ROOT') {

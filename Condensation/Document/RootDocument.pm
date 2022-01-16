@@ -1,4 +1,4 @@
-use parent 'CDS::DataTree';
+use parent 'CDS::Document';
 
 sub new($class, $privateRoot, $label) {
 	my $o = $class->SUPER::new($privateRoot->privateBoxReader->keyPair, $privateRoot->unsaved);

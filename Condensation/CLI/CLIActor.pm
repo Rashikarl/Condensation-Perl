@@ -1,4 +1,4 @@
-use parent 'CDS::ActorWithDataTree';
+use parent 'CDS::ActorWithDocument';
 
 sub openOrCreateDefault($class, $ui) {
 	$class->open(CDS::Configuration->getOrCreateDefault($ui));
@@ -170,7 +170,7 @@ sub onMessageBoxEntry($o, $message) {
 #		-> source can be deleted immediately (e.g. invalid)
 #			source.discard()
 #		-> source has been merged, and will be deleted when changes have been saved
-#			dataTree.addMergedSource(source)
+#			document.addMergedSource(source)
 #	2. wait for sender store
 #		-> set entry.waitForStore = senderStore
 #	3. skip
@@ -182,7 +182,7 @@ sub onMessageBoxEntry($o, $message) {
 
 sub onGroupDataMessage($o, $message, $section) {
 	my $ok = $o:groupDataSharer->processGroupDataMessage($message, $section);
-	$o:groupDataTree->read;
+	$o:groupDocument->read;
 	return $o:ui->line('Group data from ', $message->sender->publicKey->hash->hex) if $ok;
 	$o:ui->line($o:ui->red('Group data from foreign actor ', $message->sender->publicKey->hash->hex, ' (ignored)'));
 }

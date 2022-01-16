@@ -1,4 +1,4 @@
-use parent 'CDS::DataTree';
+use parent 'CDS::Document';
 
 sub new($class, $keyPair) {
 	return $class->SUPER::new($keyPair, CDS::InMemoryStore->create);

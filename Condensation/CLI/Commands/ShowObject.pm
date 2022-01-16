@@ -145,7 +145,7 @@ sub help($o, $cmd) {
 	$ui->line('cds get OBJECT [decrypted with AESKEY]');
 	$ui->line('cds save [data of] OBJECT [decrypted with AESKEY] as FILE');
 	$ui->line('cds open envelope OBJECT [on STORE] [using KEYPAIR]');
-	$ui->line('cds show data tree OBJECT [on STORE]');
+	$ui->line('cds show document OBJECT [on STORE]');
 	$ui->space;
 }
 

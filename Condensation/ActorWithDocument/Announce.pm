@@ -1,4 +1,4 @@
-# EXTEND CDS::ActorWithDataTree
+# EXTEND CDS::ActorWithDocument
 
 ### Announcing ###
 
@@ -40,7 +40,7 @@ sub announce($o, $store) {
 	}
 
 	# Create an unsaved state
-	my $unsaved = CDS::Unsaved->new($o->publicDataSelector->dataTree->unsaved);
+	my $unsaved = CDS::Unsaved->new($o->publicDataSelector->document->unsaved);
 
 	# Add the public card and the public key
 	my $cardObject = $card->toObject;

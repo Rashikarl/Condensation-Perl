@@ -1,9 +1,9 @@
 sub new($class, $selector) {
 	my $parentSelector = $selector->parent;
-	my $parent = $parentSelector ? $selector->dataTree->getOrCreate($parentSelector) : undef;
+	my $parent = $parentSelector ? $selector->document->getOrCreate($parentSelector) : undef;
 
 	my $o = bless {
-		dataTree => $selector->dataTree,
+		document => $selector->document,
 		selector => $selector,
 		parent => $parent,
 		children => [],
@@ -30,8 +30,8 @@ sub pruneTree($o) {
 	# Remove this from the tree
 	$o:parent:children = [grep { $_ != $o } @$o:parent:children];
 
-	# Remove this from the datatree hash
-	delete $o:dataTree:itemsBySelector->{$o:selector:id};
+	# Remove this from the document hash
+	delete $o:document:itemsBySelector->{$o:selector:id};
 }
 
 # Low-level part change.
@@ -50,7 +50,7 @@ sub mergeValue($o, $part, $revision, $record) {
 	$o->setPart($part);
 	$o:revision = $revision;
 	$o:record = $record;
-	$o:dataTree->dataChanged;
+	$o:document->dataChanged;
 	return 1;
 }
 

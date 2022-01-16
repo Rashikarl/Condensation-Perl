@@ -267,7 +267,7 @@ sub recordChildren($o, $record, $storeUrl) {
 }
 
 sub selector($o, $selector, $rootLabel) {
-	my $item = $selector->dataTree->get($selector);
+	my $item = $selector->document->get($selector);
 	my $revision = $item:revision ? $o->green('  ', $o->niceDateTime($item:revision)) : '';
 
 	if ($selector:id eq 'ROOT') {

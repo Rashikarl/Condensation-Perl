@@ -1,5 +1,5 @@
-# INCLUDE DataTree/Item.pm
-# INCLUDE DataTree/Part.pm
+# INCLUDE Document/Item.pm
+# INCLUDE Document/Part.pm
 
 sub new($class, $keyPair, $store) {
 	my $o = bless {
@@ -11,7 +11,7 @@ sub new($class, $keyPair, $store) {
 		}, $class;
 
 	$o:root = CDS::Selector->root($o);
-	$o:changes = CDS::DataTree::Part->new;
+	$o:changes = CDS::Document::Part->new;
 	return $o;
 }
 
@@ -29,7 +29,7 @@ sub get($o, $selector) { $o:itemsBySelector->{$selector:id} }
 
 sub getOrCreate($o, $selector) {
 	my $item = $o:itemsBySelector->{$selector:id};
-	$o:itemsBySelector->{$selector:id} = $item = CDS::DataTree::Item->new($selector) if ! $item;
+	$o:itemsBySelector->{$selector:id} = $item = CDS::Document::Item->new($selector) if ! $item;
 	return $item;
 }
 
@@ -41,7 +41,7 @@ sub merge($o; @hashesAndKeys) {
 	for my $hashAndKey (@_) {
 		next if ! $hashAndKey;
 		next if $o:parts->{$hashAndKey->hash->bytes};
-		my $part = CDS::DataTree::Part->new;
+		my $part = CDS::Document::Part->new;
 		$part:hashAndKey = $hashAndKey;
 		$o:parts->{$hashAndKey->hash->bytes} = $part;
 		$o:hasPartsToMerge = 1;
@@ -93,7 +93,7 @@ sub mergeNode($o, $part, $selector, $record, $oldFormat) {
 }
 
 # *** Saving
-# Call $dataTree->save at any time to save the current state (if necessary).
+# Call $document->save at any time to save the current state (if necessary).
 
 # This is called by the items whenever some data changes.
 sub dataChanged($o) { }
@@ -107,7 +107,7 @@ sub save($o) {
 	if ($o:changes:count) {
 		# Take the changes
 		$newPart = $o:changes;
-		$o:changes = CDS::DataTree::Part->new;
+		$o:changes = CDS::Document::Part->new;
 
 		# Select all parts smaller than 2 * changes
 		$newPart:selected = 1;

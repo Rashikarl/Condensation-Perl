@@ -348,7 +348,7 @@ sub actorGroup($o) {
 	my $builder = CDS::ActorGroupBuilder->new;
 	$builder->addKnownPublicKey($o:actor->keyPair->publicKey);
 	$builder->parse($record, 1);
-	my ($actorGroup, $storeError) = $builder->load($o:actor->groupDataTree->unsaved, $o:actor->keyPair, $o);
+	my ($actorGroup, $storeError) = $builder->load($o:actor->groupDocument->unsaved, $o:actor->keyPair, $o);
 	return $o:actor->storeError($o:actor->storageStore, $storeError) if defined $storeError;
 	return CDS::ActorGroupToken->new($o:text, $actorGroup);
 }

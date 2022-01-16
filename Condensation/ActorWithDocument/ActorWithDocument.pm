@@ -9,8 +9,8 @@ sub new($class, $keyPair, $storageStore, $messagingStore, $messagingStoreUrl, $p
 
 	# Private data on the storage store
 	$o:storagePrivateRoot = CDS::PrivateRoot->new($keyPair, $storageStore, $o);
-	$o:groupDataTree = CDS::RootDataTree->new($o:storagePrivateRoot, 'group data tree');
-	$o:localDataTree = CDS::RootDataTree->new($o:storagePrivateRoot, 'local data tree');
+	$o:groupDocument = CDS::RootDocument->new($o:storagePrivateRoot, 'group data');
+	$o:localDocument = CDS::RootDocument->new($o:storagePrivateRoot, 'local data');
 
 	# Private data on the messaging store
 	$o:messagingPrivateRoot = $storageStore->id eq $messagingStore->id ? $o:storagePrivateRoot : CDS::PrivateRoot->new($keyPair, $messagingStore, $o);
@@ -19,11 +19,11 @@ sub new($class, $keyPair, $storageStore, $messagingStore, $messagingStoreUrl, $p
 
 	# Group data sharing
 	$o:groupDataSharer = CDS::GroupDataSharer->new($o);
-	$o:groupDataSharer->addDataHandler($o:groupDataTree->label, $o:groupDataTree);
+	$o:groupDataSharer->addDataHandler($o:groupDocument->label, $o:groupDocument);
 
 	# Selectors
-	$o:groupRoot = $o:groupDataTree->root;
-	$o:localRoot = $o:localDataTree->root;
+	$o:groupRoot = $o:groupDocument->root;
+	$o:localRoot = $o:localDocument->root;
 	$o:publicDataSelector = $o:groupRoot->child('public data');
 	$o:actorGroupSelector = $o:groupRoot->child('actor group');
 	$o:actorSelector = $o:actorGroupSelector->child(substr($keyPair->publicKey->hash->bytes, 0, 16));
@@ -45,8 +45,8 @@ sub messagingStore;
 sub messagingStoreUrl;
 
 sub storagePrivateRoot;
-sub groupDataTree;
-sub localDataTree;
+sub groupDocument;
+sub localDocument;
 
 sub messagingPrivateRoot;
 sub sentList;
@@ -155,7 +155,7 @@ sub getGroupDataMembers($o) {
 		}
 
 		# Get the public key and add
-		my ($publicKey, $invalidReason, $storeError) = $o:keyPair->getPublicKey($hash, $o:groupDataTree->unsaved);
+		my ($publicKey, $invalidReason, $storeError) = $o:keyPair->getPublicKey($hash, $o:groupDocument->unsaved);
 		return if defined $storeError;
 		if (defined $invalidReason) {
 			delete $o:cachedGroupDataMembers->{$child->label};
@@ -212,7 +212,7 @@ sub getEntrustedKey($o, $hash) {
 	my $entrustedKey = $o:cachedEntrustedKeys->{$hash->bytes};
 	return $entrustedKey if $entrustedKey;
 
-	my ($publicKey, $invalidReason, $storeError) = $o:keyPair->getPublicKey($hash, $o:groupDataTree->unsaved);
+	my ($publicKey, $invalidReason, $storeError) = $o:keyPair->getPublicKey($hash, $o:groupDocument->unsaved);
 	return if defined $storeError;
 	return if defined $invalidReason;
 	$o:cachedEntrustedKeys->{$hash->bytes} = $publicKey;
@@ -223,14 +223,14 @@ sub getEntrustedKey($o, $hash) {
 
 sub procurePrivateData($o, $interval // CDS->DAY) {
 	$o:storagePrivateRoot->procure($interval) // return;
-	$o:groupDataTree->read // return;
-	$o:localDataTree->read // return;
+	$o:groupDocument->read // return;
+	$o:localDocument->read // return;
 	return 1;
 }
 
 sub savePrivateDataAndShareGroupData($o) {
-	$o:localDataTree->save;
-	$o:groupDataTree->save;
+	$o:localDocument->save;
+	$o:groupDocument->save;
 	$o->groupDataSharer->share;
 	my $entrustedKeys = $o->getEntrustedKeys // return;
 	my ($ok, $missingHash) = $o:storagePrivateRoot->save($entrustedKeys);

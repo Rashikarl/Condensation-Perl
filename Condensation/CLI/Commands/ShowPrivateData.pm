@@ -69,10 +69,10 @@ sub help($o, $cmd) {
 	my $ui = $o:ui;
 	$ui->space;
 	$ui->command('cds show group data');
-	$ui->p('Shows the group data tree. This data tree is shared among all group members.');
+	$ui->p('Shows the group document. This document is shared among all group members.');
 	$ui->space;
 	$ui->command('cds show local data');
-	$ui->p('Shows the local data tree. This data tree is stored locally, and private to this actor.');
+	$ui->p('Shows the local document. This document is stored locally, and private to this actor.');
 	$ui->space;
 	$ui->command('cds show sent list');
 	$ui->p('Shows the list of sent messages with their expiry date, envelope hash, and content hash.');

@@ -53,18 +53,18 @@
 # INCLUDE Condensation/Messaging/NewMessagingStore.pm
 # INCLUDE Condensation/Messaging/NewAnnounce.pm
 
-# INCLUDE Condensation/ActorWithDataTree/ActorWithDataTree.pm
-# INCLUDE Condensation/ActorWithDataTree/Announce.pm
-# INCLUDE Condensation/ActorWithDataTree/GroupDataSharer.pm
-# INCLUDE Condensation/ActorWithDataTree/MessageChannel.pm
-# INCLUDE Condensation/ActorWithDataTree/SentItem.pm
-# INCLUDE Condensation/ActorWithDataTree/SentList.pm
+# INCLUDE Condensation/ActorWithDocument/ActorWithDocument.pm
+# INCLUDE Condensation/ActorWithDocument/Announce.pm
+# INCLUDE Condensation/ActorWithDocument/GroupDataSharer.pm
+# INCLUDE Condensation/ActorWithDocument/MessageChannel.pm
+# INCLUDE Condensation/ActorWithDocument/SentItem.pm
+# INCLUDE Condensation/ActorWithDocument/SentList.pm
 
-# INCLUDE Condensation/DataTree/DataTree.pm
-# INCLUDE Condensation/DataTree/DetachedDataTree.pm
-# INCLUDE Condensation/DataTree/RootDataTree.pm
-# INCLUDE Condensation/DataTree/Selector.pm
-# INCLUDE Condensation/DataTree/SubDataTree.pm
+# INCLUDE Condensation/Document/Document.pm
+# INCLUDE Condensation/Document/DetachedDocument.pm
+# INCLUDE Condensation/Document/RootDocument.pm
+# INCLUDE Condensation/Document/Selector.pm
+# INCLUDE Condensation/Document/SubDocument.pm
 
 # INCLUDE Condensation/UnionList/UnionList.pm
 

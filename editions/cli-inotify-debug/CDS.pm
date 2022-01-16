@@ -905,8 +905,8 @@ sub equals {
 	return $this->{store}->id eq $that->{store}->id && $this->{publicKey}->{hash}->equals($that->{publicKey}->{hash});
 }
 
-#line 1 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
-package CDS::ActorWithDataTree;
+#line 1 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+package CDS::ActorWithDocument;
 
 sub new {
 	my $class = shift;
@@ -916,7 +916,7 @@ sub new {
 	my $messagingStoreUrl = shift;
 	my $publicKeyCache = shift;
 
-#line 2 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 2 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	my $o = bless {
 		keyPair => $keyPair,
 		storageStore => $storageStore,
@@ -925,64 +925,64 @@ sub new {
 		groupDataHandlers => [],
 		}, $class;
 
-#line 10 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 10 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Private data on the storage store
 	$o->{storagePrivateRoot} = CDS::PrivateRoot->new($keyPair, $storageStore, $o);
-	$o->{groupDataTree} = CDS::RootDataTree->new($o->{storagePrivateRoot}, 'group data tree');
-	$o->{localDataTree} = CDS::RootDataTree->new($o->{storagePrivateRoot}, 'local data tree');
+	$o->{groupDocument} = CDS::RootDocument->new($o->{storagePrivateRoot}, 'group data');
+	$o->{localDocument} = CDS::RootDocument->new($o->{storagePrivateRoot}, 'local data');
 
-#line 15 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 15 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Private data on the messaging store
 	$o->{messagingPrivateRoot} = $storageStore->id eq $messagingStore->id ? $o->{storagePrivateRoot} : CDS::PrivateRoot->new($keyPair, $messagingStore, $o);
 	$o->{sentList} = CDS::SentList->new($o->{messagingPrivateRoot});
 	$o->{sentListReady} = 0;
 
-#line 20 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 20 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Group data sharing
 	$o->{groupDataSharer} = CDS::GroupDataSharer->new($o);
-	$o->{groupDataSharer}->addDataHandler($o->{groupDataTree}->label, $o->{groupDataTree});
+	$o->{groupDataSharer}->addDataHandler($o->{groupDocument}->label, $o->{groupDocument});
 
-#line 24 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 24 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Selectors
-	$o->{groupRoot} = $o->{groupDataTree}->root;
-	$o->{localRoot} = $o->{localDataTree}->root;
+	$o->{groupRoot} = $o->{groupDocument}->root;
+	$o->{localRoot} = $o->{localDocument}->root;
 	$o->{publicDataSelector} = $o->{groupRoot}->child('public data');
 	$o->{actorGroupSelector} = $o->{groupRoot}->child('actor group');
 	$o->{actorSelector} = $o->{actorGroupSelector}->child(substr($keyPair->publicKey->hash->bytes, 0, 16));
 	$o->{entrustedActorsSelector} = $o->{groupRoot}->child('entrusted actors');
 
-#line 32 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 32 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Message reader
 	my $pool = CDS::MessageBoxReaderPool->new($keyPair, $publicKeyCache, $o);
 	$o->{messageBoxReader} = CDS::MessageBoxReader->new($pool, CDS::ActorOnStore->new($keyPair->publicKey, $messagingStore), CDS->HOUR);
 
-#line 36 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 36 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Active actor group members and entrusted keys
 	$o->{cachedGroupDataMembers} = {};
 	$o->{cachedEntrustedKeys} = {};
 	return $o;
 }
 
-#line 42 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 42 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub keyPair { shift->{keyPair} }
 sub storageStore { shift->{storageStore} }
 sub messagingStore { shift->{messagingStore} }
 sub messagingStoreUrl { shift->{messagingStoreUrl} }
 
-#line 47 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 47 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub storagePrivateRoot { shift->{storagePrivateRoot} }
-sub groupDataTree { shift->{groupDataTree} }
-sub localDataTree { shift->{localDataTree} }
+sub groupDocument { shift->{groupDocument} }
+sub localDocument { shift->{localDocument} }
 
-#line 51 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 51 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub messagingPrivateRoot { shift->{messagingPrivateRoot} }
 sub sentList { shift->{sentList} }
 sub sentListReady { shift->{sentListReady} }
 
-#line 55 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 55 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub groupDataSharer { shift->{groupDataSharer} }
 
-#line 57 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 57 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub groupRoot { shift->{groupRoot} }
 sub localRoot { shift->{localRoot} }
 sub publicDataSelector { shift->{publicDataSelector} }
@@ -990,40 +990,40 @@ sub actorGroupSelector { shift->{actorGroupSelector} }
 sub actorSelector { shift->{actorSelector} }
 sub entrustedActorsSelector { shift->{entrustedActorsSelector} }
 
-#line 64 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 64 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Our own actor ###
 
-#line 66 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 66 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub isMe {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
-#line 67 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 67 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return $o->{keyPair}->publicKey->hash->equals($actorHash);
 }
 
-#line 70 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 70 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub setName {
 	my $o = shift;
 	my $name = shift;
 
-#line 71 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 71 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{actorSelector}->child('name')->set($name);
 }
 
-#line 74 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 74 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub getName {
 	my $o = shift;
 
-#line 75 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 75 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return $o->{actorSelector}->child('name')->textValue;
 }
 
-#line 78 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 78 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub updateMyRegistration {
 	my $o = shift;
 
-#line 79 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 79 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{actorSelector}->addObject($o->{keyPair}->publicKey->hash, $o->{keyPair}->publicKey->object);
 	my $record = CDS::Record->new;
 	$record->add('hash')->addHash($o->{keyPair}->publicKey->hash);
@@ -1031,44 +1031,44 @@ sub updateMyRegistration {
 	$o->{actorSelector}->set($record);
 }
 
-#line 86 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 86 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub setMyActiveFlag {
 	my $o = shift;
 	my $flag = shift;
 
-#line 87 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 87 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{actorSelector}->child('active')->setBoolean($flag);
 }
 
-#line 90 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 90 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub setMyGroupDataFlag {
 	my $o = shift;
 	my $flag = shift;
 
-#line 91 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 91 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{actorSelector}->child('group data')->setBoolean($flag);
 }
 
-#line 94 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 94 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Actor group
 
-#line 96 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 96 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub isGroupMember {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
-#line 97 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 97 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return 1 if $actorHash->equals($o->{keyPair}->publicKey->hash);
 	my $memberSelector = $o->findMember($actorHash) // return;
 	return ! $memberSelector->child('revoked')->isSet;
 }
 
-#line 102 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 102 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub findMember {
 	my $o = shift;
 	my $memberHash = shift; die 'wrong type '.ref($memberHash).' for $memberHash' if defined $memberHash && ref $memberHash ne 'CDS::Hash';
 
-#line 103 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 103 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	for my $child ($o->{actorGroupSelector}->children) {
 		my $record = $child->record;
 		my $hash = $record->child('hash')->hashValue // next;
@@ -1076,16 +1076,16 @@ sub findMember {
 		return $child;
 	}
 
-#line 110 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 110 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return;
 }
 
-#line 113 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 113 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub forgetOldIdleActors {
 	my $o = shift;
 	my $limit = shift;
 
-#line 114 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 114 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	for my $child ($o->{actorGroupSelector}->children) {
 		next if $child->child('active')->booleanValue;
 		next if $child->child('group data')->booleanValue;
@@ -1094,14 +1094,14 @@ sub forgetOldIdleActors {
 	}
 }
 
-#line 122 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 122 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Group data members
 
-#line 124 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 124 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub getGroupDataMembers {
 	my $o = shift;
 
-#line 125 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 125 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Update the cached list
 	for my $child ($o->{actorGroupSelector}->children) {
 		my $record = $child->record;
@@ -1110,20 +1110,20 @@ sub getGroupDataMembers {
 		$hash = undef if $child->child('revoked')->isSet;
 		$hash = undef if ! $child->child('group data')->isSet;
 
-#line 133 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 133 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Remove
 		if (! $hash) {
 			delete $o->{cachedGroupDataMembers}->{$child->label};
 			next;
 		}
 
-#line 139 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 139 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Keep
 		my $member = $o->{cachedGroupDataMembers}->{$child->label};
 		my $storeUrl = $record->child('store')->textValue;
 		next if $member && $member->storeUrl eq $storeUrl && $member->actorOnStore->publicKey->hash->equals($hash);
 
-#line 144 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 144 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Verify the store
 		my $store = $o->onVerifyMemberStore($storeUrl, $child);
 		if (! $store) {
@@ -1131,42 +1131,42 @@ sub getGroupDataMembers {
 			next;
 		}
 
-#line 151 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 151 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Reuse the public key and add
 		if ($member && $member->actorOnStore->publicKey->hash->equals($hash)) {
 			my $actorOnStore = CDS::ActorOnStore->new($member->actorOnStore->publicKey, $store);
 			$o->{cachedEntrustedKeys}->{$child->label} = {storeUrl => $storeUrl, actorOnStore => $actorOnStore};
 		}
 
-#line 157 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 157 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Get the public key and add
-		my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDataTree}->unsaved);
+		my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDocument}->unsaved);
 		return if defined $storeError;
 		if (defined $invalidReason) {
 			delete $o->{cachedGroupDataMembers}->{$child->label};
 			next;
 		}
 
-#line 165 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 165 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		my $actorOnStore = CDS::ActorOnStore->new($publicKey, $store);
 		$o->{cachedGroupDataMembers}->{$child->label} = {storeUrl => $storeUrl, actorOnStore => $actorOnStore};
 	}
 
-#line 169 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 169 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Return the current list
 	return [map { $_->{actorOnStore} } values %{$o->{cachedGroupDataMembers}}];
 }
 
-#line 173 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 173 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Entrusted actors
 
-#line 175 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 175 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub entrust {
 	my $o = shift;
 	my $storeUrl = shift;
 	my $publicKey = shift; die 'wrong type '.ref($publicKey).' for $publicKey' if defined $publicKey && ref $publicKey ne 'CDS::PublicKey';
 
-#line 176 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 176 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# TODO: this is not compatible with the Java implementation (which uses a record with "hash" and "store")
 	my $selector = $o->{entrustedActorsSelector};
 	my $builder = CDS::ActorGroupBuilder->new;
@@ -1178,12 +1178,12 @@ sub entrust {
 	$o->{cachedEntrustedKeys}->{$publicKey->hash->bytes} = $publicKey;
 }
 
-#line 187 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 187 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub doNotEntrust {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 188 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 188 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	my $selector = $o->{entrustedActorsSelector};
 	my $builder = CDS::ActorGroupBuilder->new;
 	$builder->parseEntrustedActorList($selector->record, 1);
@@ -1192,11 +1192,11 @@ sub doNotEntrust {
 	delete $o->{cachedEntrustedKeys}->{$hash->bytes};
 }
 
-#line 196 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 196 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub getEntrustedKeys {
 	my $o = shift;
 
-#line 197 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 197 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	my $entrustedKeys = [];
 	for my $storeRecord ($o->{entrustedActorsSelector}->record->children) {
 		for my $child ($storeRecord->children) {
@@ -1205,53 +1205,53 @@ sub getEntrustedKeys {
 		}
 	}
 
-#line 205 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 205 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# We could remove unused keys from $o->{cachedEntrustedKeys} here, but since this is
 	# such a rare event, and doesn't consume a lot of memory, this would be overkill.
 
-#line 208 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 208 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return $entrustedKeys;
 }
 
-#line 211 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 211 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub getEntrustedKey {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 212 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 212 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	my $entrustedKey = $o->{cachedEntrustedKeys}->{$hash->bytes};
 	return $entrustedKey if $entrustedKey;
 
-#line 215 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
-	my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDataTree}->unsaved);
+#line 215 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+	my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDocument}->unsaved);
 	return if defined $storeError;
 	return if defined $invalidReason;
 	$o->{cachedEntrustedKeys}->{$hash->bytes} = $publicKey;
 	return $publicKey;
 }
 
-#line 222 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 222 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Private data
 
-#line 224 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 224 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub procurePrivateData {
 	my $o = shift;
 	my $interval = shift // CDS->DAY;
 
-#line 225 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 225 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{storagePrivateRoot}->procure($interval) // return;
-	$o->{groupDataTree}->read // return;
-	$o->{localDataTree}->read // return;
+	$o->{groupDocument}->read // return;
+	$o->{localDocument}->read // return;
 	return 1;
 }
 
-#line 231 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 231 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub savePrivateDataAndShareGroupData {
 	my $o = shift;
 
-#line 232 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
-	$o->{localDataTree}->save;
-	$o->{groupDataTree}->save;
+#line 232 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+	$o->{localDocument}->save;
+	$o->{groupDocument}->save;
 	$o->groupDataSharer->share;
 	my $entrustedKeys = $o->getEntrustedKeys // return;
 	my ($ok, $missingHash) = $o->{storagePrivateRoot}->save($entrustedKeys);
@@ -1260,41 +1260,41 @@ sub savePrivateDataAndShareGroupData {
 	return;
 }
 
-#line 242 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 242 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 # abstract sub onVerifyMemberStore($storeUrl, $selector)
 # abstract sub onPrivateRootReadingInvalidEntry($o, $source, $reason)
 # abstract sub onMissingObject($missingHash)
 
-#line 246 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 246 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Sending messages
 
-#line 248 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 248 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub procureSentList {
 	my $o = shift;
 	my $interval = shift // CDS->DAY;
 
-#line 249 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 249 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{messagingPrivateRoot}->procure($interval) // return;
 	$o->{sentList}->read // return;
 	$o->{sentListReady} = 1;
 	return 1;
 }
 
-#line 255 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 255 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub openMessageChannel {
 	my $o = shift;
 	my $label = shift;
 	my $validity = shift;
 
-#line 256 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 256 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return CDS::MessageChannel->new($o, $label, $validity);
 }
 
-#line 259 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 259 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub sendMessages {
 	my $o = shift;
 
-#line 260 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 260 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return 1 if ! $o->{sentList}->hasChanges;
 	$o->{sentList}->save;
 	my $entrustedKeys = $o->getEntrustedKeys // return;
@@ -1304,41 +1304,41 @@ sub sendMessages {
 	return;
 }
 
-#line 269 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 269 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Receiving messages
 
-#line 271 "Condensation/ActorWithDataTree/ActorWithDataTree.pm"
+#line 271 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 # abstract sub onMessageBoxVerifyStore($o, $senderStoreUrl, $hash, $envelope, $senderHash)
 # abstract sub onMessage($o, $message)
 # abstract sub onInvalidMessage($o, $source, $reason)
 # abstract sub onMessageBoxEntry($o, $message)
 # abstract sub onMessageBoxInvalidEntry($o, $source, $reason)
 
-#line 3 "Condensation/ActorWithDataTree/Announce.pm"
+#line 3 "Condensation/ActorWithDocument/Announce.pm"
 ### Announcing ###
 
-#line 5 "Condensation/ActorWithDataTree/Announce.pm"
+#line 5 "Condensation/ActorWithDocument/Announce.pm"
 sub announceOnAllStores {
 	my $o = shift;
 
-#line 6 "Condensation/ActorWithDataTree/Announce.pm"
+#line 6 "Condensation/ActorWithDocument/Announce.pm"
 	$o->announce($o->{storageStore});
 	$o->announce($o->{messagingStore}) if $o->{messagingStore}->id ne $o->{storageStore}->id;
 }
 
-#line 10 "Condensation/ActorWithDataTree/Announce.pm"
+#line 10 "Condensation/ActorWithDocument/Announce.pm"
 sub announce {
 	my $o = shift;
 	my $store = shift;
 
-#line 11 "Condensation/ActorWithDataTree/Announce.pm"
+#line 11 "Condensation/ActorWithDocument/Announce.pm"
 	die 'probably calling old announce, which should now be announceOnAllStores' if ! defined $store;
 
-#line 13 "Condensation/ActorWithDataTree/Announce.pm"
+#line 13 "Condensation/ActorWithDocument/Announce.pm"
 	# Prepare the actor group
 	my $builder = CDS::ActorGroupBuilder->new;
 
-#line 16 "Condensation/ActorWithDataTree/Announce.pm"
+#line 16 "Condensation/ActorWithDocument/Announce.pm"
 	my $me = $o->keyPair->publicKey->hash;
 	$builder->addMember($me, $o->messagingStoreUrl, CDS->now, 'active');
 	for my $child ($o->actorGroupSelector->children) {
@@ -1353,38 +1353,38 @@ sub announce {
 		$builder->addMember($hash, $storeUrl, $revision, $actorStatus);
 	}
 
-#line 30 "Condensation/ActorWithDataTree/Announce.pm"
+#line 30 "Condensation/ActorWithDocument/Announce.pm"
 	$builder->parseEntrustedActorList($o->entrustedActorsSelector->record, 1) if $builder->mergeEntrustedActors($o->entrustedActorsSelector->revision);
 
-#line 32 "Condensation/ActorWithDataTree/Announce.pm"
+#line 32 "Condensation/ActorWithDocument/Announce.pm"
 	# Create the card
 	my $card = $builder->toRecord(0);
 	$card->add('public key')->addHash($o->{keyPair}->publicKey->hash);
 
-#line 36 "Condensation/ActorWithDataTree/Announce.pm"
+#line 36 "Condensation/ActorWithDocument/Announce.pm"
 	# Add the public data
 	for my $child ($o->publicDataSelector->children) {
 		my $childRecord = $child->record;
 		$card->addRecord($childRecord->children);
 	}
 
-#line 42 "Condensation/ActorWithDataTree/Announce.pm"
+#line 42 "Condensation/ActorWithDocument/Announce.pm"
 	# Create an unsaved state
-	my $unsaved = CDS::Unsaved->new($o->publicDataSelector->dataTree->unsaved);
+	my $unsaved = CDS::Unsaved->new($o->publicDataSelector->document->unsaved);
 
-#line 45 "Condensation/ActorWithDataTree/Announce.pm"
+#line 45 "Condensation/ActorWithDocument/Announce.pm"
 	# Add the public card and the public key
 	my $cardObject = $card->toObject;
 	my $cardHash = $cardObject->calculateHash;
 	$unsaved->state->addObject($cardHash, $cardObject);
 	$unsaved->state->addObject($me, $o->keyPair->publicKey->object);
 
-#line 51 "Condensation/ActorWithDataTree/Announce.pm"
+#line 51 "Condensation/ActorWithDocument/Announce.pm"
 	# Prepare the public envelope
 	my $envelopeObject = $o->keyPair->createPublicEnvelope($cardHash)->toObject;
 	my $envelopeHash = $envelopeObject->calculateHash;
 
-#line 55 "Condensation/ActorWithDataTree/Announce.pm"
+#line 55 "Condensation/ActorWithDocument/Announce.pm"
 	# Upload the objects
 	my ($missingObject, $transferStore, $transferError) = $o->keyPair->transfer([$cardHash], $unsaved, $store);
 	return if defined $transferError;
@@ -1394,12 +1394,12 @@ sub announce {
 		return;
 	}
 
-#line 64 "Condensation/ActorWithDataTree/Announce.pm"
+#line 64 "Condensation/ActorWithDocument/Announce.pm"
 	# Prepare to modify
 	my $modifications = CDS::StoreModifications->new;
 	$modifications->add($me, 'public', $envelopeHash, $envelopeObject);
 
-#line 68 "Condensation/ActorWithDataTree/Announce.pm"
+#line 68 "Condensation/ActorWithDocument/Announce.pm"
 	# List the current cards to remove them
 	# Ignore errors, in the worst case, we are going to have multiple entries in the public box
 	my ($hashes, $error) = $store->list($me, 'public', 0, $o->keyPair);
@@ -1409,7 +1409,7 @@ sub announce {
 		}
 	}
 
-#line 77 "Condensation/ActorWithDataTree/Announce.pm"
+#line 77 "Condensation/ActorWithDocument/Announce.pm"
 	# Modify the public box
 	my $modifyError = $store->modify($modifications, $o->keyPair);
 	return if defined $modifyError;
@@ -1443,7 +1443,7 @@ sub url {
 #line 1 "Condensation/CLI/CLIActor.pm"
 package CDS::CLIActor;
 
-use parent -norequire, 'CDS::ActorWithDataTree';
+use parent -norequire, 'CDS::ActorWithDocument';
 
 #line 3 "Condensation/CLI/CLIActor.pm"
 sub openOrCreateDefault {
@@ -1713,7 +1713,7 @@ sub onMessageBoxEntry {
 #		-> source can be deleted immediately (e.g. invalid)
 #			source.discard()
 #		-> source has been merged, and will be deleted when changes have been saved
-#			dataTree.addMergedSource(source)
+#			document.addMergedSource(source)
 #	2. wait for sender store
 #		-> set entry.waitForStore = senderStore
 #	3. skip
@@ -1732,7 +1732,7 @@ sub onGroupDataMessage {
 
 #line 184 "Condensation/CLI/CLIActor.pm"
 	my $ok = $o->{groupDataSharer}->processGroupDataMessage($message, $section);
-	$o->{groupDataTree}->read;
+	$o->{groupDocument}->read;
 	return $o->{ui}->line('Group data from ', $message->sender->publicKey->hash->hex) if $ok;
 	$o->{ui}->line($o->{ui}->red('Group data from foreign actor ', $message->sender->publicKey->hash->hex, ' (ignored)'));
 }
@@ -9391,7 +9391,7 @@ sub help {
 	$ui->line('cds get OBJECT [decrypted with AESKEY]');
 	$ui->line('cds save [data of] OBJECT [decrypted with AESKEY] as FILE');
 	$ui->line('cds open envelope OBJECT [on STORE] [using KEYPAIR]');
-	$ui->line('cds show data tree OBJECT [on STORE]');
+	$ui->line('cds show document OBJECT [on STORE]');
 	$ui->space;
 }
 
@@ -9667,10 +9667,10 @@ sub help {
 	my $ui = $o->{ui};
 	$ui->space;
 	$ui->command('cds show group data');
-	$ui->p('Shows the group data tree. This data tree is shared among all group members.');
+	$ui->p('Shows the group document. This document is shared among all group members.');
 	$ui->space;
 	$ui->command('cds show local data');
-	$ui->p('Shows the local data tree. This data tree is stored locally, and private to this actor.');
+	$ui->p('Shows the local document. This document is stored locally, and private to this actor.');
 	$ui->space;
 	$ui->command('cds show sent list');
 	$ui->p('Shows the list of sent messages with their expiry date, envelope hash, and content hash.');
@@ -11065,412 +11065,28 @@ sub readFirstLine {
 	return $content;
 }
 
-package CDS::DataTree;
+#line 1 "Condensation/Document/DetachedDocument.pm"
+package CDS::DetachedDocument;
 
-#line 4 "Condensation/DataTree/DataTree.pm"
-sub new {
-	my $class = shift;
-	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
-	my $store = shift;
+use parent -norequire, 'CDS::Document';
 
-#line 5 "Condensation/DataTree/DataTree.pm"
-	my $o = bless {
-		keyPair => $keyPair,
-		unsaved => CDS::Unsaved->new($store),
-		itemsBySelector => {},
-		parts => {},
-		hasPartsToMerge => 0,
-		}, $class;
-
-#line 13 "Condensation/DataTree/DataTree.pm"
-	$o->{root} = CDS::Selector->root($o);
-	$o->{changes} = CDS::DataTree::Part->new;
-	return $o;
-}
-
-#line 18 "Condensation/DataTree/DataTree.pm"
-sub keyPair { shift->{keyPair} }
-sub unsaved { shift->{unsaved} }
-sub parts {
-	my $o = shift;
-	 values %{$o->{parts}} }
-sub hasPartsToMerge { shift->{hasPartsToMerge} }
-
-#line 23 "Condensation/DataTree/DataTree.pm"
-### Items
-
-#line 25 "Condensation/DataTree/DataTree.pm"
-sub root { shift->{root} }
-sub rootItem {
-	my $o = shift;
-	 $o->getOrCreate($o->{root}) }
-
-#line 28 "Condensation/DataTree/DataTree.pm"
-sub get {
-	my $o = shift;
-	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
-	 $o->{itemsBySelector}->{$selector->{id}} }
-
-#line 30 "Condensation/DataTree/DataTree.pm"
-sub getOrCreate {
-	my $o = shift;
-	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
-
-#line 31 "Condensation/DataTree/DataTree.pm"
-	my $item = $o->{itemsBySelector}->{$selector->{id}};
-	$o->{itemsBySelector}->{$selector->{id}} = $item = CDS::DataTree::Item->new($selector) if ! $item;
-	return $item;
-}
-
-#line 36 "Condensation/DataTree/DataTree.pm"
-sub prune {
-	my $o = shift;
-	 $o->rootItem->pruneTree; }
-
-#line 38 "Condensation/DataTree/DataTree.pm"
-### Merging
-
-#line 40 "Condensation/DataTree/DataTree.pm"
-sub merge {
-	my $o = shift;
-
-#line 41 "Condensation/DataTree/DataTree.pm"
-	for my $hashAndKey (@_) {
-		next if ! $hashAndKey;
-		next if $o->{parts}->{$hashAndKey->hash->bytes};
-		my $part = CDS::DataTree::Part->new;
-		$part->{hashAndKey} = $hashAndKey;
-		$o->{parts}->{$hashAndKey->hash->bytes} = $part;
-		$o->{hasPartsToMerge} = 1;
-	}
-}
-
-#line 51 "Condensation/DataTree/DataTree.pm"
-sub read {
-	my $o = shift;
-
-#line 52 "Condensation/DataTree/DataTree.pm"
-	return 1 if ! $o->{hasPartsToMerge};
-
-#line 54 "Condensation/DataTree/DataTree.pm"
-	# Load the parts
-	for my $part (values %{$o->{parts}}) {
-		next if $part->{isMerged};
-		next if $part->{loadedRecord};
-
-#line 59 "Condensation/DataTree/DataTree.pm"
-		my ($record, $object, $invalidReason, $storeError) = $o->{keyPair}->getAndDecryptRecord($part->{hashAndKey}, $o->{unsaved});
-		return if defined $storeError;
-
-#line 62 "Condensation/DataTree/DataTree.pm"
-		delete $o->{parts}->{$part->{hashAndKey}->hash->bytes} if defined $invalidReason;
-		$part->{loadedRecord} = $record;
-	}
-
-#line 66 "Condensation/DataTree/DataTree.pm"
-	# Merge the loaded parts
-	for my $part (values %{$o->{parts}}) {
-		next if $part->{isMerged};
-		next if ! $part->{loadedRecord};
-		my $oldFormat = $part->{loadedRecord}->child('client')->textValue =~ /0.19/ ? 1 : 0;
-		$o->mergeNode($part, $o->{root}, $part->{loadedRecord}->child('root'), $oldFormat);
-		delete $part->{loadedRecord};
-		$part->{isMerged} = 1;
-	}
-
-#line 76 "Condensation/DataTree/DataTree.pm"
-	$o->{hasPartsToMerge} = 0;
-	return 1;
-}
-
-#line 80 "Condensation/DataTree/DataTree.pm"
-sub mergeNode {
-	my $o = shift;
-	my $part = shift;
-	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
-	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
-	my $oldFormat = shift;
-
-#line 81 "Condensation/DataTree/DataTree.pm"
-	# Prepare
-	my @children = $record->children;
-	return if ! scalar @children;
-	my $item = $o->getOrCreate($selector);
-
-#line 86 "Condensation/DataTree/DataTree.pm"
-	# Merge value
-	my $valueRecord = shift @children;
-	$valueRecord = $valueRecord->firstChild if $oldFormat;
-	$item->mergeValue($part, $valueRecord->asInteger, $valueRecord);
-
-#line 91 "Condensation/DataTree/DataTree.pm"
-	# Merge children
-	for my $child (@children) { $o->mergeNode($part, $selector->child($child->bytes), $child, $oldFormat); }
-}
-
-#line 95 "Condensation/DataTree/DataTree.pm"
-# *** Saving
-# Call $dataTree->save at any time to save the current state (if necessary).
-
-#line 98 "Condensation/DataTree/DataTree.pm"
-# This is called by the items whenever some data changes.
-sub dataChanged {
-	my $o = shift;
-	 }
-
-#line 101 "Condensation/DataTree/DataTree.pm"
-sub save {
-	my $o = shift;
-
-#line 102 "Condensation/DataTree/DataTree.pm"
-	$o->{unsaved}->startSaving;
-	my $revision = CDS->now;
-	my $newPart = undef;
-
-#line 106 "Condensation/DataTree/DataTree.pm"
-	#-- saving ++ $o->{changes}->{count}
-	if ($o->{changes}->{count}) {
-		# Take the changes
-		$newPart = $o->{changes};
-		$o->{changes} = CDS::DataTree::Part->new;
-
-#line 112 "Condensation/DataTree/DataTree.pm"
-		# Select all parts smaller than 2 * changes
-		$newPart->{selected} = 1;
-		my $count = $newPart->{count};
-		while (1) {
-			my $addedPart = 0;
-			for my $part (values %{$o->{parts}}) {
-				#-- candidate ++ $part->{count} ++ $count
-				next if ! $part->{isMerged} || $part->{selected} || $part->{count} >= $count * 2;
-				$count += $part->{count};
-				$part->{selected} = 1;
-				$addedPart = 1;
-			}
-
-#line 125 "Condensation/DataTree/DataTree.pm"
-			last if ! $addedPart;
-		}
-
-#line 128 "Condensation/DataTree/DataTree.pm"
-		# Include the selected items
-		for my $item (values %{$o->{itemsBySelector}}) {
-			next if ! $item->{part}->{selected};
-			$item->setPart($newPart);
-			$item->createSaveRecord;
-		}
-
-#line 135 "Condensation/DataTree/DataTree.pm"
-		my $record = CDS::Record->new;
-		$record->add('created')->addInteger($revision);
-		$record->add('client')->add(CDS->version);
-		$record->addRecord($o->rootItem->createSaveRecord);
-
-#line 140 "Condensation/DataTree/DataTree.pm"
-		# Detach the save records
-		for my $item (values %{$o->{itemsBySelector}}) {
-			$item->detachSaveRecord;
-		}
-
-#line 145 "Condensation/DataTree/DataTree.pm"
-		# Serialize and encrypt the record
-		my $key = CDS->randomKey;
-		my $newObject = $record->toObject->crypt($key);
-		$newPart->{hashAndKey} = CDS::HashAndKey->new($newObject->calculateHash, $key);
-		$newPart->{isMerged} = 1;
-		$newPart->{selected} = 0;
-		$o->{parts}->{$newPart->{hashAndKey}->hash->bytes} = $newPart;
-		#-- added ++ $o->{parts} ++ scalar keys %{$o->{parts}} ++ $newPart->{count}
-		$o->{unsaved}->{savingState}->addObject($newPart->{hashAndKey}->hash, $newObject);
-	}
-
-#line 156 "Condensation/DataTree/DataTree.pm"
-	# Remove obsolete parts
-	my $obsoleteParts = [];
-	for my $part (values %{$o->{parts}}) {
-		next if ! $part->{isMerged};
-		next if $part->{count};
-		push @$obsoleteParts, $part;
-		delete $o->{parts}->{$part->{hashAndKey}->hash->bytes};
-	}
-
-#line 165 "Condensation/DataTree/DataTree.pm"
-	# Commit
-	#-- saving done ++ $revision ++ $newPart ++ $obsoleteParts
-	return $o->savingDone($revision, $newPart, $obsoleteParts);
-}
-
-#line 1 "Condensation/DataTree/DataTree/Item.pm"
-package CDS::DataTree::Item;
-
-sub new {
-	my $class = shift;
-	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
-
-#line 2 "Condensation/DataTree/DataTree/Item.pm"
-	my $parentSelector = $selector->parent;
-	my $parent = $parentSelector ? $selector->dataTree->getOrCreate($parentSelector) : undef;
-
-#line 5 "Condensation/DataTree/DataTree/Item.pm"
-	my $o = bless {
-		dataTree => $selector->dataTree,
-		selector => $selector,
-		parent => $parent,
-		children => [],
-		part => undef,
-		revision => 0,
-		record => CDS::Record->new
-		};
-
-#line 15 "Condensation/DataTree/DataTree/Item.pm"
-	push @{$parent->{children}}, $o if $parent;
-	return $o;
-}
-
-#line 19 "Condensation/DataTree/DataTree/Item.pm"
-sub pruneTree {
-	my $o = shift;
-
-#line 20 "Condensation/DataTree/DataTree/Item.pm"
-	# Try to remove children
-	for my $child (@{$o->{children}}) { $child->pruneTree; }
-
-#line 23 "Condensation/DataTree/DataTree/Item.pm"
-	# Don't remove the root item
-	return if ! $o->{parent};
-
-#line 26 "Condensation/DataTree/DataTree/Item.pm"
-	# Don't remove if the item has children, or a value
-	return if scalar @{$o->{children}};
-	return if $o->{revision} > 0;
-
-#line 30 "Condensation/DataTree/DataTree/Item.pm"
-	# Remove this from the tree
-	$o->{parent}->{children} = [grep { $_ != $o } @{$o->{parent}->{children}}];
-
-#line 33 "Condensation/DataTree/DataTree/Item.pm"
-	# Remove this from the datatree hash
-	delete $o->{dataTree}->{itemsBySelector}->{$o->{selector}->{id}};
-}
-
-#line 37 "Condensation/DataTree/DataTree/Item.pm"
-# Low-level part change.
-sub setPart {
-	my $o = shift;
-	my $part = shift;
-
-#line 39 "Condensation/DataTree/DataTree/Item.pm"
-	$o->{part}->{count} -= 1 if $o->{part};
-	$o->{part} = $part;
-	$o->{part}->{count} += 1 if $o->{part};
-}
-
-#line 44 "Condensation/DataTree/DataTree/Item.pm"
-# Merge a value
-
-#line 46 "Condensation/DataTree/DataTree/Item.pm"
-sub mergeValue {
-	my $o = shift;
-	my $part = shift;
-	my $revision = shift;
-	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
-
-#line 47 "Condensation/DataTree/DataTree/Item.pm"
-	return if $revision <= 0;
-	return if $revision < $o->{revision};
-	return if $revision == $o->{revision} && $part->{size} < $o->{part}->{size};
-	$o->setPart($part);
-	$o->{revision} = $revision;
-	$o->{record} = $record;
-	$o->{dataTree}->dataChanged;
-	return 1;
-}
-
-#line 57 "Condensation/DataTree/DataTree/Item.pm"
-sub forget {
-	my $o = shift;
-
-#line 58 "Condensation/DataTree/DataTree/Item.pm"
-	return if $o->{revision} <= 0;
-	$o->{revision} = 0;
-	$o->{record} = CDS::Record->new;
-	$o->setPart;
-}
-
-#line 64 "Condensation/DataTree/DataTree/Item.pm"
-# Saving
-
-#line 66 "Condensation/DataTree/DataTree/Item.pm"
-sub createSaveRecord {
-	my $o = shift;
-
-#line 67 "Condensation/DataTree/DataTree/Item.pm"
-	return $o->{saveRecord} if $o->{saveRecord};
-	$o->{saveRecord} = $o->{parent} ? $o->{parent}->createSaveRecord->add($o->{selector}->{label}) : CDS::Record->new('root');
-	if ($o->{part}->{selected}) {
-		CDS->log('Item saving zero revision of ', $o->{selector}->label) if $o->{revision} <= 0;
-		$o->{saveRecord}->addInteger($o->{revision})->addRecord($o->{record}->children);
-	} else {
-		$o->{saveRecord}->add('');
-	}
-	return $o->{saveRecord};
-}
-
-#line 78 "Condensation/DataTree/DataTree/Item.pm"
-sub detachSaveRecord {
-	my $o = shift;
-
-#line 79 "Condensation/DataTree/DataTree/Item.pm"
-	return if ! $o->{saveRecord};
-	delete $o->{saveRecord};
-	$o->{parent}->detachSaveRecord if $o->{parent};
-}
-
-#line 1 "Condensation/DataTree/DataTree/Part.pm"
-package CDS::DataTree::Part;
-
-sub new {
-	my $class = shift;
-
-#line 2 "Condensation/DataTree/DataTree/Part.pm"
-	return bless {
-		isMerged => 0,
-		hashAndKey => undef,
-		size => 0,
-		count => 0,
-		selected => 0,
-		};
-}
-
-#line 11 "Condensation/DataTree/DataTree/Part.pm"
-# In this implementation, we only keep track of the number of values of the list, but
-# not of the corresponding items. This saves memory (~100 MiB for 1M items), but takes
-# more time (0.5 s for 1M items) when saving. Since command line programs usually write
-# the data tree only once, this is acceptable. Reading the tree anyway takes about 10
-# times more time.
-
-#line 1 "Condensation/DataTree/DetachedDataTree.pm"
-package CDS::DetachedDataTree;
-
-use parent -norequire, 'CDS::DataTree';
-
-#line 3 "Condensation/DataTree/DetachedDataTree.pm"
+#line 3 "Condensation/Document/DetachedDocument.pm"
 sub new {
 	my $class = shift;
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
-#line 4 "Condensation/DataTree/DetachedDataTree.pm"
+#line 4 "Condensation/Document/DetachedDocument.pm"
 	return $class->SUPER::new($keyPair, CDS::InMemoryStore->create);
 }
 
-#line 7 "Condensation/DataTree/DetachedDataTree.pm"
+#line 7 "Condensation/Document/DetachedDocument.pm"
 sub savingDone {
 	my $o = shift;
 	my $revision = shift;
 	my $newPart = shift;
 	my $obsoleteParts = shift;
 
-#line 8 "Condensation/DataTree/DetachedDataTree.pm"
+#line 8 "Condensation/Document/DetachedDocument.pm"
 	# We don't do anything
 	$o->{unsaved}->savingDone;
 }
@@ -11907,6 +11523,390 @@ sub hasLinkToUs {
 	}
 	return;
 }
+
+package CDS::Document;
+
+#line 4 "Condensation/Document/Document.pm"
+sub new {
+	my $class = shift;
+	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
+	my $store = shift;
+
+#line 5 "Condensation/Document/Document.pm"
+	my $o = bless {
+		keyPair => $keyPair,
+		unsaved => CDS::Unsaved->new($store),
+		itemsBySelector => {},
+		parts => {},
+		hasPartsToMerge => 0,
+		}, $class;
+
+#line 13 "Condensation/Document/Document.pm"
+	$o->{root} = CDS::Selector->root($o);
+	$o->{changes} = CDS::Document::Part->new;
+	return $o;
+}
+
+#line 18 "Condensation/Document/Document.pm"
+sub keyPair { shift->{keyPair} }
+sub unsaved { shift->{unsaved} }
+sub parts {
+	my $o = shift;
+	 values %{$o->{parts}} }
+sub hasPartsToMerge { shift->{hasPartsToMerge} }
+
+#line 23 "Condensation/Document/Document.pm"
+### Items
+
+#line 25 "Condensation/Document/Document.pm"
+sub root { shift->{root} }
+sub rootItem {
+	my $o = shift;
+	 $o->getOrCreate($o->{root}) }
+
+#line 28 "Condensation/Document/Document.pm"
+sub get {
+	my $o = shift;
+	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
+	 $o->{itemsBySelector}->{$selector->{id}} }
+
+#line 30 "Condensation/Document/Document.pm"
+sub getOrCreate {
+	my $o = shift;
+	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
+
+#line 31 "Condensation/Document/Document.pm"
+	my $item = $o->{itemsBySelector}->{$selector->{id}};
+	$o->{itemsBySelector}->{$selector->{id}} = $item = CDS::Document::Item->new($selector) if ! $item;
+	return $item;
+}
+
+#line 36 "Condensation/Document/Document.pm"
+sub prune {
+	my $o = shift;
+	 $o->rootItem->pruneTree; }
+
+#line 38 "Condensation/Document/Document.pm"
+### Merging
+
+#line 40 "Condensation/Document/Document.pm"
+sub merge {
+	my $o = shift;
+
+#line 41 "Condensation/Document/Document.pm"
+	for my $hashAndKey (@_) {
+		next if ! $hashAndKey;
+		next if $o->{parts}->{$hashAndKey->hash->bytes};
+		my $part = CDS::Document::Part->new;
+		$part->{hashAndKey} = $hashAndKey;
+		$o->{parts}->{$hashAndKey->hash->bytes} = $part;
+		$o->{hasPartsToMerge} = 1;
+	}
+}
+
+#line 51 "Condensation/Document/Document.pm"
+sub read {
+	my $o = shift;
+
+#line 52 "Condensation/Document/Document.pm"
+	return 1 if ! $o->{hasPartsToMerge};
+
+#line 54 "Condensation/Document/Document.pm"
+	# Load the parts
+	for my $part (values %{$o->{parts}}) {
+		next if $part->{isMerged};
+		next if $part->{loadedRecord};
+
+#line 59 "Condensation/Document/Document.pm"
+		my ($record, $object, $invalidReason, $storeError) = $o->{keyPair}->getAndDecryptRecord($part->{hashAndKey}, $o->{unsaved});
+		return if defined $storeError;
+
+#line 62 "Condensation/Document/Document.pm"
+		delete $o->{parts}->{$part->{hashAndKey}->hash->bytes} if defined $invalidReason;
+		$part->{loadedRecord} = $record;
+	}
+
+#line 66 "Condensation/Document/Document.pm"
+	# Merge the loaded parts
+	for my $part (values %{$o->{parts}}) {
+		next if $part->{isMerged};
+		next if ! $part->{loadedRecord};
+		my $oldFormat = $part->{loadedRecord}->child('client')->textValue =~ /0.19/ ? 1 : 0;
+		$o->mergeNode($part, $o->{root}, $part->{loadedRecord}->child('root'), $oldFormat);
+		delete $part->{loadedRecord};
+		$part->{isMerged} = 1;
+	}
+
+#line 76 "Condensation/Document/Document.pm"
+	$o->{hasPartsToMerge} = 0;
+	return 1;
+}
+
+#line 80 "Condensation/Document/Document.pm"
+sub mergeNode {
+	my $o = shift;
+	my $part = shift;
+	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
+	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
+	my $oldFormat = shift;
+
+#line 81 "Condensation/Document/Document.pm"
+	# Prepare
+	my @children = $record->children;
+	return if ! scalar @children;
+	my $item = $o->getOrCreate($selector);
+
+#line 86 "Condensation/Document/Document.pm"
+	# Merge value
+	my $valueRecord = shift @children;
+	$valueRecord = $valueRecord->firstChild if $oldFormat;
+	$item->mergeValue($part, $valueRecord->asInteger, $valueRecord);
+
+#line 91 "Condensation/Document/Document.pm"
+	# Merge children
+	for my $child (@children) { $o->mergeNode($part, $selector->child($child->bytes), $child, $oldFormat); }
+}
+
+#line 95 "Condensation/Document/Document.pm"
+# *** Saving
+# Call $document->save at any time to save the current state (if necessary).
+
+#line 98 "Condensation/Document/Document.pm"
+# This is called by the items whenever some data changes.
+sub dataChanged {
+	my $o = shift;
+	 }
+
+#line 101 "Condensation/Document/Document.pm"
+sub save {
+	my $o = shift;
+
+#line 102 "Condensation/Document/Document.pm"
+	$o->{unsaved}->startSaving;
+	my $revision = CDS->now;
+	my $newPart = undef;
+
+#line 106 "Condensation/Document/Document.pm"
+	#-- saving ++ $o->{changes}->{count}
+	if ($o->{changes}->{count}) {
+		# Take the changes
+		$newPart = $o->{changes};
+		$o->{changes} = CDS::Document::Part->new;
+
+#line 112 "Condensation/Document/Document.pm"
+		# Select all parts smaller than 2 * changes
+		$newPart->{selected} = 1;
+		my $count = $newPart->{count};
+		while (1) {
+			my $addedPart = 0;
+			for my $part (values %{$o->{parts}}) {
+				#-- candidate ++ $part->{count} ++ $count
+				next if ! $part->{isMerged} || $part->{selected} || $part->{count} >= $count * 2;
+				$count += $part->{count};
+				$part->{selected} = 1;
+				$addedPart = 1;
+			}
+
+#line 125 "Condensation/Document/Document.pm"
+			last if ! $addedPart;
+		}
+
+#line 128 "Condensation/Document/Document.pm"
+		# Include the selected items
+		for my $item (values %{$o->{itemsBySelector}}) {
+			next if ! $item->{part}->{selected};
+			$item->setPart($newPart);
+			$item->createSaveRecord;
+		}
+
+#line 135 "Condensation/Document/Document.pm"
+		my $record = CDS::Record->new;
+		$record->add('created')->addInteger($revision);
+		$record->add('client')->add(CDS->version);
+		$record->addRecord($o->rootItem->createSaveRecord);
+
+#line 140 "Condensation/Document/Document.pm"
+		# Detach the save records
+		for my $item (values %{$o->{itemsBySelector}}) {
+			$item->detachSaveRecord;
+		}
+
+#line 145 "Condensation/Document/Document.pm"
+		# Serialize and encrypt the record
+		my $key = CDS->randomKey;
+		my $newObject = $record->toObject->crypt($key);
+		$newPart->{hashAndKey} = CDS::HashAndKey->new($newObject->calculateHash, $key);
+		$newPart->{isMerged} = 1;
+		$newPart->{selected} = 0;
+		$o->{parts}->{$newPart->{hashAndKey}->hash->bytes} = $newPart;
+		#-- added ++ $o->{parts} ++ scalar keys %{$o->{parts}} ++ $newPart->{count}
+		$o->{unsaved}->{savingState}->addObject($newPart->{hashAndKey}->hash, $newObject);
+	}
+
+#line 156 "Condensation/Document/Document.pm"
+	# Remove obsolete parts
+	my $obsoleteParts = [];
+	for my $part (values %{$o->{parts}}) {
+		next if ! $part->{isMerged};
+		next if $part->{count};
+		push @$obsoleteParts, $part;
+		delete $o->{parts}->{$part->{hashAndKey}->hash->bytes};
+	}
+
+#line 165 "Condensation/Document/Document.pm"
+	# Commit
+	#-- saving done ++ $revision ++ $newPart ++ $obsoleteParts
+	return $o->savingDone($revision, $newPart, $obsoleteParts);
+}
+
+#line 1 "Condensation/Document/Document/Item.pm"
+package CDS::Document::Item;
+
+sub new {
+	my $class = shift;
+	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
+
+#line 2 "Condensation/Document/Document/Item.pm"
+	my $parentSelector = $selector->parent;
+	my $parent = $parentSelector ? $selector->document->getOrCreate($parentSelector) : undef;
+
+#line 5 "Condensation/Document/Document/Item.pm"
+	my $o = bless {
+		document => $selector->document,
+		selector => $selector,
+		parent => $parent,
+		children => [],
+		part => undef,
+		revision => 0,
+		record => CDS::Record->new
+		};
+
+#line 15 "Condensation/Document/Document/Item.pm"
+	push @{$parent->{children}}, $o if $parent;
+	return $o;
+}
+
+#line 19 "Condensation/Document/Document/Item.pm"
+sub pruneTree {
+	my $o = shift;
+
+#line 20 "Condensation/Document/Document/Item.pm"
+	# Try to remove children
+	for my $child (@{$o->{children}}) { $child->pruneTree; }
+
+#line 23 "Condensation/Document/Document/Item.pm"
+	# Don't remove the root item
+	return if ! $o->{parent};
+
+#line 26 "Condensation/Document/Document/Item.pm"
+	# Don't remove if the item has children, or a value
+	return if scalar @{$o->{children}};
+	return if $o->{revision} > 0;
+
+#line 30 "Condensation/Document/Document/Item.pm"
+	# Remove this from the tree
+	$o->{parent}->{children} = [grep { $_ != $o } @{$o->{parent}->{children}}];
+
+#line 33 "Condensation/Document/Document/Item.pm"
+	# Remove this from the document hash
+	delete $o->{document}->{itemsBySelector}->{$o->{selector}->{id}};
+}
+
+#line 37 "Condensation/Document/Document/Item.pm"
+# Low-level part change.
+sub setPart {
+	my $o = shift;
+	my $part = shift;
+
+#line 39 "Condensation/Document/Document/Item.pm"
+	$o->{part}->{count} -= 1 if $o->{part};
+	$o->{part} = $part;
+	$o->{part}->{count} += 1 if $o->{part};
+}
+
+#line 44 "Condensation/Document/Document/Item.pm"
+# Merge a value
+
+#line 46 "Condensation/Document/Document/Item.pm"
+sub mergeValue {
+	my $o = shift;
+	my $part = shift;
+	my $revision = shift;
+	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
+
+#line 47 "Condensation/Document/Document/Item.pm"
+	return if $revision <= 0;
+	return if $revision < $o->{revision};
+	return if $revision == $o->{revision} && $part->{size} < $o->{part}->{size};
+	$o->setPart($part);
+	$o->{revision} = $revision;
+	$o->{record} = $record;
+	$o->{document}->dataChanged;
+	return 1;
+}
+
+#line 57 "Condensation/Document/Document/Item.pm"
+sub forget {
+	my $o = shift;
+
+#line 58 "Condensation/Document/Document/Item.pm"
+	return if $o->{revision} <= 0;
+	$o->{revision} = 0;
+	$o->{record} = CDS::Record->new;
+	$o->setPart;
+}
+
+#line 64 "Condensation/Document/Document/Item.pm"
+# Saving
+
+#line 66 "Condensation/Document/Document/Item.pm"
+sub createSaveRecord {
+	my $o = shift;
+
+#line 67 "Condensation/Document/Document/Item.pm"
+	return $o->{saveRecord} if $o->{saveRecord};
+	$o->{saveRecord} = $o->{parent} ? $o->{parent}->createSaveRecord->add($o->{selector}->{label}) : CDS::Record->new('root');
+	if ($o->{part}->{selected}) {
+		CDS->log('Item saving zero revision of ', $o->{selector}->label) if $o->{revision} <= 0;
+		$o->{saveRecord}->addInteger($o->{revision})->addRecord($o->{record}->children);
+	} else {
+		$o->{saveRecord}->add('');
+	}
+	return $o->{saveRecord};
+}
+
+#line 78 "Condensation/Document/Document/Item.pm"
+sub detachSaveRecord {
+	my $o = shift;
+
+#line 79 "Condensation/Document/Document/Item.pm"
+	return if ! $o->{saveRecord};
+	delete $o->{saveRecord};
+	$o->{parent}->detachSaveRecord if $o->{parent};
+}
+
+#line 1 "Condensation/Document/Document/Part.pm"
+package CDS::Document::Part;
+
+sub new {
+	my $class = shift;
+
+#line 2 "Condensation/Document/Document/Part.pm"
+	return bless {
+		isMerged => 0,
+		hashAndKey => undef,
+		size => 0,
+		count => 0,
+		selected => 0,
+		};
+}
+
+#line 11 "Condensation/Document/Document/Part.pm"
+# In this implementation, we only keep track of the number of values of the list, but
+# not of the corresponding items. This saves memory (~100 MiB for 1M items), but takes
+# more time (0.5 s for 1M items) when saving. Since command line programs usually write
+# the document only once, this is acceptable. Reading the tree anyway takes about 10
+# times more time.
 
 #line 1 "Condensation/Stores/ErrorHandlingStore.pm"
 package CDS::ErrorHandlingStore;
@@ -12686,14 +12686,14 @@ sub done {
 	$o->{watch}->cancel if $o->{watch};
 }
 
-#line 1 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 1 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 package CDS::GroupDataSharer;
 
 sub new {
 	my $class = shift;
 	my $actor = shift;
 
-#line 2 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 2 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	my $o = bless {
 		actor => $actor,
 		label => 'shared group data',
@@ -12703,87 +12703,87 @@ sub new {
 		version => '',
 		}, $class;
 
-#line 11 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 11 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	$actor->storagePrivateRoot->addDataHandler($o->{label}, $o);
 	return $o;
 }
 
-#line 15 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 15 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 ### Group data handlers
 
-#line 17 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 17 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub addDataHandler {
 	my $o = shift;
 	my $label = shift;
 	my $dataHandler = shift;
 
-#line 18 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 18 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	$o->{dataHandlers}->{$label} = $dataHandler;
 }
 
-#line 21 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 21 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub removeDataHandler {
 	my $o = shift;
 	my $label = shift;
 	my $dataHandler = shift;
 
-#line 22 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 22 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	my $registered = $o->{dataHandlers}->{$label};
 	return if $registered != $dataHandler;
 	delete $o->{dataHandlers}->{$label};
 }
 
-#line 27 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 27 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 ### MergeableData interface
 
-#line 29 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 29 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub addDataTo {
 	my $o = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 30 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 30 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	return if ! $o->{revision};
 	$record->addInteger($o->{revision})->add($o->{version});
 }
 
-#line 34 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 34 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub mergeData {
 	my $o = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 35 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 35 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	for my $child ($record->children) {
 		my $revision = $child->asInteger;
 		next if $revision <= $o->{revision};
 
-#line 39 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 39 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 		$o->{revision} = $revision;
 		$o->{version} = $child->bytesValue;
 	}
 }
 
-#line 44 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 44 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub mergeExternalData {
 	my $o = shift;
 	my $store = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 	my $source = shift; die 'wrong type '.ref($source).' for $source' if defined $source && ref $source ne 'CDS::Source';
 
-#line 45 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 45 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	$o->mergeData($record);
 	return if ! $source;
 	$source->keep;
 	$o->{actor}->storagePrivateRoot->unsaved->state->addMergedSource($source);
 }
 
-#line 51 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 51 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 ### Sending messages
 
-#line 53 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 53 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub createMessage {
 	my $o = shift;
 
-#line 54 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 54 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	my $message = CDS::Record->new;
 	my $data = $message->add('group data');
 	for my $label (keys %{$o->{dataHandlers}}) {
@@ -12793,39 +12793,39 @@ sub createMessage {
 	return $message;
 }
 
-#line 63 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 63 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub share {
 	my $o = shift;
 
-#line 64 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 64 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	# Get the group data members
 	my $members = $o->{actor}->getGroupDataMembers // return;
 	return 1 if ! scalar @$members;
 
-#line 68 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 68 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	# Create the group data message, and check if it changed
 	my $message = $o->createMessage;
 	my $versionHash = $message->toObject->calculateHash;
 	return if $versionHash->bytes eq $o->{version};
 
-#line 73 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 73 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	$o->{revision} = CDS->now;
 	$o->{version} = $versionHash->bytes;
 	$o->{actor}->storagePrivateRoot->dataChanged;
 
-#line 77 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 77 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	# Procure the sent list
 	$o->{actor}->procureSentList // return;
 
-#line 80 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 80 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	# Get the entrusted keys
 	my $entrustedKeys = $o->{actor}->getEntrustedKeys // return;
 
-#line 83 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 83 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	# Transfer the data
 	$o->{messageChannel}->addTransfer([$message->dependentHashes], $o->{actor}->storagePrivateRoot->unsaved, 'group data message');
 
-#line 86 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 86 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	# Send the message
 	$o->{messageChannel}->setRecipients($members, $entrustedKeys);
 	my ($submission, $missingObject) = $o->{messageChannel}->submit($message, $o);
@@ -12834,40 +12834,40 @@ sub share {
 	return 1;
 }
 
-#line 94 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 94 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub onMessageChannelSubmissionCancelled {
 	my $o = shift;
 	 }
 
-#line 96 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 96 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub onMessageChannelSubmissionRecipientDone {
 	my $o = shift;
 	my $recipientActorOnStore = shift; die 'wrong type '.ref($recipientActorOnStore).' for $recipientActorOnStore' if defined $recipientActorOnStore && ref $recipientActorOnStore ne 'CDS::ActorOnStore';
 	 }
 
-#line 98 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 98 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub onMessageChannelSubmissionRecipientFailed {
 	my $o = shift;
 	my $recipientActorOnStore = shift; die 'wrong type '.ref($recipientActorOnStore).' for $recipientActorOnStore' if defined $recipientActorOnStore && ref $recipientActorOnStore ne 'CDS::ActorOnStore';
 	 }
 
-#line 100 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 100 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub onMessageChannelSubmissionDone {
 	my $o = shift;
 	my $succeeded = shift;
 	my $failed = shift;
 	 }
 
-#line 102 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 102 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 ### Receiving messages
 
-#line 104 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 104 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 sub processGroupDataMessage {
 	my $o = shift;
 	my $message = shift;
 	my $section = shift;
 
-#line 105 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 105 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	if (! $o->{actor}->isGroupMember($message->sender->publicKey->hash)) {
 		# TODO:
 		# If the sender is not a known group member, we should run actor group discovery on the sender. He may be part of us, but we don't know that yet.
@@ -12875,13 +12875,13 @@ sub processGroupDataMessage {
 		return;
 	}
 
-#line 112 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 112 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	for my $child ($section->children) {
 		my $dataHandler = $o->{dataHandlers}->{$child->bytes} // next;
 		$dataHandler->mergeExternalData($message->sender->store, $child, $message->source);
 	}
 
-#line 117 "Condensation/ActorWithDataTree/GroupDataSharer.pm"
+#line 117 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 	return 1;
 }
 
@@ -15391,21 +15391,21 @@ sub publicKeyCache { shift->{publicKeyCache} }
 
 package CDS::MessageChannel;
 
-#line 3 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 3 "Condensation/ActorWithDocument/MessageChannel.pm"
 sub new {
 	my $class = shift;
 	my $actor = shift;
 	my $label = shift;
 	my $validity = shift;
 
-#line 4 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 4 "Condensation/ActorWithDocument/MessageChannel.pm"
 	my $o = bless {
 		actor => $actor,
 		label => $label,
 		validity => $validity,
 		};
 
-#line 10 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 10 "Condensation/ActorWithDocument/MessageChannel.pm"
 	$o->{unsaved} = CDS::Unsaved->new($actor->sentList->unsaved);
 	$o->{transfers} = [];
 	$o->{recipients} = [];
@@ -15415,7 +15415,7 @@ sub new {
 	return $o;
 }
 
-#line 19 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 19 "Condensation/ActorWithDocument/MessageChannel.pm"
 sub actor { shift->{actor} }
 sub label { shift->{label} }
 sub validity { shift->{validity} }
@@ -15430,60 +15430,60 @@ sub entrustedKeys {
 	my $o = shift;
 	 @{$o->{entrustedKeys}} }
 
-#line 27 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 27 "Condensation/ActorWithDocument/MessageChannel.pm"
 sub addObject {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $object = shift; die 'wrong type '.ref($object).' for $object' if defined $object && ref $object ne 'CDS::Object';
 
-#line 28 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 28 "Condensation/ActorWithDocument/MessageChannel.pm"
 	$o->{unsaved}->state->addObject($hash, $object);
 }
 
-#line 31 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 31 "Condensation/ActorWithDocument/MessageChannel.pm"
 sub addTransfer {
 	my $o = shift;
 	my $hashes = shift;
 	my $sourceStore = shift;
 	my $context = shift;
 
-#line 32 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 32 "Condensation/ActorWithDocument/MessageChannel.pm"
 	return if ! scalar @$hashes;
 	push @{$o->{transfers}}, {hashes => $hashes, sourceStore => $sourceStore, context => $context};
 }
 
-#line 36 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 36 "Condensation/ActorWithDocument/MessageChannel.pm"
 sub setRecipientActorGroup {
 	my $o = shift;
 	my $actorGroup = shift; die 'wrong type '.ref($actorGroup).' for $actorGroup' if defined $actorGroup && ref $actorGroup ne 'CDS::ActorGroup';
 
-#line 37 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 37 "Condensation/ActorWithDocument/MessageChannel.pm"
 	$o->{recipients} = [map { $_->actorOnStore } $actorGroup->members];
 	$o->{entrustedKeys} = [map { $_->actorOnStore->publicKey } $actorGroup->entrustedActors];
 }
 
-#line 41 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 41 "Condensation/ActorWithDocument/MessageChannel.pm"
 sub setRecipients {
 	my $o = shift;
 	my $recipients = shift;
 	my $entrustedKeys = shift;
 
-#line 42 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 42 "Condensation/ActorWithDocument/MessageChannel.pm"
 	$o->{recipients} = $recipients;
 	$o->{entrustedKeys} = $entrustedKeys;
 }
 
-#line 46 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 46 "Condensation/ActorWithDocument/MessageChannel.pm"
 sub submit {
 	my $o = shift;
 	my $message = shift;
 	my $done = shift;
 
-#line 47 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 47 "Condensation/ActorWithDocument/MessageChannel.pm"
 	# Check if the sent list has been loaded
 	return if ! $o->{actor}->sentListReady;
 
-#line 50 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 50 "Condensation/ActorWithDocument/MessageChannel.pm"
 	# Transfer
 	my $transfers = $o->{transfers};
 	$o->{transfers} = [];
@@ -15491,27 +15491,27 @@ sub submit {
 		my ($missingObject, $store, $error) = $o->{actor}->keyPair->transfer($transfer->{hashes}, $transfer->{sourceStore}, $o->{actor}->messagingPrivateRoot->unsaved);
 		return if defined $error;
 
-#line 57 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 57 "Condensation/ActorWithDocument/MessageChannel.pm"
 		if ($missingObject) {
 			$missingObject->{context} = $transfer->{context};
 			return undef, $missingObject;
 		}
 	}
 
-#line 63 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 63 "Condensation/ActorWithDocument/MessageChannel.pm"
 	# Send the message
 	return CDS::MessageChannel::Submission->new($o, $message, $done);
 }
 
-#line 67 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 67 "Condensation/ActorWithDocument/MessageChannel.pm"
 sub clear {
 	my $o = shift;
 
-#line 68 "Condensation/ActorWithDataTree/MessageChannel.pm"
+#line 68 "Condensation/ActorWithDocument/MessageChannel.pm"
 	$o->item->clear(CDS->now + $o->{validity});
 }
 
-#line 1 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 1 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 package CDS::MessageChannel::Submission;
 
 sub new {
@@ -15520,10 +15520,10 @@ sub new {
 	my $message = shift;
 	my $done = shift;
 
-#line 2 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 2 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	$channel->{currentSubmissionId} += 1;
 
-#line 4 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 4 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	my $o = bless {
 		channel => $channel,
 		message => $message,
@@ -15534,13 +15534,13 @@ sub new {
 		expires => CDS->now + $channel->validity,
 		};
 
-#line 14 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 14 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	# Add the current envelope hash to the obsolete hashes
 	my $item = $channel->item;
 	$channel->{obsoleteHashes}->{$item->envelopeHash->bytes} = $item->envelopeHash if $item->envelopeHash;
 	$o->{obsoleteHashesSnapshot} = [values %{$channel->{obsoleteHashes}}];
 
-#line 19 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 19 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	# Create an envelope
 	my $publicKeys = [];
 	push @$publicKeys, $channel->{actor}->keyPair->publicKey;
@@ -15549,7 +15549,7 @@ sub new {
 	$o->{envelopeObject} = $channel->{actor}->keyPair->createMessageEnvelope($channel->{actor}->messagingStoreUrl, $message, $publicKeys, $o->{expires})->toObject;
 	$o->{envelopeHash} = $o->{envelopeObject}->calculateHash;
 
-#line 27 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 27 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	# Set the new item and wait until it gets saved
 	$channel->{unsaved}->startSaving;
 	$channel->{unsaved}->savingState->addDataSavedHandler($o);
@@ -15557,11 +15557,11 @@ sub new {
 	$item->set($o->{expires}, $o->{envelopeHash}, $message);
 	$channel->{unsaved}->savingDone;
 
-#line 34 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 34 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	return $o;
 }
 
-#line 37 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 37 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 sub channel { shift->{channel} }
 sub message { shift->{message} }
 sub recipients {
@@ -15574,35 +15574,35 @@ sub expires { shift->{expires} }
 sub envelopeObject { shift->{envelopeObject} }
 sub envelopeHash { shift->{envelopeHash} }
 
-#line 45 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 45 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 sub onDataSaved {
 	my $o = shift;
 
-#line 46 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 46 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	# If we are not the head any more, give up
 	return $o->{done}->onMessageChannelSubmissionCancelled if $o->{submissionId} != $o->{channel}->{currentSubmissionId};
 	$o->{channel}->{obsoleteHashes}->{$o->{envelopeHash}->bytes} = $o->{envelopeHash};
 
-#line 50 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 50 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	# Process all recipients
 	my $succeeded = 0;
 	my $failed = 0;
 	for my $recipient (@{$o->{recipients}}) {
 		my $modifications = CDS::StoreModifications->new;
 
-#line 56 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 56 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 		# Prepare the list of removals
 		my $removals = [];
 		for my $hash (@{$o->{obsoleteHashesSnapshot}}) {
 			$modifications->remove($recipient->publicKey->hash, 'messages', $hash);
 		}
 
-#line 62 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 62 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 		# Add the message entry
 		$modifications->add($recipient->publicKey->hash, 'messages', $o->{envelopeHash}, $o->{envelopeObject});
 		my $error = $recipient->store->modify($modifications, $o->{channel}->{actor}->keyPair);
 
-#line 66 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 66 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 		if (defined $error) {
 			$failed += 1;
 			$o->{done}->onMessageChannelSubmissionRecipientFailed($recipient, $error);
@@ -15612,14 +15612,14 @@ sub onDataSaved {
 		}
 	}
 
-#line 75 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 75 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	if ($failed == 0 || scalar keys %{$o->{obsoleteHashes}} > 64) {
 		for my $hash (@{$o->{obsoleteHashesSnapshot}}) {
 			delete $o->{channel}->{obsoleteHashes}->{$hash->bytes};
 		}
 	}
 
-#line 81 "Condensation/ActorWithDataTree/MessageChannel/Submission.pm"
+#line 81 "Condensation/ActorWithDocument/MessageChannel/Submission.pm"
 	$o->{done}->onMessageChannelSubmissionDone($succeeded, $failed);
 }
 
@@ -17122,7 +17122,7 @@ sub actorGroup {
 	my $builder = CDS::ActorGroupBuilder->new;
 	$builder->addKnownPublicKey($o->{actor}->keyPair->publicKey);
 	$builder->parse($record, 1);
-	my ($actorGroup, $storeError) = $builder->load($o->{actor}->groupDataTree->unsaved, $o->{actor}->keyPair, $o);
+	my ($actorGroup, $storeError) = $builder->load($o->{actor}->groupDocument->unsaved, $o->{actor}->keyPair, $o);
 	return $o->{actor}->storeError($o->{actor}->storageStore, $storeError) if defined $storeError;
 	return CDS::ActorGroupToken->new($o->{text}, $actorGroup);
 }
@@ -18263,52 +18263,52 @@ sub addHash {
 	return $index;
 }
 
-#line 1 "Condensation/DataTree/RootDataTree.pm"
-package CDS::RootDataTree;
+#line 1 "Condensation/Document/RootDocument.pm"
+package CDS::RootDocument;
 
-use parent -norequire, 'CDS::DataTree';
+use parent -norequire, 'CDS::Document';
 
-#line 3 "Condensation/DataTree/RootDataTree.pm"
+#line 3 "Condensation/Document/RootDocument.pm"
 sub new {
 	my $class = shift;
 	my $privateRoot = shift;
 	my $label = shift;
 
-#line 4 "Condensation/DataTree/RootDataTree.pm"
+#line 4 "Condensation/Document/RootDocument.pm"
 	my $o = $class->SUPER::new($privateRoot->privateBoxReader->keyPair, $privateRoot->unsaved);
 	$o->{privateRoot} = $privateRoot;
 	$o->{label} = $label;
 	$privateRoot->addDataHandler($label, $o);
 
-#line 9 "Condensation/DataTree/RootDataTree.pm"
+#line 9 "Condensation/Document/RootDocument.pm"
 	# State
 	$o->{dataSharingMessage} = undef;
 	return $o;
 }
 
-#line 14 "Condensation/DataTree/RootDataTree.pm"
+#line 14 "Condensation/Document/RootDocument.pm"
 sub privateRoot { shift->{privateRoot} }
 sub label { shift->{label} }
 
-#line 17 "Condensation/DataTree/RootDataTree.pm"
+#line 17 "Condensation/Document/RootDocument.pm"
 sub savingDone {
 	my $o = shift;
 	my $revision = shift;
 	my $newPart = shift;
 	my $obsoleteParts = shift;
 
-#line 18 "Condensation/DataTree/RootDataTree.pm"
+#line 18 "Condensation/Document/RootDocument.pm"
 	$o->{privateRoot}->unsaved->state->merge($o->{unsaved}->savingState);
 	$o->{unsaved}->savingDone;
 	$o->{privateRoot}->dataChanged if $newPart || scalar @$obsoleteParts;
 }
 
-#line 23 "Condensation/DataTree/RootDataTree.pm"
+#line 23 "Condensation/Document/RootDocument.pm"
 sub addDataTo {
 	my $o = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 24 "Condensation/DataTree/RootDataTree.pm"
+#line 24 "Condensation/Document/RootDocument.pm"
 	for my $part (sort { $a->{hashAndKey}->hash->bytes cmp $b->{hashAndKey}->hash->bytes } values %{$o->{parts}}) {
 		$record->addHashAndKey($part->{hashAndKey});
 	}
@@ -18317,24 +18317,24 @@ sub mergeData {
 	my $o = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 29 "Condensation/DataTree/RootDataTree.pm"
+#line 29 "Condensation/Document/RootDocument.pm"
 	my @hashesAndKeys;
 	for my $child ($record->children) {
 		push @hashesAndKeys, $child->asHashAndKey // next;
 	}
 
-#line 34 "Condensation/DataTree/RootDataTree.pm"
+#line 34 "Condensation/Document/RootDocument.pm"
 	$o->merge(@hashesAndKeys);
 }
 
-#line 37 "Condensation/DataTree/RootDataTree.pm"
+#line 37 "Condensation/Document/RootDocument.pm"
 sub mergeExternalData {
 	my $o = shift;
 	my $store = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 	my $source = shift; die 'wrong type '.ref($source).' for $source' if defined $source && ref $source ne 'CDS::Source';
 
-#line 38 "Condensation/DataTree/RootDataTree.pm"
+#line 38 "Condensation/Document/RootDocument.pm"
 	my @hashes;
 	my @hashesAndKeys;
 	for my $child ($record->children) {
@@ -18344,166 +18344,166 @@ sub mergeExternalData {
 		push @hashesAndKeys, $hashAndKey;
 	}
 
-#line 47 "Condensation/DataTree/RootDataTree.pm"
+#line 47 "Condensation/Document/RootDocument.pm"
 	my ($missing, $transferStore, $storeError) = $o->{keyPair}->transfer([@hashes], $store, $o->{privateRoot}->unsaved);
 	return if defined $storeError;
 	return if $missing;
 
-#line 51 "Condensation/DataTree/RootDataTree.pm"
+#line 51 "Condensation/Document/RootDocument.pm"
 	if ($source) {
 		$source->keep;
 		$o->{privateRoot}->unsaved->state->addMergedSource($source);
 	}
 
-#line 56 "Condensation/DataTree/RootDataTree.pm"
+#line 56 "Condensation/Document/RootDocument.pm"
 	$o->merge(@hashesAndKeys);
 	return 1;
 }
 
 package CDS::Selector;
 
-#line 3 "Condensation/DataTree/Selector.pm"
+#line 3 "Condensation/Document/Selector.pm"
 sub root {
 	my $class = shift;
-	my $dataTree = shift;
+	my $document = shift;
 
-#line 4 "Condensation/DataTree/Selector.pm"
-	return bless {dataTree => $dataTree, id => 'ROOT', label => ''};
+#line 4 "Condensation/Document/Selector.pm"
+	return bless {document => $document, id => 'ROOT', label => ''};
 }
 
-#line 7 "Condensation/DataTree/Selector.pm"
-sub dataTree { shift->{dataTree} }
+#line 7 "Condensation/Document/Selector.pm"
+sub document { shift->{document} }
 sub parent { shift->{parent} }
 sub label { shift->{label} }
 
-#line 11 "Condensation/DataTree/Selector.pm"
+#line 11 "Condensation/Document/Selector.pm"
 sub child {
 	my $o = shift;
 	my $label = shift;
 
-#line 12 "Condensation/DataTree/Selector.pm"
+#line 12 "Condensation/Document/Selector.pm"
 	return bless {
-		dataTree => $o->{dataTree},
+		document => $o->{document},
 		id => $o->{id}.'/'.unpack('H*', $label),
 		parent => $o,
 		label => $label,
 		};
 }
 
-#line 20 "Condensation/DataTree/Selector.pm"
+#line 20 "Condensation/Document/Selector.pm"
 sub childWithText {
 	my $o = shift;
 	my $label = shift;
 
-#line 21 "Condensation/DataTree/Selector.pm"
+#line 21 "Condensation/Document/Selector.pm"
 	return $o->child(Encode::encode_utf8($label // ''));
 }
 
-#line 24 "Condensation/DataTree/Selector.pm"
+#line 24 "Condensation/Document/Selector.pm"
 sub children {
 	my $o = shift;
 
-#line 25 "Condensation/DataTree/Selector.pm"
-	my $item = $o->{dataTree}->get($o) // return;
+#line 25 "Condensation/Document/Selector.pm"
+	my $item = $o->{document}->get($o) // return;
 	return map { $_->{selector} } @{$item->{children}};
 }
 
-#line 29 "Condensation/DataTree/Selector.pm"
+#line 29 "Condensation/Document/Selector.pm"
 # Value
 
-#line 31 "Condensation/DataTree/Selector.pm"
+#line 31 "Condensation/Document/Selector.pm"
 sub revision {
 	my $o = shift;
 
-#line 32 "Condensation/DataTree/Selector.pm"
-	my $item = $o->{dataTree}->get($o) // return 0;
+#line 32 "Condensation/Document/Selector.pm"
+	my $item = $o->{document}->get($o) // return 0;
 	return $item->{revision};
 }
 
-#line 36 "Condensation/DataTree/Selector.pm"
+#line 36 "Condensation/Document/Selector.pm"
 sub isSet {
 	my $o = shift;
 
-#line 37 "Condensation/DataTree/Selector.pm"
-	my $item = $o->{dataTree}->get($o) // return;
+#line 37 "Condensation/Document/Selector.pm"
+	my $item = $o->{document}->get($o) // return;
 	return scalar $item->{record}->children > 0;
 }
 
-#line 41 "Condensation/DataTree/Selector.pm"
+#line 41 "Condensation/Document/Selector.pm"
 sub record {
 	my $o = shift;
 
-#line 42 "Condensation/DataTree/Selector.pm"
-	my $item = $o->{dataTree}->get($o) // return CDS::Record->new;
+#line 42 "Condensation/Document/Selector.pm"
+	my $item = $o->{document}->get($o) // return CDS::Record->new;
 	return $item->{record};
 }
 
-#line 46 "Condensation/DataTree/Selector.pm"
+#line 46 "Condensation/Document/Selector.pm"
 sub set {
 	my $o = shift;
 	my $record = shift // return; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 47 "Condensation/DataTree/Selector.pm"
+#line 47 "Condensation/Document/Selector.pm"
 	my $now = CDS->now;
-	my $item = $o->{dataTree}->getOrCreate($o);
-	$item->mergeValue($o->{dataTree}->{changes}, $item->{revision} >= $now ? $item->{revision} + 1 : $now, $record);
+	my $item = $o->{document}->getOrCreate($o);
+	$item->mergeValue($o->{document}->{changes}, $item->{revision} >= $now ? $item->{revision} + 1 : $now, $record);
 }
 
-#line 52 "Condensation/DataTree/Selector.pm"
+#line 52 "Condensation/Document/Selector.pm"
 sub merge {
 	my $o = shift;
 	my $revision = shift;
 	my $record = shift // return; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 53 "Condensation/DataTree/Selector.pm"
-	my $item = $o->{dataTree}->getOrCreate($o);
-	return $item->mergeValue($o->{dataTree}->{changes}, $revision, $record);
+#line 53 "Condensation/Document/Selector.pm"
+	my $item = $o->{document}->getOrCreate($o);
+	return $item->mergeValue($o->{document}->{changes}, $revision, $record);
 }
 
-#line 57 "Condensation/DataTree/Selector.pm"
+#line 57 "Condensation/Document/Selector.pm"
 sub clear {
 	my $o = shift;
 	 $o->set(CDS::Record->new) }
 
-#line 59 "Condensation/DataTree/Selector.pm"
+#line 59 "Condensation/Document/Selector.pm"
 sub clearInThePast {
 	my $o = shift;
 
-#line 60 "Condensation/DataTree/Selector.pm"
+#line 60 "Condensation/Document/Selector.pm"
 	$o->merge($o->revision + 1, CDS::Record->new) if $o->isSet;
 }
 
-#line 63 "Condensation/DataTree/Selector.pm"
+#line 63 "Condensation/Document/Selector.pm"
 sub forget {
 	my $o = shift;
 
-#line 64 "Condensation/DataTree/Selector.pm"
-	my $item = $o->{dataTree}->get($o) // return;
+#line 64 "Condensation/Document/Selector.pm"
+	my $item = $o->{document}->get($o) // return;
 	$item->forget;
 }
 
-#line 68 "Condensation/DataTree/Selector.pm"
+#line 68 "Condensation/Document/Selector.pm"
 sub forgetBranch {
 	my $o = shift;
 
-#line 69 "Condensation/DataTree/Selector.pm"
+#line 69 "Condensation/Document/Selector.pm"
 	for my $child ($o->children) { $child->forgetBranch; }
 	$o->forget;
 }
 
-#line 73 "Condensation/DataTree/Selector.pm"
+#line 73 "Condensation/Document/Selector.pm"
 # Convenience methods (simple interface)
 
-#line 75 "Condensation/DataTree/Selector.pm"
+#line 75 "Condensation/Document/Selector.pm"
 sub firstValue {
 	my $o = shift;
 
-#line 76 "Condensation/DataTree/Selector.pm"
-	my $item = $o->{dataTree}->get($o) // return CDS::Record->new;
+#line 76 "Condensation/Document/Selector.pm"
+	my $item = $o->{document}->get($o) // return CDS::Record->new;
 	return $item->{record}->firstChild;
 }
 
-#line 80 "Condensation/DataTree/Selector.pm"
+#line 80 "Condensation/Document/Selector.pm"
 sub bytesValue {
 	my $o = shift;
 	 $o->firstValue->bytes }
@@ -18526,20 +18526,20 @@ sub hashAndKeyValue {
 	my $o = shift;
 	 $o->firstValue->asHashAndKey }
 
-#line 88 "Condensation/DataTree/Selector.pm"
+#line 88 "Condensation/Document/Selector.pm"
 # Sets a new value unless the node has that value already.
 sub setBytes {
 	my $o = shift;
 	my $bytes = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 90 "Condensation/DataTree/Selector.pm"
+#line 90 "Condensation/Document/Selector.pm"
 	my $record = CDS::Record->new;
 	$record->add($bytes, $hash);
 	$o->set($record);
 }
 
-#line 95 "Condensation/DataTree/Selector.pm"
+#line 95 "Condensation/Document/Selector.pm"
 sub setHash {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
@@ -18569,47 +18569,47 @@ sub setHashAndKey {
 	my $hashAndKey = shift; die 'wrong type '.ref($hashAndKey).' for $hashAndKey' if defined $hashAndKey && ref $hashAndKey ne 'CDS::HashAndKey';
 	 $o->setBytes($hashAndKey->key, $hashAndKey->hash); };
 
-#line 102 "Condensation/DataTree/Selector.pm"
+#line 102 "Condensation/Document/Selector.pm"
 # Adding objects and merged sources
 
-#line 104 "Condensation/DataTree/Selector.pm"
+#line 104 "Condensation/Document/Selector.pm"
 sub addObject {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $object = shift; die 'wrong type '.ref($object).' for $object' if defined $object && ref $object ne 'CDS::Object';
 
-#line 105 "Condensation/DataTree/Selector.pm"
-	$o->{dataTree}->{unsaved}->state->addObject($hash, $object);
+#line 105 "Condensation/Document/Selector.pm"
+	$o->{document}->{unsaved}->state->addObject($hash, $object);
 }
 
-#line 108 "Condensation/DataTree/Selector.pm"
+#line 108 "Condensation/Document/Selector.pm"
 sub addMergedSource {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 109 "Condensation/DataTree/Selector.pm"
-	$o->{dataTree}->{unsaved}->state->addMergedSource($hash);
+#line 109 "Condensation/Document/Selector.pm"
+	$o->{document}->{unsaved}->state->addMergedSource($hash);
 }
 
-#line 1 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 1 "Condensation/ActorWithDocument/SentItem.pm"
 package CDS::SentItem;
 
 use parent -norequire, 'CDS::UnionList::Item';
 
-#line 3 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 3 "Condensation/ActorWithDocument/SentItem.pm"
 sub new {
 	my $class = shift;
 	my $unionList = shift;
 	my $id = shift;
 
-#line 4 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 4 "Condensation/ActorWithDocument/SentItem.pm"
 	my $o = $class->SUPER::new($unionList, $id);
 	$o->{validUntil} = 0;
 	$o->{message} = CDS::Record->new;
 	return $o;
 }
 
-#line 10 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 10 "Condensation/ActorWithDocument/SentItem.pm"
 sub validUntil { shift->{validUntil} }
 sub envelopeHash {
 	my $o = shift;
@@ -18619,45 +18619,45 @@ sub envelopeHashBytes {
 	 $o->{message}->bytes }
 sub message { shift->{message} }
 
-#line 15 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 15 "Condensation/ActorWithDocument/SentItem.pm"
 sub addToRecord {
 	my $o = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 16 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 16 "Condensation/ActorWithDocument/SentItem.pm"
 	$record->add($o->{id})->addInteger($o->{validUntil})->addRecord($o->{message});
 }
 
-#line 19 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 19 "Condensation/ActorWithDocument/SentItem.pm"
 sub set {
 	my $o = shift;
 	my $validUntil = shift;
 	my $envelopeHash = shift; die 'wrong type '.ref($envelopeHash).' for $envelopeHash' if defined $envelopeHash && ref $envelopeHash ne 'CDS::Hash';
 	my $messageRecord = shift; die 'wrong type '.ref($messageRecord).' for $messageRecord' if defined $messageRecord && ref $messageRecord ne 'CDS::Record';
 
-#line 20 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 20 "Condensation/ActorWithDocument/SentItem.pm"
 	my $message = CDS::Record->new($envelopeHash->bytes);
 	$message->addRecord($messageRecord->children);
 	$o->merge($o->{unionList}->{changes}, CDS->max($validUntil, $o->{validUntil} + 1), $message);
 }
 
-#line 25 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 25 "Condensation/ActorWithDocument/SentItem.pm"
 sub clear {
 	my $o = shift;
 	my $validUntil = shift;
 
-#line 26 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 26 "Condensation/ActorWithDocument/SentItem.pm"
 	$o->merge($o->{unionList}->{changes}, CDS->max($validUntil, $o->{validUntil} + 1), CDS::Record->new);
 }
 
-#line 29 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 29 "Condensation/ActorWithDocument/SentItem.pm"
 sub merge {
 	my $o = shift;
 	my $part = shift;
 	my $validUntil = shift;
 	my $message = shift;
 
-#line 30 "Condensation/ActorWithDataTree/SentItem.pm"
+#line 30 "Condensation/ActorWithDocument/SentItem.pm"
 	return if $o->{validUntil} > $validUntil;
 	return if $o->{validUntil} == $validUntil && $part->{size} < $o->{part}->{size};
 	$o->{validUntil} = $validUntil;
@@ -18665,36 +18665,36 @@ sub merge {
 	$o->setPart($part);
 }
 
-#line 1 "Condensation/ActorWithDataTree/SentList.pm"
+#line 1 "Condensation/ActorWithDocument/SentList.pm"
 package CDS::SentList;
 
 use parent -norequire, 'CDS::UnionList';
 
-#line 3 "Condensation/ActorWithDataTree/SentList.pm"
+#line 3 "Condensation/ActorWithDocument/SentList.pm"
 sub new {
 	my $class = shift;
 	my $privateRoot = shift;
 
-#line 4 "Condensation/ActorWithDataTree/SentList.pm"
+#line 4 "Condensation/ActorWithDocument/SentList.pm"
 	return $class->SUPER::new($privateRoot, 'sent list');
 }
 
-#line 7 "Condensation/ActorWithDataTree/SentList.pm"
+#line 7 "Condensation/ActorWithDocument/SentList.pm"
 sub createItem {
 	my $o = shift;
 	my $id = shift;
 
-#line 8 "Condensation/ActorWithDataTree/SentList.pm"
+#line 8 "Condensation/ActorWithDocument/SentList.pm"
 	return CDS::SentItem->new($o, $id);
 }
 
-#line 11 "Condensation/ActorWithDataTree/SentList.pm"
+#line 11 "Condensation/ActorWithDocument/SentList.pm"
 sub mergeRecord {
 	my $o = shift;
 	my $part = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 12 "Condensation/ActorWithDataTree/SentList.pm"
+#line 12 "Condensation/ActorWithDocument/SentList.pm"
 	my $item = $o->getOrCreate($record->bytes);
 	for my $child ($record->children) {
 		my $validUntil = $child->asInteger;
@@ -18703,11 +18703,11 @@ sub mergeRecord {
 	}
 }
 
-#line 20 "Condensation/ActorWithDataTree/SentList.pm"
+#line 20 "Condensation/ActorWithDocument/SentList.pm"
 sub forgetObsoleteItems {
 	my $o = shift;
 
-#line 21 "Condensation/ActorWithDataTree/SentList.pm"
+#line 21 "Condensation/ActorWithDocument/SentList.pm"
 	my $now = CDS->now;
 	my $toDelete = [];
 	for my $item (values %{$o->{items}}) {
@@ -19375,60 +19375,60 @@ sub stillInUse {
 	$o->{lastUsed} = CDS->now;
 }
 
-#line 1 "Condensation/DataTree/SubDataTree.pm"
-package CDS::SubDataTree;
+#line 1 "Condensation/Document/SubDocument.pm"
+package CDS::SubDocument;
 
-use parent -norequire, 'CDS::DataTree';
+use parent -norequire, 'CDS::Document';
 
-#line 3 "Condensation/DataTree/SubDataTree.pm"
+#line 3 "Condensation/Document/SubDocument.pm"
 sub new {
 	my $class = shift;
 	my $parentSelector = shift; die 'wrong type '.ref($parentSelector).' for $parentSelector' if defined $parentSelector && ref $parentSelector ne 'CDS::Selector';
 
-#line 4 "Condensation/DataTree/SubDataTree.pm"
-	my $o = $class->SUPER::new($parentSelector->dataTree->keyPair, $parentSelector->dataTree->unsaved);
+#line 4 "Condensation/Document/SubDocument.pm"
+	my $o = $class->SUPER::new($parentSelector->document->keyPair, $parentSelector->document->unsaved);
 	$o->{parentSelector} = $parentSelector;
 	return $o;
 }
 
-#line 9 "Condensation/DataTree/SubDataTree.pm"
+#line 9 "Condensation/Document/SubDocument.pm"
 sub parentSelector { shift->{parentSelector} }
 
-#line 11 "Condensation/DataTree/SubDataTree.pm"
+#line 11 "Condensation/Document/SubDocument.pm"
 sub partSelector {
 	my $o = shift;
 	my $hashAndKey = shift; die 'wrong type '.ref($hashAndKey).' for $hashAndKey' if defined $hashAndKey && ref $hashAndKey ne 'CDS::HashAndKey';
 
-#line 12 "Condensation/DataTree/SubDataTree.pm"
+#line 12 "Condensation/Document/SubDocument.pm"
 	$o->{parentSelector}->child(substr($hashAndKey->hash->bytes, 0, 16));
 }
 
-#line 15 "Condensation/DataTree/SubDataTree.pm"
+#line 15 "Condensation/Document/SubDocument.pm"
 sub read {
 	my $o = shift;
 
-#line 16 "Condensation/DataTree/SubDataTree.pm"
+#line 16 "Condensation/Document/SubDocument.pm"
 	$o->merge(map { $_->hashAndKeyValue } $o->{parentSelector}->children);
 	return $o->SUPER::read;
 }
 
-#line 20 "Condensation/DataTree/SubDataTree.pm"
+#line 20 "Condensation/Document/SubDocument.pm"
 sub savingDone {
 	my $o = shift;
 	my $revision = shift;
 	my $newPart = shift;
 	my $obsoleteParts = shift;
 
-#line 21 "Condensation/DataTree/SubDataTree.pm"
-	$o->{parentSelector}->dataTree->unsaved->state->merge($o->{unsaved}->savingState);
+#line 21 "Condensation/Document/SubDocument.pm"
+	$o->{parentSelector}->document->unsaved->state->merge($o->{unsaved}->savingState);
 
-#line 23 "Condensation/DataTree/SubDataTree.pm"
+#line 23 "Condensation/Document/SubDocument.pm"
 	# Remove obsolete parts
 	for my $part (@$obsoleteParts) {
 		$o->partSelector($part->{hashAndKey})->merge($revision, CDS::Record->new);
 	}
 
-#line 28 "Condensation/DataTree/SubDataTree.pm"
+#line 28 "Condensation/Document/SubDocument.pm"
 	# Add the new part
 	if ($newPart) {
 		my $record = CDS::Record->new;
@@ -19436,7 +19436,7 @@ sub savingDone {
 		$o->partSelector($newPart->{hashAndKey})->merge($revision, $record);
 	}
 
-#line 35 "Condensation/DataTree/SubDataTree.pm"
+#line 35 "Condensation/Document/SubDocument.pm"
 	$o->{unsaved}->savingDone;
 }
 
@@ -19902,7 +19902,7 @@ sub selector {
 	my $rootLabel = shift;
 
 #line 270 "Condensation/CLI/UI.pm"
-	my $item = $selector->dataTree->get($selector);
+	my $item = $selector->document->get($selector);
 	my $revision = $item->{revision} ? $o->green('  ', $o->niceDateTime($item->{revision})) : '';
 
 #line 273 "Condensation/CLI/UI.pm"

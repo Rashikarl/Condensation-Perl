@@ -1,16 +1,16 @@
 use Encode;
 
-sub root($class, $dataTree) {
-	return bless {dataTree => $dataTree, id => 'ROOT', label => ''};
+sub root($class, $document) {
+	return bless {document => $document, id => 'ROOT', label => ''};
 }
 
-sub dataTree;
+sub document;
 sub parent;
 sub label;
 
 sub child($o, $label) {
 	return bless {
-		dataTree => $o:dataTree,
+		document => $o:document,
 		id => $o:id.'/'.unpack('H*', $label),
 		parent => $o,
 		label => $label,
@@ -22,36 +22,36 @@ sub childWithText($o, $label) {
 }
 
 sub children($o) {
-	my $item = $o:dataTree->get($o) // return;
+	my $item = $o:document->get($o) // return;
 	return map { $_:selector } @$item:children;
 }
 
 # Value
 
 sub revision($o) {
-	my $item = $o:dataTree->get($o) // return 0;
+	my $item = $o:document->get($o) // return 0;
 	return $item:revision;
 }
 
 sub isSet($o) {
-	my $item = $o:dataTree->get($o) // return;
+	my $item = $o:document->get($o) // return;
 	return scalar $item:record->children > 0;
 }
 
 sub record($o) {
-	my $item = $o:dataTree->get($o) // return CDS::Record->new;
+	my $item = $o:document->get($o) // return CDS::Record->new;
 	return $item:record;
 }
 
 sub set($o, $record // return) {
 	my $now = CDS->now;
-	my $item = $o:dataTree->getOrCreate($o);
-	$item->mergeValue($o:dataTree:changes, $item:revision >= $now ? $item:revision + 1 : $now, $record);
+	my $item = $o:document->getOrCreate($o);
+	$item->mergeValue($o:document:changes, $item:revision >= $now ? $item:revision + 1 : $now, $record);
 }
 
 sub merge($o, $revision, $record // return) {
-	my $item = $o:dataTree->getOrCreate($o);
-	return $item->mergeValue($o:dataTree:changes, $revision, $record);
+	my $item = $o:document->getOrCreate($o);
+	return $item->mergeValue($o:document:changes, $revision, $record);
 }
 
 sub clear($o) { $o->set(CDS::Record->new) }
@@ -61,7 +61,7 @@ sub clearInThePast($o) {
 }
 
 sub forget($o) {
-	my $item = $o:dataTree->get($o) // return;
+	my $item = $o:document->get($o) // return;
 	$item->forget;
 }
 
@@ -73,7 +73,7 @@ sub forgetBranch($o) {
 # Convenience methods (simple interface)
 
 sub firstValue($o) {
-	my $item = $o:dataTree->get($o) // return CDS::Record->new;
+	my $item = $o:document->get($o) // return CDS::Record->new;
 	return $item:record->firstChild;
 }
 
@@ -102,9 +102,9 @@ sub setHashAndKey($o, $hashAndKey) { $o->setBytes($hashAndKey->key, $hashAndKey-
 # Adding objects and merged sources
 
 sub addObject($o, $hash, $object) {
-	$o:dataTree:unsaved->state->addObject($hash, $object);
+	$o:document:unsaved->state->addObject($hash, $object);
 }
 
 sub addMergedSource($o, $hash) {
-	$o:dataTree:unsaved->state->addMergedSource($hash);
+	$o:document:unsaved->state->addMergedSource($hash);
 }

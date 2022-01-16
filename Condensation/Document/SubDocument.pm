@@ -1,7 +1,7 @@
-use parent 'CDS::DataTree';
+use parent 'CDS::Document';
 
 sub new($class, $parentSelector) {
-	my $o = $class->SUPER::new($parentSelector->dataTree->keyPair, $parentSelector->dataTree->unsaved);
+	my $o = $class->SUPER::new($parentSelector->document->keyPair, $parentSelector->document->unsaved);
 	$o:parentSelector = $parentSelector;
 	return $o;
 }
@@ -18,7 +18,7 @@ sub read($o) {
 }
 
 sub savingDone($o, $revision, $newPart, $obsoleteParts) {
-	$o:parentSelector->dataTree->unsaved->state->merge($o:unsaved->savingState);
+	$o:parentSelector->document->unsaved->state->merge($o:unsaved->savingState);
 
 	# Remove obsolete parts
 	for my $part (@$obsoleteParts) {

@@ -4055,7 +4055,7 @@ sub selector {
 	my $selector = shift; die 'wrong type '.ref($selector).' for $selector' if defined $selector && ref $selector ne 'CDS::Selector';
 	my $rootLabel = shift;
 
-	my $item = $selector->dataTree->get($selector);
+	my $item = $selector->document->get($selector);
 	my $revision = $item->{revision} ? $o->green('  ', $o->niceDateTime($item->{revision})) : '';
 
 	if ($selector->{id} eq 'ROOT') {
