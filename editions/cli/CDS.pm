@@ -1,9 +1,10 @@
-# This is the Condensation Perl Module 0.22 (cli) built on 2022-01-16.
+# This is the Condensation Perl Module 0.23 (cli) built on 2022-01-18.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
 use warnings;
 use 5.010000;
+
 use Cwd;
 use Digest::SHA;
 use Encode;
@@ -15,12 +16,11 @@ use HTTP::Server::Simple;
 use LWP::UserAgent;
 use Time::Local;
 use utf8;
-
 package CDS;
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 our $edition = 'cli';
-our $releaseDate = '2022-01-16';
+our $releaseDate = '2022-01-18';
 
 sub now { time * 1000 }
 
@@ -1223,10 +1223,10 @@ sub open {
 	my $storeManager = CDS::CLIStoreManager->new($ui);
 
 	my $storageStoreUrl = $configuration->storageStoreUrl;
-	my $storageStore = $storeManager->uncachedStoreForUrl($storageStoreUrl) // return $ui->error('Your storage store "', $storageStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('store'), '".');
+	my $storageStore = $storeManager->storeForUrl($storageStoreUrl) // return $ui->error('Your storage store "', $storageStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('store'), '".');
 
 	my $messagingStoreUrl = $configuration->messagingStoreUrl;
-	my $messagingStore = $storeManager->uncachedStoreForUrl($messagingStoreUrl) // return $ui->error('Your messaging store "', $messagingStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('messaging-store'), '".');
+	my $messagingStore = $storeManager->storeForUrl($messagingStoreUrl) // return $ui->error('Your messaging store "', $messagingStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('messaging-store'), '".');
 
 	# Read the key pair
 	my $keyPair = $configuration->keyPair // return $ui->error('Your key pair (', $configuration->file('key-pair'), ') is missing.');
@@ -1363,24 +1363,8 @@ sub storeForUrl {
 	my $o = shift;
 	my $url = shift;
 
-	my $store = &main::uncachedStoreForUrl($url) // return;
-	my $progressShowingStore = CDS::UI::ProgressStore->new($store, $url, $o->{ui});
-	my $cacheStore = $o->cacheStore;
-	my $cachedStore = defined $cacheStore ? CDS::ObjectCache->new($progressShowingStore, $cacheStore) : $progressShowingStore;
-	return CDS::ErrorHandlingStore->new($cachedStore, $url, $o->{storeManager});
-}
-
-sub cacheStore {
-	my $o = shift;
-
-	my $selector = $o->{sessionRoot}->child('use cache');
-	return if ! $selector->isSet;
-	my $storeUrl = $selector->textValue;
-	return $o->{cacheStore} if defined $o->{cacheStoreUrl} && $storeUrl eq $o->{cacheStoreUrl};
-
-	$o->{cacheStoreUrl} = $storeUrl;
-	$o->{cacheStore} = &main::uncachedStoreForUrl($storeUrl);
-	return $o->{cacheStore};
+	$o->{storeManager}->setCacheStoreUrl($o->{sessionRoot}->child('use cache')->textValue);
+	return $o->{storeManager}->storeForUrl($url);
 }
 
 ### Processing messages
@@ -1804,16 +1788,25 @@ sub new {
 
 sub ui { shift->{ui} }
 
-sub uncachedStoreForUrl {
+sub rawStoreForUrl {
 	my $o = shift;
 	my $url = shift;
 
-	my $store =
+	return if ! $url;
+	return
 		CDS::FolderStore->forUrl($url) //
 		CDS::HTTPStore->forUrl($url) //
 		undef;
+}
+
+sub storeForUrl {
+	my $o = shift;
+	my $url = shift;
+
+	my $store = $o->rawStoreForUrl($url);
 	my $progressStore = CDS::UI::ProgressStore->new($store, $url, $o->{ui});
-	return CDS::ErrorHandlingStore->new($progressStore, $url, $o);
+	my $cachedStore = defined $o->{cacheStore} ? CDS::ObjectCache->new($progressStore, $o->{cacheStore}) : $progressStore;
+	return CDS::ErrorHandlingStore->new($cachedStore, $url, $o);
 }
 
 sub onStoreSuccess {
@@ -1842,6 +1835,15 @@ sub hasStoreError {
 	return if ! $o->{failedStores}->{$store->store->id};
 	$o->{ui}->error('Ignoring store "', $store->{url}, '", because it previously reported errors.');
 	return 1;
+}
+
+sub setCacheStoreUrl {
+	my $o = shift;
+	my $storeUrl = shift;
+
+	return if ($storeUrl // '') eq ($o->{cacheStoreUrl} // '');
+	$o->{cacheStoreUrl} = $storeUrl;
+	$o->{cacheStore} = $o->rawStoreForUrl($storeUrl);
 }
 
 package CDS::CheckSignatureStore;
@@ -17746,7 +17748,7 @@ package UNKNOWN;
 
 package CDS::C;
 use Config;
-use Inline (C => 'DATA', CCFLAGS => $Config{ccflags}.' -DNDEBUG -std=gnu99', OPTIMIZE => '-O3', LIBS => '-lrt');
+use Inline (C => 'DATA', CCFLAGS => $Config{ccflags}.' -DNDEBUG -std=gnu99', OPTIMIZE => '-O3');
 Inline->init;
 
 1;
@@ -17892,6 +17894,7 @@ double cdsGetFloat64BE(const uint8_t * bytes) {
 #line 1 "Condensation/../../c/Condensation/all.inc.h"
 #include <stdint.h>
 #include <stdbool.h>
+
 
 #line 1 "Condensation/../../c/Condensation/public.h"
 #include <stdbool.h>
@@ -18047,6 +18050,7 @@ struct cdsRecord {
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+
 
 #line 1 "Condensation/../../c/Condensation/minMax.inc.c"
 //static int min(int a, int b) { return a < b ? a : b; }
@@ -18208,6 +18212,7 @@ struct cdsBytes cdsRandomBytes(uint8_t * buffer, cdsLength length) {
 
 #line 8 "Condensation/../../c/Condensation/all.inc.c"
 
+
 #line 1 "Condensation/../../c/Condensation/AES256/AES256.inc.c"
 // *** AES 256 encryption
 // AES 256 operates with a key length of 32 bytes, and a block size of 16 byte.
@@ -18349,6 +18354,7 @@ struct cdsBytes cdsCrypt(const struct cdsAES256 * aes, const struct cdsBytes byt
 }
 
 #line 10 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/SHA256/SHA256.inc.c"
 // *** SHA 256
@@ -18502,6 +18508,7 @@ struct cdsBytes cdsSHA256(const struct cdsBytes bytes, uint8_t * result) {
 }
 
 #line 12 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/RSA64/production.inc.c"
 // *** Element access
@@ -20831,6 +20838,7 @@ struct cdsBytes cdsDecrypt(const struct cdsRSAPrivateKey * this, const struct cd
 	return cdsDecryptWithMemory(this, encrypted, resultBuffer, &memory);
 }
 
+
 #line 17 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/RSA64/PublicKey.inc.c"
@@ -20901,6 +20909,7 @@ struct cdsBytes cdsEncrypt(const struct cdsRSAPublicKey * this, const struct cds
 }
 
 #line 18 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/Serialization/Hash.inc.c"
 struct cdsHash invalidHashForDebugging = {{0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x20, 0x48, 0x41, 0x53, 0x48, 0x20, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x20, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x20, 0x48, 0x41, 0x53, 0x48, 0x20}};
@@ -21520,6 +21529,7 @@ struct cdsRecord * cdsParseRecord(const struct cdsBytes bytes, struct cdsRecord 
 }
 
 #line 25 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/Actors/PrivateKey.inc.c"
 struct cdsBytes cdsPrivateKeyFromBytes(struct cdsRSAPrivateKey * this, const struct cdsBytes bytes) {

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-sudo rm /usr/local/bin/condensation-*
-sudo rm -r /usr/local/lib/x86_64-linux-gnu/perl/5.20.1/Condensation
-sudo rm -r /usr/local/lib/x86_64-linux-gnu/perl/5.20.1/auto/Condensation
+sudo rm /usr/local/bin/cds
+sudo rm -r /usr/local/lib/x86_64-linux-gnu/perl/5.32.1/CDS
+sudo rm -r /usr/local/lib/x86_64-linux-gnu/perl/5.32.1/auto/CDS
 echo 'Done!'

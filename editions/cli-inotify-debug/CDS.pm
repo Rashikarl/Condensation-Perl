@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.22 (cli inotify debug) built on 2022-01-16.
+# This is the Condensation Perl Module 0.23 (cli inotify debug) built on 2022-01-17.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -19,9 +19,9 @@ use utf8;
 
 package CDS;
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 our $edition = 'cli inotify debug';
-our $releaseDate = '2022-01-16';
+our $releaseDate = '2022-01-17';
 
 #line 3 "Condensation/Duration.pm"
 sub now { time * 1000 }
@@ -1466,11 +1466,11 @@ sub open {
 
 #line 12 "Condensation/CLI/CLIActor.pm"
 	my $storageStoreUrl = $configuration->storageStoreUrl;
-	my $storageStore = $storeManager->uncachedStoreForUrl($storageStoreUrl) // return $ui->error('Your storage store "', $storageStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('store'), '".');
+	my $storageStore = $storeManager->storeForUrl($storageStoreUrl) // return $ui->error('Your storage store "', $storageStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('store'), '".');
 
 #line 15 "Condensation/CLI/CLIActor.pm"
 	my $messagingStoreUrl = $configuration->messagingStoreUrl;
-	my $messagingStore = $storeManager->uncachedStoreForUrl($messagingStoreUrl) // return $ui->error('Your messaging store "', $messagingStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('messaging-store'), '".');
+	my $messagingStore = $storeManager->storeForUrl($messagingStoreUrl) // return $ui->error('Your messaging store "', $messagingStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('messaging-store'), '".');
 
 #line 18 "Condensation/CLI/CLIActor.pm"
 	# Read the key pair
@@ -1634,54 +1634,35 @@ sub storeForUrl {
 	my $url = shift;
 
 #line 125 "Condensation/CLI/CLIActor.pm"
-	my $store = &main::uncachedStoreForUrl($url) // return;
-	my $progressShowingStore = CDS::UI::ProgressStore->new($store, $url, $o->{ui});
-	my $cacheStore = $o->cacheStore;
-	my $cachedStore = defined $cacheStore ? CDS::ObjectCache->new($progressShowingStore, $cacheStore) : $progressShowingStore;
-	return CDS::ErrorHandlingStore->new($cachedStore, $url, $o->{storeManager});
+	$o->{storeManager}->setCacheStoreUrl($o->{sessionRoot}->child('use cache')->textValue);
+	return $o->{storeManager}->storeForUrl($url);
 }
 
-#line 132 "Condensation/CLI/CLIActor.pm"
-sub cacheStore {
-	my $o = shift;
-
-#line 133 "Condensation/CLI/CLIActor.pm"
-	my $selector = $o->{sessionRoot}->child('use cache');
-	return if ! $selector->isSet;
-	my $storeUrl = $selector->textValue;
-	return $o->{cacheStore} if defined $o->{cacheStoreUrl} && $storeUrl eq $o->{cacheStoreUrl};
-
-#line 138 "Condensation/CLI/CLIActor.pm"
-	$o->{cacheStoreUrl} = $storeUrl;
-	$o->{cacheStore} = &main::uncachedStoreForUrl($storeUrl);
-	return $o->{cacheStore};
-}
-
-#line 143 "Condensation/CLI/CLIActor.pm"
+#line 129 "Condensation/CLI/CLIActor.pm"
 ### Processing messages
 
-#line 145 "Condensation/CLI/CLIActor.pm"
+#line 131 "Condensation/CLI/CLIActor.pm"
 sub setMessageHandler {
 	my $o = shift;
 	my $type = shift;
 	my $handler = shift;
 
-#line 146 "Condensation/CLI/CLIActor.pm"
+#line 132 "Condensation/CLI/CLIActor.pm"
 	$o->{messageHandlers}->{$type} = $handler;
 }
 
-#line 149 "Condensation/CLI/CLIActor.pm"
+#line 135 "Condensation/CLI/CLIActor.pm"
 sub readMessages {
 	my $o = shift;
 
-#line 150 "Condensation/CLI/CLIActor.pm"
+#line 136 "Condensation/CLI/CLIActor.pm"
 	$o->{ui}->title('Messages');
 	$o->{countMessages} = 0;
 	$o->{messageBoxReader}->read;
 	$o->{ui}->line($o->{ui}->gray('none')) if ! $o->{countMessages};
 }
 
-#line 156 "Condensation/CLI/CLIActor.pm"
+#line 142 "Condensation/CLI/CLIActor.pm"
 sub onMessageBoxVerifyStore {
 	my $o = shift;
 	my $senderStoreUrl = shift;
@@ -1689,26 +1670,26 @@ sub onMessageBoxVerifyStore {
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 	my $senderHash = shift; die 'wrong type '.ref($senderHash).' for $senderHash' if defined $senderHash && ref $senderHash ne 'CDS::Hash';
 
-#line 157 "Condensation/CLI/CLIActor.pm"
+#line 143 "Condensation/CLI/CLIActor.pm"
 	return $o->storeForUrl($senderStoreUrl);
 }
 
-#line 160 "Condensation/CLI/CLIActor.pm"
+#line 146 "Condensation/CLI/CLIActor.pm"
 sub onMessageBoxEntry {
 	my $o = shift;
 	my $message = shift;
 
-#line 161 "Condensation/CLI/CLIActor.pm"
+#line 147 "Condensation/CLI/CLIActor.pm"
 	$o->{countMessages} += 1;
 
-#line 163 "Condensation/CLI/CLIActor.pm"
+#line 149 "Condensation/CLI/CLIActor.pm"
 	for my $section ($message->content->children) {
 		my $type = $section->bytes;
 		my $handler = $o->{messageHandlers}->{$type} // \&onUnknownMessage;
 		&$handler($o, $message, $section);
 	}
 
-#line 169 "Condensation/CLI/CLIActor.pm"
+#line 155 "Condensation/CLI/CLIActor.pm"
 #	1. message processed
 #		-> source can be deleted immediately (e.g. invalid)
 #			source.discard()
@@ -1719,89 +1700,89 @@ sub onMessageBoxEntry {
 #	3. skip
 #		-> set entry.processed = false
 
-#line 179 "Condensation/CLI/CLIActor.pm"
+#line 165 "Condensation/CLI/CLIActor.pm"
 	my $source = $message->source;
 	$message->source->discard;
 }
 
-#line 183 "Condensation/CLI/CLIActor.pm"
+#line 169 "Condensation/CLI/CLIActor.pm"
 sub onGroupDataMessage {
 	my $o = shift;
 	my $message = shift;
 	my $section = shift;
 
-#line 184 "Condensation/CLI/CLIActor.pm"
+#line 170 "Condensation/CLI/CLIActor.pm"
 	my $ok = $o->{groupDataSharer}->processGroupDataMessage($message, $section);
 	$o->{groupDocument}->read;
 	return $o->{ui}->line('Group data from ', $message->sender->publicKey->hash->hex) if $ok;
 	$o->{ui}->line($o->{ui}->red('Group data from foreign actor ', $message->sender->publicKey->hash->hex, ' (ignored)'));
 }
 
-#line 190 "Condensation/CLI/CLIActor.pm"
+#line 176 "Condensation/CLI/CLIActor.pm"
 sub onIgnoreMessage {
 	my $o = shift;
 	my $message = shift;
 	my $section = shift;
 	 }
 
-#line 192 "Condensation/CLI/CLIActor.pm"
+#line 178 "Condensation/CLI/CLIActor.pm"
 sub onUnknownMessage {
 	my $o = shift;
 	my $message = shift;
 	my $section = shift;
 
-#line 193 "Condensation/CLI/CLIActor.pm"
+#line 179 "Condensation/CLI/CLIActor.pm"
 	$o->{ui}->line($o->{ui}->orange('Unknown message of type "', $section->asText, '" from ', $message->sender->publicKey->hash->hex));
 }
 
-#line 196 "Condensation/CLI/CLIActor.pm"
+#line 182 "Condensation/CLI/CLIActor.pm"
 sub onMessageBoxInvalidEntry {
 	my $o = shift;
 	my $source = shift; die 'wrong type '.ref($source).' for $source' if defined $source && ref $source ne 'CDS::Source';
 	my $reason = shift;
 
-#line 197 "Condensation/CLI/CLIActor.pm"
+#line 183 "Condensation/CLI/CLIActor.pm"
 	$o->{ui}->warning('Discarding invalid message ', $source->hash->hex, ' (', $reason, ').');
 	$source->discard;
 }
 
-#line 201 "Condensation/CLI/CLIActor.pm"
+#line 187 "Condensation/CLI/CLIActor.pm"
 ### Remembered values
 
-#line 203 "Condensation/CLI/CLIActor.pm"
+#line 189 "Condensation/CLI/CLIActor.pm"
 sub labelSelector {
 	my $o = shift;
 	my $label = shift;
 
-#line 204 "Condensation/CLI/CLIActor.pm"
+#line 190 "Condensation/CLI/CLIActor.pm"
 	my $bytes = Encode::encode_utf8($label);
 	return $o->groupRoot->child('labels')->child($bytes);
 }
 
-#line 208 "Condensation/CLI/CLIActor.pm"
+#line 194 "Condensation/CLI/CLIActor.pm"
 sub remembered {
 	my $o = shift;
 	my $label = shift;
 
-#line 209 "Condensation/CLI/CLIActor.pm"
+#line 195 "Condensation/CLI/CLIActor.pm"
 	return $o->labelSelector($label)->record;
 }
 
-#line 212 "Condensation/CLI/CLIActor.pm"
+#line 198 "Condensation/CLI/CLIActor.pm"
 sub remember {
 	my $o = shift;
 	my $label = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 213 "Condensation/CLI/CLIActor.pm"
+#line 199 "Condensation/CLI/CLIActor.pm"
 	$o->labelSelector($label)->set($record);
 }
 
-#line 216 "Condensation/CLI/CLIActor.pm"
+#line 202 "Condensation/CLI/CLIActor.pm"
 sub rememberedRecords {
 	my $o = shift;
 
-#line 217 "Condensation/CLI/CLIActor.pm"
+#line 203 "Condensation/CLI/CLIActor.pm"
 	my $records = {};
 	for my $child ($o->{groupRoot}->child('labels')->children) {
 		next if ! $child->isSet;
@@ -1809,16 +1790,16 @@ sub rememberedRecords {
 		$records->{$label} = $child->record;
 	}
 
-#line 224 "Condensation/CLI/CLIActor.pm"
+#line 210 "Condensation/CLI/CLIActor.pm"
 	return $records;
 }
 
-#line 227 "Condensation/CLI/CLIActor.pm"
+#line 213 "Condensation/CLI/CLIActor.pm"
 sub storeLabel {
 	my $o = shift;
 	my $storeUrl = shift;
 
-#line 228 "Condensation/CLI/CLIActor.pm"
+#line 214 "Condensation/CLI/CLIActor.pm"
 	my $records = $o->rememberedRecords;
 	for my $label (keys %$records) {
 		my $record = $records->{$label};
@@ -1827,16 +1808,16 @@ sub storeLabel {
 		return $label;
 	}
 
-#line 236 "Condensation/CLI/CLIActor.pm"
+#line 222 "Condensation/CLI/CLIActor.pm"
 	return;
 }
 
-#line 239 "Condensation/CLI/CLIActor.pm"
+#line 225 "Condensation/CLI/CLIActor.pm"
 sub actorLabel {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
-#line 240 "Condensation/CLI/CLIActor.pm"
+#line 226 "Condensation/CLI/CLIActor.pm"
 	my $records = $o->rememberedRecords;
 	for my $label (keys %$records) {
 		my $record = $records->{$label};
@@ -1844,16 +1825,16 @@ sub actorLabel {
 		return $label;
 	}
 
-#line 247 "Condensation/CLI/CLIActor.pm"
+#line 233 "Condensation/CLI/CLIActor.pm"
 	return;
 }
 
-#line 250 "Condensation/CLI/CLIActor.pm"
+#line 236 "Condensation/CLI/CLIActor.pm"
 sub actorLabelByHashStartBytes {
 	my $o = shift;
 	my $actorHashStartBytes = shift;
 
-#line 251 "Condensation/CLI/CLIActor.pm"
+#line 237 "Condensation/CLI/CLIActor.pm"
 	my $length = length $actorHashStartBytes;
 	my $records = $o->rememberedRecords;
 	for my $label (keys %$records) {
@@ -1862,47 +1843,47 @@ sub actorLabelByHashStartBytes {
 		return $label;
 	}
 
-#line 259 "Condensation/CLI/CLIActor.pm"
+#line 245 "Condensation/CLI/CLIActor.pm"
 	return;
 }
 
-#line 262 "Condensation/CLI/CLIActor.pm"
+#line 248 "Condensation/CLI/CLIActor.pm"
 sub accountLabel {
 	my $o = shift;
 	my $storeUrl = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
-#line 263 "Condensation/CLI/CLIActor.pm"
+#line 249 "Condensation/CLI/CLIActor.pm"
 	my $storeLabel;
 	my $actorLabel;
 
-#line 266 "Condensation/CLI/CLIActor.pm"
+#line 252 "Condensation/CLI/CLIActor.pm"
 	my $records = $o->rememberedRecords;
 	for my $label (keys %$records) {
 		my $record = $records->{$label};
 		my $actorBytes = $record->child('actor')->bytesValue;
 
-#line 271 "Condensation/CLI/CLIActor.pm"
+#line 257 "Condensation/CLI/CLIActor.pm"
 		my $correctActor = $actorHash->bytes eq $actorBytes;
 		$actorLabel = $label if $correctActor;
 
-#line 274 "Condensation/CLI/CLIActor.pm"
+#line 260 "Condensation/CLI/CLIActor.pm"
 		if ($storeUrl eq $record->child('store')->textValue) {
 			return $label if $correctActor;
 			$storeLabel = $label if ! length $actorBytes;
 		}
 	}
 
-#line 280 "Condensation/CLI/CLIActor.pm"
+#line 266 "Condensation/CLI/CLIActor.pm"
 	return (undef, $storeLabel, $actorLabel);
 }
 
-#line 283 "Condensation/CLI/CLIActor.pm"
+#line 269 "Condensation/CLI/CLIActor.pm"
 sub keyPairLabel {
 	my $o = shift;
 	my $file = shift;
 
-#line 284 "Condensation/CLI/CLIActor.pm"
+#line 270 "Condensation/CLI/CLIActor.pm"
 	my $records = $o->rememberedRecords;
 	for my $label (keys %$records) {
 		my $record = $records->{$label};
@@ -1910,142 +1891,142 @@ sub keyPairLabel {
 		return $label;
 	}
 
-#line 291 "Condensation/CLI/CLIActor.pm"
+#line 277 "Condensation/CLI/CLIActor.pm"
 	return;
 }
 
-#line 294 "Condensation/CLI/CLIActor.pm"
+#line 280 "Condensation/CLI/CLIActor.pm"
 ### References that can be used in commands
 
-#line 296 "Condensation/CLI/CLIActor.pm"
+#line 282 "Condensation/CLI/CLIActor.pm"
 sub actorReference {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
-#line 297 "Condensation/CLI/CLIActor.pm"
+#line 283 "Condensation/CLI/CLIActor.pm"
 	return $o->actorLabel($actorHash) // $actorHash->hex;
 }
 
-#line 300 "Condensation/CLI/CLIActor.pm"
+#line 286 "Condensation/CLI/CLIActor.pm"
 sub storeReference {
 	my $o = shift;
 	my $store = shift;
 	 $o->storeUrlReference($store->url); }
 
-#line 302 "Condensation/CLI/CLIActor.pm"
+#line 288 "Condensation/CLI/CLIActor.pm"
 sub storeUrlReference {
 	my $o = shift;
 	my $storeUrl = shift;
 
-#line 303 "Condensation/CLI/CLIActor.pm"
+#line 289 "Condensation/CLI/CLIActor.pm"
 	return $o->storeLabel($storeUrl) // $storeUrl;
 }
 
-#line 306 "Condensation/CLI/CLIActor.pm"
+#line 292 "Condensation/CLI/CLIActor.pm"
 sub accountReference {
 	my $o = shift;
 	my $accountToken = shift;
 
-#line 307 "Condensation/CLI/CLIActor.pm"
+#line 293 "Condensation/CLI/CLIActor.pm"
 	my ($accountLabel, $storeLabel, $actorLabel) = $o->accountLabel($accountToken->{cliStore}->url, $accountToken->{actorHash});
 	return $accountLabel if defined $accountLabel;
 	return defined $actorLabel ? $actorLabel : $accountToken->{actorHash}->hex, ' on ', defined $storeLabel ? $storeLabel : $accountToken->{cliStore}->url;
 }
 
-#line 312 "Condensation/CLI/CLIActor.pm"
+#line 298 "Condensation/CLI/CLIActor.pm"
 sub boxReference {
 	my $o = shift;
 	my $boxToken = shift;
 
-#line 313 "Condensation/CLI/CLIActor.pm"
+#line 299 "Condensation/CLI/CLIActor.pm"
 	return $o->boxName($boxToken->{boxLabel}), ' of ', $o->accountReference($boxToken->{accountToken});
 }
 
-#line 316 "Condensation/CLI/CLIActor.pm"
+#line 302 "Condensation/CLI/CLIActor.pm"
 sub keyPairReference {
 	my $o = shift;
 	my $keyPairToken = shift;
 
-#line 317 "Condensation/CLI/CLIActor.pm"
+#line 303 "Condensation/CLI/CLIActor.pm"
 	return $o->keyPairLabel($keyPairToken->file) // $keyPairToken->file;
 }
 
-#line 320 "Condensation/CLI/CLIActor.pm"
+#line 306 "Condensation/CLI/CLIActor.pm"
 sub blueActorReference {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
-#line 321 "Condensation/CLI/CLIActor.pm"
+#line 307 "Condensation/CLI/CLIActor.pm"
 	my $label = $o->actorLabel($actorHash);
 	return defined $label ? $o->{ui}->blue($label) : $actorHash->hex;
 }
 
-#line 325 "Condensation/CLI/CLIActor.pm"
+#line 311 "Condensation/CLI/CLIActor.pm"
 sub blueStoreReference {
 	my $o = shift;
 	my $store = shift;
 	 $o->blueStoreUrlReference($store->url); }
 
-#line 327 "Condensation/CLI/CLIActor.pm"
+#line 313 "Condensation/CLI/CLIActor.pm"
 sub blueStoreUrlReference {
 	my $o = shift;
 	my $storeUrl = shift;
 
-#line 328 "Condensation/CLI/CLIActor.pm"
+#line 314 "Condensation/CLI/CLIActor.pm"
 	my $label = $o->storeLabel($storeUrl);
 	return defined $label ? $o->{ui}->blue($label) : $storeUrl;
 }
 
-#line 332 "Condensation/CLI/CLIActor.pm"
+#line 318 "Condensation/CLI/CLIActor.pm"
 sub blueAccountReference {
 	my $o = shift;
 	my $accountToken = shift;
 
-#line 333 "Condensation/CLI/CLIActor.pm"
+#line 319 "Condensation/CLI/CLIActor.pm"
 	my ($accountLabel, $storeLabel, $actorLabel) = $o->accountLabel($accountToken->{cliStore}->url, $accountToken->{actorHash});
 	return $o->{ui}->blue($accountLabel) if defined $accountLabel;
 	return defined $actorLabel ? $o->{ui}->blue($actorLabel) : $accountToken->{actorHash}->hex, ' on ', defined $storeLabel ? $o->{ui}->blue($storeLabel) : $accountToken->{cliStore}->url;
 }
 
-#line 338 "Condensation/CLI/CLIActor.pm"
+#line 324 "Condensation/CLI/CLIActor.pm"
 sub blueBoxReference {
 	my $o = shift;
 	my $boxToken = shift;
 
-#line 339 "Condensation/CLI/CLIActor.pm"
+#line 325 "Condensation/CLI/CLIActor.pm"
 	return $o->boxName($boxToken->{boxLabel}), ' of ', $o->blueAccountReference($boxToken->{accountToken});
 }
 
-#line 342 "Condensation/CLI/CLIActor.pm"
+#line 328 "Condensation/CLI/CLIActor.pm"
 sub blueKeyPairReference {
 	my $o = shift;
 	my $keyPairToken = shift;
 
-#line 343 "Condensation/CLI/CLIActor.pm"
+#line 329 "Condensation/CLI/CLIActor.pm"
 	my $label = $o->keyPairLabel($keyPairToken->file);
 	return defined $label ? $o->{ui}->blue($label) : $keyPairToken->file;
 }
 
-#line 347 "Condensation/CLI/CLIActor.pm"
+#line 333 "Condensation/CLI/CLIActor.pm"
 sub boxName {
 	my $o = shift;
 	my $boxLabel = shift;
 
-#line 348 "Condensation/CLI/CLIActor.pm"
+#line 334 "Condensation/CLI/CLIActor.pm"
 	return 'private box' if $boxLabel eq 'private';
 	return 'public box' if $boxLabel eq 'public';
 	return 'message box' if $boxLabel eq 'messages';
 	return $boxLabel;
 }
 
-#line 354 "Condensation/CLI/CLIActor.pm"
+#line 340 "Condensation/CLI/CLIActor.pm"
 ### Session
 
-#line 356 "Condensation/CLI/CLIActor.pm"
+#line 342 "Condensation/CLI/CLIActor.pm"
 sub forgetOldSessions {
 	my $o = shift;
 
-#line 357 "Condensation/CLI/CLIActor.pm"
+#line 343 "Condensation/CLI/CLIActor.pm"
 	for my $child ($o->{sessionRoot}->parent->children) {
 		my $pid = $child->label;
 		next if -e '/proc/'.$pid;
@@ -2053,45 +2034,45 @@ sub forgetOldSessions {
 	}
 }
 
-#line 364 "Condensation/CLI/CLIActor.pm"
+#line 350 "Condensation/CLI/CLIActor.pm"
 sub selectedKeyPairToken {
 	my $o = shift;
 
-#line 365 "Condensation/CLI/CLIActor.pm"
+#line 351 "Condensation/CLI/CLIActor.pm"
 	my $file = $o->{sessionRoot}->child('selected key pair')->textValue;
 	return if ! length $file;
 	my $keyPair = CDS::KeyPair->fromFile($file) // return;
 	return CDS::KeyPairToken->new($file, $keyPair);
 }
 
-#line 371 "Condensation/CLI/CLIActor.pm"
+#line 357 "Condensation/CLI/CLIActor.pm"
 sub selectedStoreUrl {
 	my $o = shift;
 
-#line 372 "Condensation/CLI/CLIActor.pm"
+#line 358 "Condensation/CLI/CLIActor.pm"
 	my $storeUrl = $o->{sessionRoot}->child('selected store')->textValue;
 	return if ! length $storeUrl;
 	return $storeUrl;
 }
 
-#line 377 "Condensation/CLI/CLIActor.pm"
+#line 363 "Condensation/CLI/CLIActor.pm"
 sub selectedStore {
 	my $o = shift;
 
-#line 378 "Condensation/CLI/CLIActor.pm"
+#line 364 "Condensation/CLI/CLIActor.pm"
 	my $storeUrl = $o->selectedStoreUrl // return;
 	return $o->storeForUrl($storeUrl);
 }
 
-#line 382 "Condensation/CLI/CLIActor.pm"
+#line 368 "Condensation/CLI/CLIActor.pm"
 sub selectedActorHash {
 	my $o = shift;
 
-#line 383 "Condensation/CLI/CLIActor.pm"
+#line 369 "Condensation/CLI/CLIActor.pm"
 	return CDS::Hash->fromBytes($o->{sessionRoot}->child('selected actor')->bytesValue);
 }
 
-#line 386 "Condensation/CLI/CLIActor.pm"
+#line 372 "Condensation/CLI/CLIActor.pm"
 sub preferredKeyPairToken {
 	my $o = shift;
 	 $o->selectedKeyPairToken // $o->keyPairToken }
@@ -2105,53 +2086,53 @@ sub preferredActorHash {
 	my $o = shift;
 	 $o->selectedActorHash // $o->keyPair->publicKey->hash }
 
-#line 391 "Condensation/CLI/CLIActor.pm"
+#line 377 "Condensation/CLI/CLIActor.pm"
 ### Common functions
 
-#line 393 "Condensation/CLI/CLIActor.pm"
+#line 379 "Condensation/CLI/CLIActor.pm"
 sub uiGetObject {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $store = shift;
 	my $keyPairToken = shift;
 
-#line 394 "Condensation/CLI/CLIActor.pm"
+#line 380 "Condensation/CLI/CLIActor.pm"
 	my ($object, $storeError) = $store->get($hash, $keyPairToken->keyPair);
 	return if defined $storeError;
 	return $o->{ui}->error('The object ', $hash->hex, ' does not exist on "', $store->url, '".') if ! $object;
 	return $object;
 }
 
-#line 400 "Condensation/CLI/CLIActor.pm"
+#line 386 "Condensation/CLI/CLIActor.pm"
 sub uiGetRecord {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $store = shift;
 	my $keyPairToken = shift;
 
-#line 401 "Condensation/CLI/CLIActor.pm"
+#line 387 "Condensation/CLI/CLIActor.pm"
 	my $object = $o->uiGetObject($hash, $store, $keyPairToken) // return;
 	return CDS::Record->fromObject($object) // return $o->{ui}->error('The object ', $hash->hex, ' is not a record.');
 }
 
-#line 405 "Condensation/CLI/CLIActor.pm"
+#line 391 "Condensation/CLI/CLIActor.pm"
 sub uiGetPublicKey {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $store = shift;
 	my $keyPairToken = shift;
 
-#line 406 "Condensation/CLI/CLIActor.pm"
+#line 392 "Condensation/CLI/CLIActor.pm"
 	my $object = $o->uiGetObject($hash, $store, $keyPairToken) // return;
 	return CDS::PublicKey->fromObject($object) // return $o->{ui}->error('The object ', $hash->hex, ' is not a public key.');
 }
 
-#line 410 "Condensation/CLI/CLIActor.pm"
+#line 396 "Condensation/CLI/CLIActor.pm"
 sub isEnvelope {
 	my $o = shift;
 	my $object = shift; die 'wrong type '.ref($object).' for $object' if defined $object && ref $object ne 'CDS::Object';
 
-#line 411 "Condensation/CLI/CLIActor.pm"
+#line 397 "Condensation/CLI/CLIActor.pm"
 	my $record = CDS::Record->fromObject($object) // return;
 	return if ! $record->contains('signed');
 	my $signatureRecord = $record->child('signature')->firstChild;
@@ -2175,51 +2156,73 @@ sub new {
 sub ui { shift->{ui} }
 
 #line 7 "Condensation/CLI/CLIStoreManager.pm"
-sub uncachedStoreForUrl {
+sub rawStoreForUrl {
 	my $o = shift;
 	my $url = shift;
 
 #line 8 "Condensation/CLI/CLIStoreManager.pm"
-	my $store =
+	return if ! $url;
+	return
 		CDS::FolderStore->forUrl($url) //
 		CDS::HTTPStore->forUrl($url) //
 		undef;
-	my $progressStore = CDS::UI::ProgressStore->new($store, $url, $o->{ui});
-	return CDS::ErrorHandlingStore->new($progressStore, $url, $o);
 }
 
+#line 15 "Condensation/CLI/CLIStoreManager.pm"
+sub storeForUrl {
+	my $o = shift;
+	my $url = shift;
+
 #line 16 "Condensation/CLI/CLIStoreManager.pm"
+	my $store = $o->rawStoreForUrl($url);
+	my $progressStore = CDS::UI::ProgressStore->new($store, $url, $o->{ui});
+	my $cachedStore = defined $o->{cacheStore} ? CDS::ObjectCache->new($progressStore, $o->{cacheStore}) : $progressStore;
+	return CDS::ErrorHandlingStore->new($cachedStore, $url, $o);
+}
+
+#line 22 "Condensation/CLI/CLIStoreManager.pm"
 sub onStoreSuccess {
 	my $o = shift;
 	my $store = shift;
 	my $function = shift;
 
-#line 17 "Condensation/CLI/CLIStoreManager.pm"
+#line 23 "Condensation/CLI/CLIStoreManager.pm"
 	delete $o->{failedStores}->{$store->store->id};
 }
 
-#line 20 "Condensation/CLI/CLIStoreManager.pm"
+#line 26 "Condensation/CLI/CLIStoreManager.pm"
 sub onStoreError {
 	my $o = shift;
 	my $store = shift;
 	my $function = shift;
 	my $error = shift;
 
-#line 21 "Condensation/CLI/CLIStoreManager.pm"
+#line 27 "Condensation/CLI/CLIStoreManager.pm"
 	$o->{failedStores}->{$store->store->id} = 1;
 	$o->{ui}->error('The store "', $store->{url}, '" reports: ', $error);
 }
 
-#line 25 "Condensation/CLI/CLIStoreManager.pm"
+#line 31 "Condensation/CLI/CLIStoreManager.pm"
 sub hasStoreError {
 	my $o = shift;
 	my $store = shift;
 	my $function = shift;
 
-#line 26 "Condensation/CLI/CLIStoreManager.pm"
+#line 32 "Condensation/CLI/CLIStoreManager.pm"
 	return if ! $o->{failedStores}->{$store->store->id};
 	$o->{ui}->error('Ignoring store "', $store->{url}, '", because it previously reported errors.');
 	return 1;
+}
+
+#line 37 "Condensation/CLI/CLIStoreManager.pm"
+sub setCacheStoreUrl {
+	my $o = shift;
+	my $storeUrl = shift;
+
+#line 38 "Condensation/CLI/CLIStoreManager.pm"
+	return if ($storeUrl // '') eq ($o->{cacheStoreUrl} // '');
+	$o->{cacheStoreUrl} = $storeUrl;
+	$o->{cacheStore} = $o->rawStoreForUrl($storeUrl);
 }
 
 #line 1 "Condensation/Stores/CheckSignatureStore.pm"
@@ -21043,7 +21046,7 @@ package UNKNOWN;
 
 package CDS::C;
 use Config;
-use Inline (C => 'DATA', CCFLAGS => $Config{ccflags}.' -DNDEBUG -std=gnu99', OPTIMIZE => '-O3', LIBS => '-lrt');
+use Inline (C => 'DATA', CCFLAGS => $Config{ccflags}.' -DNDEBUG -std=gnu99', OPTIMIZE => '-O3');
 Inline->init;
 
 1;

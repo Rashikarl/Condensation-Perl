@@ -1,9 +1,10 @@
-# This is the Condensation Perl Module 0.23 (http-server inotify) built on 2022-01-17.
+# This is the Condensation Perl Module 0.23 (http-server) built on 2022-01-18.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
 use warnings;
 use 5.010000;
+
 use Digest::SHA;
 use Encode;
 use HTTP::Date;
@@ -11,15 +12,13 @@ use HTTP::Headers;
 use HTTP::Request;
 use HTTP::Server::Simple;
 use LWP::UserAgent;
-use Linux::Inotify2;
 use Time::Local;
 use utf8;
-
 package CDS;
 
 our $VERSION = '0.23';
-our $edition = 'http-server inotify';
-our $releaseDate = '2022-01-17';
+our $edition = 'http-server';
+our $releaseDate = '2022-01-18';
 
 sub now { time * 1000 }
 
@@ -1093,13 +1092,7 @@ sub new {
 	my $class = shift;
 	my $folder = shift;
 
-	my $inotify = Linux::Inotify2->new;
-	my $watch = $inotify->watch($folder, Linux::Inotify2::IN_MOVED_TO | Linux::Inotify2::IN_CREATE | Linux::Inotify2::IN_ONESHOT);
-	return bless {
-		folder => $folder,
-		inotify => $inotify,
-		watch => $watch
-		};
+	return bless {folder => $folder};
 }
 
 sub wait {
@@ -1107,23 +1100,14 @@ sub wait {
 	my $remaining = shift;
 	my $until = shift;
 
-	my $remainingSeconds = $remaining / 1000;
-	return if $remainingSeconds < 1;
-	eval {
-		local $SIG{ALRM} = sub { die 'alarm' };
-		alarm $remainingSeconds;
-		$o->{inotify}->read;
-		alarm 0;
-	};
-
+	return if $remaining <= 0;
+	sleep 1;
 	return 1;
 }
 
 sub done {
 	my $o = shift;
-
-	$o->{watch}->cancel if $o->{watch};
-}
+	 }
 
 package CDS::HTTPServer;
 
@@ -4613,6 +4597,7 @@ double cdsGetFloat64BE(const uint8_t * bytes) {
 #include <stdint.h>
 #include <stdbool.h>
 
+
 #line 1 "Condensation/../../c/Condensation/public.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -4767,6 +4752,7 @@ struct cdsRecord {
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+
 
 #line 1 "Condensation/../../c/Condensation/minMax.inc.c"
 //static int min(int a, int b) { return a < b ? a : b; }
@@ -4928,6 +4914,7 @@ struct cdsBytes cdsRandomBytes(uint8_t * buffer, cdsLength length) {
 
 #line 8 "Condensation/../../c/Condensation/all.inc.c"
 
+
 #line 1 "Condensation/../../c/Condensation/AES256/AES256.inc.c"
 // *** AES 256 encryption
 // AES 256 operates with a key length of 32 bytes, and a block size of 16 byte.
@@ -5069,6 +5056,7 @@ struct cdsBytes cdsCrypt(const struct cdsAES256 * aes, const struct cdsBytes byt
 }
 
 #line 10 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/SHA256/SHA256.inc.c"
 // *** SHA 256
@@ -5222,6 +5210,7 @@ struct cdsBytes cdsSHA256(const struct cdsBytes bytes, uint8_t * result) {
 }
 
 #line 12 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/RSA64/production.inc.c"
 // *** Element access
@@ -7551,6 +7540,7 @@ struct cdsBytes cdsDecrypt(const struct cdsRSAPrivateKey * this, const struct cd
 	return cdsDecryptWithMemory(this, encrypted, resultBuffer, &memory);
 }
 
+
 #line 17 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/RSA64/PublicKey.inc.c"
@@ -7621,6 +7611,7 @@ struct cdsBytes cdsEncrypt(const struct cdsRSAPublicKey * this, const struct cds
 }
 
 #line 18 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/Serialization/Hash.inc.c"
 struct cdsHash invalidHashForDebugging = {{0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x20, 0x48, 0x41, 0x53, 0x48, 0x20, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x20, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x20, 0x48, 0x41, 0x53, 0x48, 0x20}};
@@ -8240,6 +8231,7 @@ struct cdsRecord * cdsParseRecord(const struct cdsBytes bytes, struct cdsRecord 
 }
 
 #line 25 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/Actors/PrivateKey.inc.c"
 struct cdsBytes cdsPrivateKeyFromBytes(struct cdsRSAPrivateKey * this, const struct cdsBytes bytes) {

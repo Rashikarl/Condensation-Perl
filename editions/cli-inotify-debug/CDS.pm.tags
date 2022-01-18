@@ -293,7 +293,6 @@ bytes||() in CDS::Hash|
 bytes||() in CDS::PublicKey|
 bytes||in CDS::Object|
 bytes||in CDS::Record|
-cacheStore||() in CDS::CLIActor|
 cache||($cmd) in CDS::Commands::UseCache|
 cache||in CDS::ObjectCache|
 calculateFor||($bytes) in CDS::Hash STATIC|
@@ -1215,6 +1214,7 @@ queryString||in CDS::HTTPServer::Request|
 randomBytes||($length) in CDS STATIC|
 randomHex||($length) in CDS STATIC|
 randomKey||() in CDS STATIC|
+rawStoreForUrl||($url) in CDS::CLIStoreManager|
 raw||() in CDS::UI|
 readBytesFromFile||($filename) in CDS STATIC|
 readBytes||($length) in CDS::RecordReader|
@@ -1367,6 +1367,7 @@ server||in CDS::HTTPServer::Request|
 sessionRoot||in CDS::CLIActor|
 setBoolean||($value, $hash) in CDS::Selector|
 setBytes||($bytes, $hash) in CDS::Selector|
+setCacheStoreUrl||($storeUrl) in CDS::CLIStoreManager|
 setContentType||($extension, $contentType) in CDS::HTTPServer::StaticFilesHandler|
 setCorsAllowEverybody||($value) in CDS::HTTPServer|
 setError||($item) in CDS::Commands::FolderStore::Logger|
@@ -1462,6 +1463,7 @@ storagePrivateRoot||in CDS::ActorWithDocument|
 storageStoreUrl||() in CDS::Configuration|
 storageStore||in CDS::ActorWithDocument|
 storeForUrl||($url) in CDS::CLIActor|
+storeForUrl||($url) in CDS::CLIStoreManager|
 storeIndex||($hash) in CDS::SplitStore|
 storeLabel||($storeUrl) in CDS::CLIActor|
 storeManager||in CDS::CLIActor|
@@ -1518,7 +1520,6 @@ ui||in CDS::CLIActor|
 ui||in CDS::CLIStoreManager|
 ui||in CDS::Configuration|
 ui||in CDS::UI::ProgressStore|
-uncachedStoreForUrl||($url) in CDS::CLIStoreManager|
 underlined||() in CDS::UI|
 unionList||in CDS::UnionList::Item|
 unsaved||in CDS::Document|

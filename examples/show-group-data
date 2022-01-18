@@ -5,6 +5,8 @@ use Carp::Always;
 use lib 'editions/cli-sftp';
 use CDS;
 
+#print 'Using Condensation ', $CDS::VERSION, "\n";
+
 my $ui = CDS::UI->new(*STDOUT);
 my $actor = CDS::CLIActor->openOrCreateDefault($ui) // exit(1);
 

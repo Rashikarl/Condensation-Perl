@@ -2,6 +2,8 @@ Changes
 Makefile.PL
 MANIFEST
 README
-t/Condensation.t
+t/CDS.t
 lib/CDS.pm
+lib/CDS/C.pm
+lib/CDS/C/Inline.pm
 scripts/cds

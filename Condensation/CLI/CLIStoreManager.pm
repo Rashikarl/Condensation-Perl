@@ -4,13 +4,19 @@ sub new($class, $ui) {
 
 sub ui;
 
-sub uncachedStoreForUrl($o, $url) {
-	my $store =
+sub rawStoreForUrl($o, $url) {
+	return if ! $url;
+	return
 		CDS::FolderStore->forUrl($url) //
 		CDS::HTTPStore->forUrl($url) //
 		undef;
+}
+
+sub storeForUrl($o, $url) {
+	my $store = $o->rawStoreForUrl($url);
 	my $progressStore = CDS::UI::ProgressStore->new($store, $url, $o:ui);
-	return CDS::ErrorHandlingStore->new($progressStore, $url, $o);
+	my $cachedStore = defined $o:cacheStore ? CDS::ObjectCache->new($progressStore, $o:cacheStore) : $progressStore;
+	return CDS::ErrorHandlingStore->new($cachedStore, $url, $o);
 }
 
 sub onStoreSuccess($o, $store, $function) {
@@ -26,4 +32,10 @@ sub hasStoreError($o, $store, $function) {
 	return if ! $o:failedStores->{$store->store->id};
 	$o:ui->error('Ignoring store "', $store:url, '", because it previously reported errors.');
 	return 1;
+}
+
+sub setCacheStoreUrl($o, $storeUrl) {
+	return if ($storeUrl // '') eq ($o:cacheStoreUrl // '');
+	$o:cacheStoreUrl = $storeUrl;
+	$o:cacheStore = $o->rawStoreForUrl($storeUrl);
 }

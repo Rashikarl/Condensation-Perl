@@ -10,10 +10,10 @@ sub open($class, $configuration) {
 	my $storeManager = CDS::CLIStoreManager->new($ui);
 
 	my $storageStoreUrl = $configuration->storageStoreUrl;
-	my $storageStore = $storeManager->uncachedStoreForUrl($storageStoreUrl) // return $ui->error('Your storage store "', $storageStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('store'), '".');
+	my $storageStore = $storeManager->storeForUrl($storageStoreUrl) // return $ui->error('Your storage store "', $storageStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('store'), '".');
 
 	my $messagingStoreUrl = $configuration->messagingStoreUrl;
-	my $messagingStore = $storeManager->uncachedStoreForUrl($messagingStoreUrl) // return $ui->error('Your messaging store "', $messagingStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('messaging-store'), '".');
+	my $messagingStore = $storeManager->storeForUrl($messagingStoreUrl) // return $ui->error('Your messaging store "', $messagingStoreUrl, '" cannot be accessed. You can set this store in "', $configuration->file('messaging-store'), '".');
 
 	# Read the key pair
 	my $keyPair = $configuration->keyPair // return $ui->error('Your key pair (', $configuration->file('key-pair'), ') is missing.');
@@ -122,22 +122,8 @@ sub announceOnStoreIfNecessary($o, $store, $state) {
 ### Store resolving
 
 sub storeForUrl($o, $url) {
-	my $store = &main::uncachedStoreForUrl($url) // return;
-	my $progressShowingStore = CDS::UI::ProgressStore->new($store, $url, $o:ui);
-	my $cacheStore = $o->cacheStore;
-	my $cachedStore = defined $cacheStore ? CDS::ObjectCache->new($progressShowingStore, $cacheStore) : $progressShowingStore;
-	return CDS::ErrorHandlingStore->new($cachedStore, $url, $o:storeManager);
-}
-
-sub cacheStore($o) {
-	my $selector = $o:sessionRoot->child('use cache');
-	return if ! $selector->isSet;
-	my $storeUrl = $selector->textValue;
-	return $o:cacheStore if defined $o:cacheStoreUrl && $storeUrl eq $o:cacheStoreUrl;
-
-	$o:cacheStoreUrl = $storeUrl;
-	$o:cacheStore = &main::uncachedStoreForUrl($storeUrl);
-	return $o:cacheStore;
+	$o:storeManager->setCacheStoreUrl($o:sessionRoot->child('use cache')->textValue);
+	return $o:storeManager->storeForUrl($url);
 }
 
 ### Processing messages

@@ -1,0 +1,94 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use lib '.';
+use SourceFilter;
+use Build;
+
+my $version = shift // die 'Usage: ./build-edition VERSION FLAGS*';
+my $build = Build->read($version, @ARGV);
+mkdir 'module';
+
+my @manifest = (
+	'Changes',
+	'Makefile.PL',
+	'MANIFEST',
+	'README',
+	't/CDS.t',
+	);
+
+my @note = (
+	'# This is part of the Condensation Perl Module '.$build->version.' ('.$build->editionString.') built on '.$build->releaseDate.'.',
+	'# See https://condensation.io for information about the Condensation Data System.',
+	);
+
+# Perl code
+system('rm', '-r', 'module/lib');
+mkdir 'module/lib';
+
+my @output = (
+	@note,
+	'',
+	'use strict;',
+	'use warnings;',
+	'use 5.010000;',
+	'use CDS::C;',
+	@{$build->allPackages},
+	);
+
+$build->writeLines('module/lib/CDS.pm', @output);
+push @manifest, 'lib/CDS.pm';
+
+# C code
+mkdir 'module/lib/CDS';
+
+@output = (
+	'use strict;',
+	'use warnings;',
+	'package CDS::C;',
+	'our $VERSION = \''.$version.'\';',
+	'use Exporter \'import\';',
+	'our @EXPORT = qw();',
+	'use CDS::C::Inline C => <<ENDOFCODE;',
+	@{$build->cCode},
+	'ENDOFCODE',
+	'1;',
+	);
+
+$build->writeLines('module/lib/CDS/C.pm', @output);
+push @manifest, 'lib/CDS/C.pm';
+
+# Inline stub
+mkdir 'module/lib/CDS/C';
+
+@output = (
+	'use strict; use warnings;',
+	'package CDS::C::Inline;',
+	'use Inline::Module stub => \'v2\';',
+	'1;',
+	);
+
+$build->writeLines('module/lib/CDS/C/Inline.pm', @output);
+push @manifest, 'lib/CDS/C/Inline.pm';
+
+# cds script
+mkdir 'module/scripts';
+my @cdsScript = Build->readLines('scripts/cds');
+my $firstLine = shift @cdsScript;
+
+@output = (
+	$firstLine,
+	'',
+	@note,
+	'',
+	@cdsScript,
+	);
+
+$build->writeLines('module/scripts/cds', @output);
+chmod 0755, 'module/scripts/cds';
+push @manifest, 'scripts/cds';
+
+# Write the manifest
+$build->writeLines('module/MANIFEST', @manifest);
+
+print 'CDS module ', $build->version, ' ', $build->editionString, ' built, ', $build->countSections, ' packages', "\n";
