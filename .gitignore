@@ -1,3 +1,6 @@
 _Inline
 perl-calls.inc.html
 interface
+module/CDS-*.tar.gz
+module/.inline
+.inline

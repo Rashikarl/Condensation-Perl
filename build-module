@@ -92,3 +92,9 @@ push @manifest, 'scripts/cds';
 $build->writeLines('module/MANIFEST', @manifest);
 
 print 'CDS module ', $build->version, ' ', $build->editionString, ' built, ', $build->countSections, ' packages', "\n";
+
+# To build the final module, use
+#	cd module
+#	perl Makefile.PL
+#	make dist
+#	cpan-upload --user LOCHMATT CDS-0.23.tar.gz
