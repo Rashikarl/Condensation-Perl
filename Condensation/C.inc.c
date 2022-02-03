@@ -1,5 +1,5 @@
 #insert "../../c/configuration/default.inc.h"
-#insert "../../c/random/dev-urandom.inc.c"
+#insert "../../c/random/multi-os.inc.c"
 #insert "../../c/Condensation/littleEndian.inc.c"
 #insert "../../c/Condensation/all.inc.h"
 #insert "../../c/Condensation/all.inc.c"
@@ -227,7 +227,7 @@ SV * publicKeyEncrypt(SV * svThis, SV * svMessage) {
 
 SV * performanceStart() {
 	struct timespec ts;
-	clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+	clock_gettime(CLOCK_MONOTONIC, &ts);
 	SV * obj = newSVpvn((char *) &ts, sizeof(struct timespec));
 	SvREADONLY_on(obj);
 	return obj;
@@ -245,7 +245,7 @@ SV * performanceElapsed(SV * svThis) {
 	if (this == NULL) return &PL_sv_undef;
 
 	struct timespec ts;
-	clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+	clock_gettime(CLOCK_MONOTONIC, &ts);
 	time_t dsec = ts.tv_sec - this->tv_sec;
 	long dnano = ts.tv_nsec - this->tv_nsec;
 

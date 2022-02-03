@@ -1,4 +1,4 @@
-# This is part of the Condensation Perl Module 0.23 (cli) built on 2022-01-18.
+# This is part of the Condensation Perl Module 0.24 (cli) built on 2022-02-03.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -19,9 +19,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.23';
+our $VERSION = '0.24';
 our $edition = 'cli';
-our $releaseDate = '2022-01-18';
+our $releaseDate = '2022-02-03';
 
 sub now { time * 1000 }
 
@@ -12200,27 +12200,27 @@ sub collectGarbage {
 	my $graceTime = shift;
 
 	# Mark all objects as not used
-	for my $entry (values @{$o->{objects}}) {
+	for my $entry (values %{$o->{objects}}) {
 		$entry->{inUse} = 0;
 	}
 
 	# Mark all objects newer than the grace time
-	for my $entry (values @{$o->{objects}}) {
+	for my $entry (values %{$o->{objects}}) {
 		$o->markEntry($entry) if $entry->{booked} > $graceTime;
 	}
 
 	# Mark all objects referenced from a box
-	for my $account (values @{$o->{accounts}}) {
-		for my $hash (values @{$account->{messages}}) { $o->markHash($hash); }
-		for my $hash (values @{$account->{private}}) { $o->markHash($hash); }
-		for my $hash (values @{$account->{public}}) { $o->markHash($hash); }
+	for my $account (values %{$o->{accounts}}) {
+		for my $hash (values %{$account->{messages}}) { $o->markHash($hash); }
+		for my $hash (values %{$account->{private}}) { $o->markHash($hash); }
+		for my $hash (values %{$account->{public}}) { $o->markHash($hash); }
 	}
 
 	# Remove empty accounts
 	while (my ($key, $account) = each %{$o->{accounts}}) {
-		next if scalar @{$account->{messages}};
-		next if scalar @{$account->{private}};
-		next if scalar @{$account->{public}};
+		next if scalar keys %{$account->{messages}};
+		next if scalar keys %{$account->{private}};
+		next if scalar keys %{$account->{public}};
 		delete $o->{accounts}->{$key};
 	}
 

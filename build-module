@@ -5,6 +5,20 @@ use lib '.';
 use SourceFilter;
 use Build;
 
+# To update the module, run
+#	./build-module 0.23 cli
+#
+# To check the minimum required version of Perl, run
+#	perlver --blame lib/CDS.pm
+#   perlver --blame scripts/cds
+# The minimum required version should be 5.010.
+#
+# To build the final module, use
+#	cd module
+#	perl Makefile.PL
+#	make dist
+#	cpan-upload --user LOCHMATT CDS-0.23.tar.gz
+
 my $version = shift // die 'Usage: ./build-edition VERSION FLAGS*';
 my $build = Build->read($version, @ARGV);
 mkdir 'module';
@@ -92,9 +106,3 @@ push @manifest, 'scripts/cds';
 $build->writeLines('module/MANIFEST', @manifest);
 
 print 'CDS module ', $build->version, ' ', $build->editionString, ' built, ', $build->countSections, ' packages', "\n";
-
-# To build the final module, use
-#	cd module
-#	perl Makefile.PL
-#	make dist
-#	cpan-upload --user LOCHMATT CDS-0.23.tar.gz

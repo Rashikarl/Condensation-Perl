@@ -1,5 +1,5 @@
-./build-edition 0.23 http-server inotify
-./build-edition 0.23 actor inotify
-./build-edition 0.23 cli
-./build-edition 0.23 cli inotify debug
+./build-edition 0.24 http-server inotify
+./build-edition 0.24 actor inotify
+./build-edition 0.24 cli
+./build-edition 0.24 cli inotify debug
 cp editions/cli-inotify-debug/CDS.pm.tags $HOME/.config/geany/tags/CDS.pm.tags

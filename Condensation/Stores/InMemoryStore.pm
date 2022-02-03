@@ -60,27 +60,27 @@ sub modify($o, $modifications, $keyPair) {
 
 sub collectGarbage($o, $graceTime) {
 	# Mark all objects as not used
-	for my $entry (values @$o:objects) {
+	for my $entry (values %$o:objects) {
 		$entry:inUse = 0;
 	}
 
 	# Mark all objects newer than the grace time
-	for my $entry (values @$o:objects) {
+	for my $entry (values %$o:objects) {
 		$o->markEntry($entry) if $entry:booked > $graceTime;
 	}
 
 	# Mark all objects referenced from a box
-	for my $account (values @$o:accounts) {
-		for my $hash (values @$account:messages) { $o->markHash($hash); }
-		for my $hash (values @$account:private) { $o->markHash($hash); }
-		for my $hash (values @$account:public) { $o->markHash($hash); }
+	for my $account (values %$o:accounts) {
+		for my $hash (values %$account:messages) { $o->markHash($hash); }
+		for my $hash (values %$account:private) { $o->markHash($hash); }
+		for my $hash (values %$account:public) { $o->markHash($hash); }
 	}
 
 	# Remove empty accounts
 	while (my ($key, $account) = each %$o:accounts) {
-		next if scalar @$account:messages;
-		next if scalar @$account:private;
-		next if scalar @$account:public;
+		next if scalar keys %$account:messages;
+		next if scalar keys %$account:private;
+		next if scalar keys %$account:public;
 		delete $o:accounts->{$key};
 	}
 
