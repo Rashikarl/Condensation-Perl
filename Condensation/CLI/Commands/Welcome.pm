@@ -75,8 +75,8 @@ sub show($o, $cmd) {
 	$ui->p('This is the command line interface (CLI) of Condensation ', $CDS::VERSION, ', ', $CDS::releaseDate, '. Condensation is a distributed data system with conflict-free forward merging and end-to-end security. More information is available on https://condensation.io.');
 	$ui->space;
 	$ui->p('Commands resemble short english sentences. For example, the following "sentence" will show the record of an object:');
-	$ui->line($ui->blue('  cds show record 20716a57ab520e5274230391f2874658473c2874ef8b3c2b7f67bf5b3837b69c \\'));
-	$ui->line($ui->blue('            from http://condensation.io'));
+	$ui->line($ui->blue('  cds show record e5cbfc282e1f3e6fd0f3e5fffd41964c645f44d7fae8ef5cb350c2dfd2196c9f \\'));
+	$ui->line($ui->blue('            from http://examples.condensation.io'));
 	$ui->p('Type a "?" to explore possible commands, e.g.');
 	$ui->line($ui->blue('  cds show ?'));
 	$ui->p('or use TAB or TAB-TAB for command completion.');

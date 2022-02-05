@@ -1,19 +1,22 @@
 use strict;
 use warnings;
 package CDS::C;
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 use Exporter 'import';
 our @EXPORT = qw();
 use CDS::C::Inline C => <<ENDOFCODE;
+#include <stdlib.h>
+#include <stdint.h>
+
 
 #line 1 "Condensation/../../c/configuration/default.inc.h"
 typedef uint32_t cdsLength;
 #define CDS_MAX_RECORD_DEPTH 64
 
-#line 1 "Condensation/C.inc.c"
+#line 4 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/random/multi-os.inc.c"
-#ifdef WIN32 || WIN64
+#if defined(WIN32) || defined(_WIN32)
 
 #line 1 "Condensation/../../c/random/windows.inc.c"
 #define _CRT_RAND_S
@@ -52,7 +55,7 @@ static void fillRandom(uint8_t * buffer, uint32_t length) {
 #line 4 "Condensation/../../c/random/multi-os.inc.c"
 #endif
 
-#line 2 "Condensation/C.inc.c"
+#line 5 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/littleEndian.inc.c"
 static void copyReversed4(uint8_t * destination, const uint8_t * source) {
@@ -157,7 +160,7 @@ double cdsGetFloat64BE(const uint8_t * bytes) {
 #error "This library was prepared for little-endian processor architectures. Your compiler indicates that you are compiling for a big-endian architecture."
 #endif
 
-#line 3 "Condensation/C.inc.c"
+#line 6 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/all.inc.h"
 #include <stdint.h>
@@ -308,7 +311,7 @@ struct cdsRecord {
 
 #line 8 "Condensation/../../c/Condensation/all.inc.h"
 
-#line 4 "Condensation/C.inc.c"
+#line 7 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/all.inc.c"
 #include <stdio.h>
@@ -755,7 +758,7 @@ static void setUint32(struct cdsBigInteger * x, uint32_t value) {
 static void setRandom(struct cdsBigInteger * x, int n) {
 	assert(n >= 0);
 	assert(n <= CDS_BIG_INTEGER_SIZE);
-	cdsRandomBytes((uint8_t *) x->values, (uint) n * 4);
+	cdsRandomBytes((uint8_t *) x->values, n * 4);
 	x->length = n;
 }
 
@@ -3478,9 +3481,7 @@ struct cdsBytes cdsSerializePublicKey(struct cdsRSAPublicKey * this, struct cdsM
 
 #line 28 "Condensation/../../c/Condensation/all.inc.c"
 
-#line 5 "Condensation/C.inc.c"
-#include <stdlib.h>
-#include <stdint.h>
+#line 8 "Condensation/C.inc.c"
 
 static struct cdsBytes bytesFromSV(SV * sv) {
 	if (! SvPOK(sv)) return cdsEmpty;

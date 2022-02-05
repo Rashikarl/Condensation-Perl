@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.24 (cli) built on 2022-02-03.
+# This is the Condensation Perl Module 0.24 (cli) built on 2022-02-05.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -20,7 +20,7 @@ package CDS;
 
 our $VERSION = '0.24';
 our $edition = 'cli';
-our $releaseDate = '2022-02-03';
+our $releaseDate = '2022-02-05';
 
 sub now { time * 1000 }
 
@@ -163,23 +163,13 @@ sub randomKey {
 sub version { 'Condensation, Perl, '.$CDS::VERSION }
 
 # Conversion of numbers and booleans to and from bytes.
-# To converte text, use Encode::encode_utf8($text) and Encode::decode_utf8($bytes).
-# To converte hex sequences, use pack('H*', $hex) and unpack('H*', $bytes).
+# To convert text, use Encode::encode_utf8($text) and Encode::decode_utf8($bytes).
+# To convert hex sequences, use pack('H*', $hex) and unpack('H*', $bytes).
 
-sub bytesFromUnsigned {
+sub bytesFromBoolean {
 	my $class = shift;
 	my $value = shift;
-
-	return '' if $value < 1;
-	return pack 'C', $value if $value < 0x100;
-	return pack 'S>', $value if $value < 0x10000;
-
-	# This works up to 64 bits
-	my $bytes = pack 'Q>', $value;
-	my $pos = 0;
-	$pos += 1 while substr($bytes, $pos, 1) eq "\0";
-	return substr($bytes, $pos);
-}
+	 $value ? 'y' : '' }
 
 sub bytesFromInteger {
 	my $class = shift;
@@ -215,21 +205,35 @@ sub bytesFromInteger {
 	return substr($bytes, $pos);
 }
 
-sub bytesFromBoolean {
+sub bytesFromUnsigned {
 	my $class = shift;
 	my $value = shift;
-	 $value ? 'y' : '' }
 
-sub unsignedFromBytes {
+	return '' if $value < 1;
+	return pack 'C', $value if $value < 0x100;
+	return pack 'S>', $value if $value < 0x10000;
+
+	# This works up to 64 bits
+	my $bytes = pack 'Q>', $value;
+	my $pos = 0;
+	$pos += 1 while substr($bytes, $pos, 1) eq "\0";
+	return substr($bytes, $pos);
+}
+
+sub bytesFromFloat32 {
+	my $class = shift;
+	my $value = shift;
+	 pack('f', $value) }
+sub bytesFromFloat64 {
+	my $class = shift;
+	my $value = shift;
+	 pack('d', $value) }
+
+sub booleanFromBytes {
 	my $class = shift;
 	my $bytes = shift;
 
-	my $value = 0;
-	for my $i (0 .. length($bytes) - 1) {
-		$value *= 256;
-		$value += unpack('C', substr($bytes, $i, 1));
-	}
-	return $value;
+	return length $bytes > 0;
 }
 
 sub integerFromBytes {
@@ -246,11 +250,25 @@ sub integerFromBytes {
 	return $value;
 }
 
-sub booleanFromBytes {
+sub unsignedFromBytes {
 	my $class = shift;
 	my $bytes = shift;
 
-	return length $bytes > 0;
+	my $value = 0;
+	for my $i (0 .. length($bytes) - 1) {
+		$value *= 256;
+		$value += unpack('C', substr($bytes, $i, 1));
+	}
+	return $value;
+}
+
+sub floatFromBytes {
+	my $class = shift;
+	my $bytes = shift;
+
+	return unpack('f', $bytes) if length $bytes == 4;
+	return unpack('d', $bytes) if length $bytes == 8;
+	return undef;
 }
 
 # Initial counter value for AES in CTR mode
@@ -15101,6 +15119,16 @@ sub addUnsigned {
 	my $value = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	 $o->add(CDS->bytesFromUnsigned($value // 0), $hash) }
+sub addFloat32 {
+	my $o = shift;
+	my $value = shift;
+	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
+	 $o->add(CDS->bytesFromFloat32($value // 0), $hash) }
+sub addFloat64 {
+	my $o = shift;
+	my $value = shift;
+	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
+	 $o->add(CDS->bytesFromFloat64($value // 0), $hash) }
 sub addHash {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
@@ -15197,6 +15225,9 @@ sub asInteger {
 sub asUnsigned {
 	my $o = shift;
 	 CDS->unsignedFromBytes($o->{bytes}) // 0 }
+sub asFloat {
+	my $o = shift;
+	 CDS->floatFromBytes($o->{bytes}) // 0 }
 
 sub asHashAndKey {
 	my $o = shift;
@@ -15224,6 +15255,9 @@ sub integerValue {
 sub unsignedValue {
 	my $o = shift;
 	 $o->firstChild->asUnsigned }
+sub floatValue {
+	my $o = shift;
+	 $o->firstChild->asFloat }
 sub hashAndKeyValue {
 	my $o = shift;
 	 $o->firstChild->asHashAndKey }
@@ -15640,15 +15674,18 @@ sub hashValue {
 sub textValue {
 	my $o = shift;
 	 $o->firstValue->asText }
-sub unsignedValue {
-	my $o = shift;
-	 $o->firstValue->asUnsigned }
-sub integerValue {
-	my $o = shift;
-	 $o->firstValue->asInteger }
 sub booleanValue {
 	my $o = shift;
 	 $o->firstValue->asBoolean }
+sub integerValue {
+	my $o = shift;
+	 $o->firstValue->asInteger }
+sub unsignedValue {
+	my $o = shift;
+	 $o->firstValue->asUnsigned }
+sub floatValue {
+	my $o = shift;
+	 $o->firstValue->asFloat }
 sub hashAndKeyValue {
 	my $o = shift;
 	 $o->firstValue->asHashAndKey }
@@ -15688,6 +15725,16 @@ sub setUnsigned {
 	my $value = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	 $o->setBytes(CDS->bytesFromUnsigned($value), $hash); };
+sub setFloat32 {
+	my $o = shift;
+	my $value = shift;
+	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
+	 $o->setBytes(CDS->bytesFromFloat32($value), $hash); };
+sub setFloat64 {
+	my $o = shift;
+	my $value = shift;
+	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
+	 $o->setBytes(CDS->bytesFromFloat64($value), $hash); };
 sub setHashAndKey {
 	my $o = shift;
 	my $hashAndKey = shift; die 'wrong type '.ref($hashAndKey).' for $hashAndKey' if defined $hashAndKey && ref $hashAndKey ne 'CDS::HashAndKey';
@@ -17753,15 +17800,18 @@ Inline->init;
 
 __DATA__
 __C__
+#include <stdlib.h>
+#include <stdint.h>
+
 
 #line 1 "Condensation/../../c/configuration/default.inc.h"
 typedef uint32_t cdsLength;
 #define CDS_MAX_RECORD_DEPTH 64
 
-#line 1 "Condensation/C.inc.c"
+#line 4 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/random/multi-os.inc.c"
-#ifdef WIN32 || WIN64
+#if defined(WIN32) || defined(_WIN32)
 
 #line 1 "Condensation/../../c/random/windows.inc.c"
 #define _CRT_RAND_S
@@ -17800,7 +17850,7 @@ static void fillRandom(uint8_t * buffer, uint32_t length) {
 #line 4 "Condensation/../../c/random/multi-os.inc.c"
 #endif
 
-#line 2 "Condensation/C.inc.c"
+#line 5 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/littleEndian.inc.c"
 static void copyReversed4(uint8_t * destination, const uint8_t * source) {
@@ -17905,7 +17955,7 @@ double cdsGetFloat64BE(const uint8_t * bytes) {
 #error "This library was prepared for little-endian processor architectures. Your compiler indicates that you are compiling for a big-endian architecture."
 #endif
 
-#line 3 "Condensation/C.inc.c"
+#line 6 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/all.inc.h"
 #include <stdint.h>
@@ -18056,7 +18106,7 @@ struct cdsRecord {
 
 #line 8 "Condensation/../../c/Condensation/all.inc.h"
 
-#line 4 "Condensation/C.inc.c"
+#line 7 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/all.inc.c"
 #include <stdio.h>
@@ -18503,7 +18553,7 @@ static void setUint32(struct cdsBigInteger * x, uint32_t value) {
 static void setRandom(struct cdsBigInteger * x, int n) {
 	assert(n >= 0);
 	assert(n <= CDS_BIG_INTEGER_SIZE);
-	cdsRandomBytes((uint8_t *) x->values, (uint) n * 4);
+	cdsRandomBytes((uint8_t *) x->values, n * 4);
 	x->length = n;
 }
 
@@ -21226,9 +21276,7 @@ struct cdsBytes cdsSerializePublicKey(struct cdsRSAPublicKey * this, struct cdsM
 
 #line 28 "Condensation/../../c/Condensation/all.inc.c"
 
-#line 5 "Condensation/C.inc.c"
-#include <stdlib.h>
-#include <stdint.h>
+#line 8 "Condensation/C.inc.c"
 
 static struct cdsBytes bytesFromSV(SV * sv) {
 	if (! SvPOK(sv)) return cdsEmpty;

@@ -80,9 +80,10 @@ sub firstValue($o) {
 sub bytesValue($o) { $o->firstValue->bytes }
 sub hashValue($o) { $o->firstValue->hash }
 sub textValue($o) { $o->firstValue->asText }
-sub unsignedValue($o) { $o->firstValue->asUnsigned }
-sub integerValue($o) { $o->firstValue->asInteger }
 sub booleanValue($o) { $o->firstValue->asBoolean }
+sub integerValue($o) { $o->firstValue->asInteger }
+sub unsignedValue($o) { $o->firstValue->asUnsigned }
+sub floatValue($o) { $o->firstValue->asFloat }
 sub hashAndKeyValue($o) { $o->firstValue->asHashAndKey }
 
 # Sets a new value unless the node has that value already.
@@ -97,6 +98,8 @@ sub setText($o, $value, $hash) { $o->setBytes(Encode::encode_utf8($value), $hash
 sub setBoolean($o, $value, $hash) { $o->setBytes(CDS->bytesFromBoolean($value), $hash); };
 sub setInteger($o, $value, $hash) { $o->setBytes(CDS->bytesFromInteger($value), $hash); };
 sub setUnsigned($o, $value, $hash) { $o->setBytes(CDS->bytesFromUnsigned($value), $hash); };
+sub setFloat32($o, $value, $hash) { $o->setBytes(CDS->bytesFromFloat32($value), $hash); };
+sub setFloat64($o, $value, $hash) { $o->setBytes(CDS->bytesFromFloat64($value), $hash); };
 sub setHashAndKey($o, $hashAndKey) { $o->setBytes($hashAndKey->key, $hashAndKey->hash); };
 
 # Adding objects and merged sources

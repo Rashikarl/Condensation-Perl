@@ -1,20 +1,10 @@
 # EXTEND CDS
 
 # Conversion of numbers and booleans to and from bytes.
-# To converte text, use Encode::encode_utf8($text) and Encode::decode_utf8($bytes).
-# To converte hex sequences, use pack('H*', $hex) and unpack('H*', $bytes).
+# To convert text, use Encode::encode_utf8($text) and Encode::decode_utf8($bytes).
+# To convert hex sequences, use pack('H*', $hex) and unpack('H*', $bytes).
 
-sub bytesFromUnsigned($class, $value) {
-	return '' if $value < 1;
-	return pack 'C', $value if $value < 0x100;
-	return pack 'S>', $value if $value < 0x10000;
-
-	# This works up to 64 bits
-	my $bytes = pack 'Q>', $value;
-	my $pos = 0;
-	$pos += 1 while substr($bytes, $pos, 1) eq "\0";
-	return substr($bytes, $pos);
-}
+sub bytesFromBoolean($class, $value) { $value ? 'y' : '' }
 
 sub bytesFromInteger($class, $value) {
 	return '' if $value >= 0 && $value < 1;
@@ -47,15 +37,23 @@ sub bytesFromInteger($class, $value) {
 	return substr($bytes, $pos);
 }
 
-sub bytesFromBoolean($class, $value) { $value ? 'y' : '' }
+sub bytesFromUnsigned($class, $value) {
+	return '' if $value < 1;
+	return pack 'C', $value if $value < 0x100;
+	return pack 'S>', $value if $value < 0x10000;
 
-sub unsignedFromBytes($class, $bytes) {
-	my $value = 0;
-	for my $i (0 .. length($bytes) - 1) {
-		$value *= 256;
-		$value += unpack('C', substr($bytes, $i, 1));
-	}
-	return $value;
+	# This works up to 64 bits
+	my $bytes = pack 'Q>', $value;
+	my $pos = 0;
+	$pos += 1 while substr($bytes, $pos, 1) eq "\0";
+	return substr($bytes, $pos);
+}
+
+sub bytesFromFloat32($class, $value) { pack('f', $value) }
+sub bytesFromFloat64($class, $value) { pack('d', $value) }
+
+sub booleanFromBytes($class, $bytes) {
+	return length $bytes > 0;
 }
 
 sub integerFromBytes($class, $bytes) {
@@ -69,8 +67,19 @@ sub integerFromBytes($class, $bytes) {
 	return $value;
 }
 
-sub booleanFromBytes($class, $bytes) {
-	return length $bytes > 0;
+sub unsignedFromBytes($class, $bytes) {
+	my $value = 0;
+	for my $i (0 .. length($bytes) - 1) {
+		$value *= 256;
+		$value += unpack('C', substr($bytes, $i, 1));
+	}
+	return $value;
+}
+
+sub floatFromBytes($class, $bytes) {
+	return unpack('f', $bytes) if length $bytes == 4;
+	return unpack('d', $bytes) if length $bytes == 8;
+	return undef;
 }
 
 # Initial counter value for AES in CTR mode

@@ -63,6 +63,8 @@ accounts||() in CDS::FolderStore|
 addAccount||($accountHash) in CDS::FolderStore|
 addBoolean||($value, $hash) in CDS::Record|
 addEntriesToRecord||($unsortedEntries, $record) in CDS::StoreModifications|
+addFloat32||($value, $hash) in CDS::Record|
+addFloat64||($value, $hash) in CDS::Record|
 addFromObject||($object // return) in CDS::Record|
 addHandler||($handler) in CDS::HTTPServer|
 addHashAndKey||($hashAndKey) in CDS::Record|
@@ -84,6 +86,7 @@ add||($accountHash, $boxLabel, $hash, $object) in CDS::StoreModifications|
 add||($boxLabel, $hash, $keyPair) in CDS::ObjectCache|
 add||($bytes, $hash) in CDS::Record|
 asBoolean||() in CDS::Record|
+asFloat||() in CDS::Record|
 asHashAndKey||() in CDS::Record|
 asInteger||() in CDS::Record|
 asText||() in CDS::Record|
@@ -120,6 +123,8 @@ boxFolderMode||in CDS::FolderStore::PosixPermissions::World|
 box||($request, $accountHash, $boxLabel) in CDS::HTTPServer::StoreHandler|
 byteLength||() in CDS::Object|
 bytesFromBoolean||($value) in CDS STATIC|
+bytesFromFloat32||($value) in CDS STATIC|
+bytesFromFloat64||($value) in CDS STATIC|
 bytesFromInteger||($value) in CDS STATIC|
 bytesFromUnsigned||($value) in CDS STATIC|
 bytesValue||() in CDS::Record|
@@ -179,6 +184,8 @@ fileHandle||in CDS::LogStore|
 fileHandle||in CDS::UI|
 file||($filename) in CDS::Configuration|
 firstChild||() in CDS::Record|
+floatFromBytes||($bytes) in CDS STATIC|
+floatValue||() in CDS::Record|
 folder||in CDS::Configuration|
 folder||in CDS::FolderStore|
 folder||in CDS::HTTPServer::StaticFilesHandler|

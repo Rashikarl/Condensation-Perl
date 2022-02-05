@@ -59,6 +59,7 @@ sub guessValue($o, $bytes) {
 		push @value, $o:ui->gray(' = ', $integer, $o->looksLikeTimestamp($integer) ? ' = '.$o:ui->niceDateTime($integer).' = '.$o:ui->niceDateTimeLocal($integer) : '');
 	}
 
+	push @value, $o:ui->gray(' = ', CDS->floatFromBytes($bytes)) if $length == 4 || $length == 8;
 	push @value, $o:ui->gray(' = ', CDS::Hash->fromBytes($bytes)->hex) if $length == 32;
 	push @value, $o:ui->gray(' (', length $bytes, ' bytes)') if length $bytes > 64;
 	return @value;

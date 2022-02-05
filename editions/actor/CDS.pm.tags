@@ -114,6 +114,8 @@ addDataTo||($record) in CDS::RootDocument|
 addDataTo||($record) in CDS::UnionList|
 addEntriesToRecord||($unsortedEntries, $record) in CDS::StoreModifications|
 addEntrustedActor||($hash, $storeUrl) in CDS::ActorGroupBuilder|
+addFloat32||($value, $hash) in CDS::Record|
+addFloat64||($value, $hash) in CDS::Record|
 addFromObject||($object // return) in CDS::Record|
 addHashAndKey||($hashAndKey) in CDS::Record|
 addHash||($hash) in CDS::RecordWriter|
@@ -150,6 +152,7 @@ add||($publicKey) in CDS::PublicKeyCache|
 announceOnAllStores||() in CDS::ActorWithDocument|
 announce||($store) in CDS::ActorWithDocument|
 asBoolean||() in CDS::Record|
+asFloat||() in CDS::Record|
 asHashAndKey||() in CDS::Record|
 asInteger||() in CDS::Record|
 asText||() in CDS::Record|
@@ -188,6 +191,8 @@ boxFolderMode||in CDS::FolderStore::PosixPermissions::World|
 boxLabel||in CDS::Source|
 byteLength||() in CDS::Object|
 bytesFromBoolean||($value) in CDS STATIC|
+bytesFromFloat32||($value) in CDS STATIC|
+bytesFromFloat64||($value) in CDS STATIC|
 bytesFromInteger||($value) in CDS STATIC|
 bytesFromUnsigned||($value) in CDS STATIC|
 bytesValue||() in CDS::Record|
@@ -303,6 +308,9 @@ file||($filename) in CDS::Configuration|
 findMember||($memberHash) in CDS::ActorWithDocument|
 firstChild||() in CDS::Record|
 firstValue||() in CDS::Selector|
+floatFromBytes||($bytes) in CDS STATIC|
+floatValue||() in CDS::Record|
+floatValue||() in CDS::Selector|
 folder||in CDS::Configuration|
 folder||in CDS::FolderStore|
 forFolder||($folder) in CDS::FolderStore::PosixPermissions STATIC|
@@ -729,6 +737,8 @@ sentListReady||in CDS::ActorWithDocument|
 sentList||in CDS::ActorWithDocument|
 setBoolean||($value, $hash) in CDS::Selector|
 setBytes||($bytes, $hash) in CDS::Selector|
+setFloat32||($value, $hash) in CDS::Selector|
+setFloat64||($value, $hash) in CDS::Selector|
 setHashAndKey||($hashAndKey) in CDS::Selector|
 setHash||($hash) in CDS::Selector|
 setInteger||($value, $hash) in CDS::Selector|

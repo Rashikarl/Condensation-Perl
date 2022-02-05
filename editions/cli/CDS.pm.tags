@@ -182,6 +182,8 @@ addDataTo||($record) in CDS::UnionList|
 addDefault||($node) in CDS::Parser::Node|
 addEntriesToRecord||($unsortedEntries, $record) in CDS::StoreModifications|
 addEntrustedActor||($hash, $storeUrl) in CDS::ActorGroupBuilder|
+addFloat32||($value, $hash) in CDS::Record|
+addFloat64||($value, $hash) in CDS::Record|
 addFromObject||($object // return) in CDS::Record|
 addHandler||($handler) in CDS::HTTPServer|
 addHashAndKey||($hashAndKey) in CDS::Record|
@@ -236,6 +238,7 @@ applyChanges||($actorGroup, $status, $accounts) in CDS::Commands::Announce|
 arrows||() in CDS::Parser::State|
 arrow||in CDS::Parser::State|
 asBoolean||() in CDS::Record|
+asFloat||() in CDS::Record|
 asHashAndKey||() in CDS::Record|
 asInteger||() in CDS::Record|
 asText||() in CDS::Record|
@@ -292,6 +295,8 @@ box||() in CDS::Parser::Token|
 byteData||($label, $bytes) in CDS::Commands::ShowKeyPair|
 byteLength||() in CDS::Object|
 bytesFromBoolean||($value) in CDS STATIC|
+bytesFromFloat32||($value) in CDS STATIC|
+bytesFromFloat64||($value) in CDS STATIC|
 bytesFromInteger||($value) in CDS STATIC|
 bytesFromUnsigned||($value) in CDS STATIC|
 bytesValue||() in CDS::Record|
@@ -656,6 +661,9 @@ findMember||($memberHash) in CDS::ActorWithDocument|
 firstChild||() in CDS::Record|
 firstValue||() in CDS::Selector|
 fixPermissions||($cmd) in CDS::Commands::FolderStore|
+floatFromBytes||($bytes) in CDS STATIC|
+floatValue||() in CDS::Record|
+floatValue||() in CDS::Selector|
 foldername||() in CDS::Parser::Token|
 folder||() in CDS::Parser::Token|
 folder||in CDS::Configuration|
@@ -1379,6 +1387,8 @@ setContentType||($extension, $contentType) in CDS::HTTPServer::StaticFilesHandle
 setCorsAllowEverybody||($value) in CDS::HTTPServer|
 setError||($item) in CDS::Commands::FolderStore::Logger|
 setFlag||($actorSelector, $label, $value) in CDS::Commands::ActorGroup|
+setFloat32||($value, $hash) in CDS::Selector|
+setFloat64||($value, $hash) in CDS::Selector|
 setHashAndKey||($hashAndKey) in CDS::Selector|
 setHash||($hash) in CDS::Selector|
 setHeaders||($newHeaders) in CDS::HTTPServer::Request|

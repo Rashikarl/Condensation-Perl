@@ -1,10 +1,11 @@
+#include <stdlib.h>
+#include <stdint.h>
+
 #insert "../../c/configuration/default.inc.h"
 #insert "../../c/random/multi-os.inc.c"
 #insert "../../c/Condensation/littleEndian.inc.c"
 #insert "../../c/Condensation/all.inc.h"
 #insert "../../c/Condensation/all.inc.c"
-#include <stdlib.h>
-#include <stdint.h>
 
 static struct cdsBytes bytesFromSV(SV * sv) {
 	if (! SvPOK(sv)) return cdsEmpty;

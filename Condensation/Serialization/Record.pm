@@ -29,6 +29,8 @@ sub addText($o, $value, $hash) { $o->add(Encode::encode_utf8($value // ''), $has
 sub addBoolean($o, $value, $hash) { $o->add(CDS->bytesFromBoolean($value), $hash) }
 sub addInteger($o, $value, $hash) { $o->add(CDS->bytesFromInteger($value // 0), $hash) }
 sub addUnsigned($o, $value, $hash) { $o->add(CDS->bytesFromUnsigned($value // 0), $hash) }
+sub addFloat32($o, $value, $hash) { $o->add(CDS->bytesFromFloat32($value // 0), $hash) }
+sub addFloat64($o, $value, $hash) { $o->add(CDS->bytesFromFloat64($value // 0), $hash) }
 sub addHash($o, $hash) { $o->add('', $hash) }
 sub addHashAndKey($o, $hashAndKey) { $hashAndKey ? $o->add($hashAndKey->key, $hashAndKey->hash) : $o->add('') }
 sub addRecord($o; @records) { push @$o:children, @_; return; }
@@ -83,6 +85,7 @@ sub asText($o) { Encode::decode_utf8($o:bytes) // '' }
 sub asBoolean($o) { CDS->booleanFromBytes($o:bytes) }
 sub asInteger($o) { CDS->integerFromBytes($o:bytes) // 0 }
 sub asUnsigned($o) { CDS->unsignedFromBytes($o:bytes) // 0 }
+sub asFloat($o) { CDS->floatFromBytes($o:bytes) // 0 }
 
 sub asHashAndKey($o) {
 	return if ! $o:hash;
@@ -96,6 +99,7 @@ sub textValue($o) { $o->firstChild->asText }
 sub booleanValue($o) { $o->firstChild->asBoolean }
 sub integerValue($o) { $o->firstChild->asInteger }
 sub unsignedValue($o) { $o->firstChild->asUnsigned }
+sub floatValue($o) { $o->firstChild->asFloat }
 sub hashAndKeyValue($o) { $o->firstChild->asHashAndKey }
 
 # *** Dependent hashes

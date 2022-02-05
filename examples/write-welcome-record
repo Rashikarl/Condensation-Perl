@@ -1,0 +1,46 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use Carp::Always;
+use lib 'editions/cli';
+use CDS;
+
+my $record = CDS::Record->new;
+
+my $hi = $record->add('explanation');
+$hi->add('This is a sample record.');
+$hi->add('A record is a tree of byte sequences. These byte sequences may');
+$hi->add('represent text, numbers, booleans, or anything else.');
+$hi->add('The application defines the data schema, i.e. how byte sequences');
+$hi->add('are interpreted. What you see here are just wild guesses of what');
+$hi->add('they may stand for.');
+$hi->add('Lists, dictionaries, and other data structures can easily be');
+$hi->add('built easily using trees.');
+$hi->add('Condensation records are the easiest and most flexible way of');
+$hi->add('storing data in Condensation.');
+
+my $list = $record->add('example list');
+$list->add('Oranges');
+$list->add('Milk');
+$list->add('Eggs');
+$list->add('Tea');
+
+my $dict = $record->add('example dictionary');
+#$dict->add('image')->add('');
+$dict->add('name')->addText('Matterhorn');
+my $pos = $dict->add('location');
+$pos->add('latitude')->addFloat64(45.976389);
+$pos->add('longitude')->addFloat64(7.658611);
+$pos->add('altitude')->addFloat32(4478);
+$dict->add('country')->addText('Switzerland');
+
+my $ui = CDS::UI->new;
+$ui->record($record);
+
+my $object = $record->toObject;
+my $hash = $object->calculateHash;
+my $store = CDS::HTTPStore->forUrl('http://examples.condensation.io');
+my $error = $store->put($hash, $object);
+
+$ui->line('Error: ', $error) if $error;
+$ui->line('Object stored as ', $hash->hex, '.') if ! $error;
