@@ -20,6 +20,7 @@ CollectGarbage|package||
 Commands|package||
 Configuration|package||
 Continuations|package||
+CreateEnvelope|package||
 CreateKeyPair|package||
 Curl|package||
 DAY||in CDS|
@@ -27,10 +28,12 @@ Delete|package||
 DetachedDocument|package||
 DiscoverActorGroup|package||
 Document|package||
+Duration|package||
 EntrustedActors|package||
 EntrustedActor|package||
 Entry|package||
 ErrorHandlingStore|package||
+File|package||
 FixLogger|package||
 FolderStore|package||
 Get|package||
@@ -54,6 +57,7 @@ List|package||
 LoadActorGroup|package||
 LogStore|package||
 Logger|package||
+Log|package||
 MINUTE||in CDS|
 MONTH||in CDS|
 Member|package||
@@ -61,6 +65,7 @@ MessageBoxReaderPool|package||
 MessageBoxReader|package||
 MessageChannel|package||
 MessageGatewayHandler|package||
+MinMax|package||
 MissingObject|package||
 Modify|package||
 NewAnnounce|package||
@@ -82,6 +87,7 @@ PublicKeyCache|package||
 PublicKey|package||
 PutTree|package||
 Put|package||
+Random|package||
 ReceivedMessage|package||
 RecordReader|package||
 RecordWriter|package||
@@ -109,6 +115,7 @@ StartHTTPServer|package||
 State|package||
 StaticContentHandler|package||
 StaticFilesHandler|package||
+Static|package||
 StoreHandler|package||
 StoreModifications|package||
 Store|package||
@@ -119,12 +126,12 @@ Submission|package||
 Token|package||
 Transfer|package||
 UI|package||
-UNKNOWN|package||
 UnionList|package||
 Unsaved|package||
 UseCache|package||
 UseStore|package||
 User|package||
+Version|package||
 WEEK||in CDS|
 Watcher|package||
 Welcome|package||
@@ -175,6 +182,8 @@ addDataTo||($record) in CDS::UnionList|
 addDefault||($node) in CDS::Parser::Node|
 addEntriesToRecord||($unsortedEntries, $record) in CDS::StoreModifications|
 addEntrustedActor||($hash, $storeUrl) in CDS::ActorGroupBuilder|
+addFloat32||($value, $hash) in CDS::Record|
+addFloat64||($value, $hash) in CDS::Record|
 addFromObject||($object // return) in CDS::Record|
 addHandler||($handler) in CDS::HTTPServer|
 addHashAndKey||($hashAndKey) in CDS::Record|
@@ -229,6 +238,7 @@ applyChanges||($actorGroup, $status, $accounts) in CDS::Commands::Announce|
 arrows||() in CDS::Parser::State|
 arrow||in CDS::Parser::State|
 asBoolean||() in CDS::Record|
+asFloat||() in CDS::Record|
 asHashAndKey||() in CDS::Record|
 asInteger||() in CDS::Record|
 asText||() in CDS::Record|
@@ -285,6 +295,8 @@ box||() in CDS::Parser::Token|
 byteData||($label, $bytes) in CDS::Commands::ShowKeyPair|
 byteLength||() in CDS::Object|
 bytesFromBoolean||($value) in CDS STATIC|
+bytesFromFloat32||($value) in CDS STATIC|
+bytesFromFloat64||($value) in CDS STATIC|
 bytesFromInteger||($value) in CDS STATIC|
 bytesFromUnsigned||($value) in CDS STATIC|
 bytesValue||() in CDS::Record|
@@ -532,6 +544,7 @@ content||in CDS::StreamHead|
 context||in CDS::MissingObject|
 copyDataAndCalculateHash||($fh) in CDS::HTTPServer::Request|
 correct||() in CDS::Commands::FolderStore::Logger|
+corsAllowEverybody||in CDS::HTTPServer::Request|
 corsAllowEverybody||in CDS::HTTPServer|
 countEntries||() in CDS::Record|
 covers||($hash) in CDS::DiscoverActorGroup|
@@ -649,6 +662,9 @@ findMember||($memberHash) in CDS::ActorWithDocument|
 firstChild||() in CDS::Record|
 firstValue||() in CDS::Selector|
 fixPermissions||($cmd) in CDS::Commands::FolderStore|
+floatFromBytes||($bytes) in CDS STATIC|
+floatValue||() in CDS::Record|
+floatValue||() in CDS::Selector|
 foldername||() in CDS::Parser::Token|
 folder||() in CDS::Parser::Token|
 folder||in CDS::Configuration|
@@ -756,6 +772,7 @@ hash||in CDS::Source|
 hash||in CDS::StreamHead|
 headers||($headers) in CDS::HTTPServer|
 headers||in CDS::HTTPServer::Request|
+header||($key) in CDS::HTTPServer::Request|
 header||() in CDS::RecordWriter|
 header||in CDS::Object|
 help||($cmd) in CDS::Commands::ActorGroup|
@@ -886,6 +903,7 @@ load||($store, $keyPair, $delegate) in CDS::ActorGroupBuilder|
 localDocument||in CDS::ActorWithDocument|
 localRoot||in CDS::ActorWithDocument|
 localSecondString||($time // 1000 * time) in CDS::ISODate STATIC|
+logger||in CDS::HTTPServer::Request|
 logger||in CDS::HTTPServer|
 log||($cmd, $input, $output, $elapsed) in CDS::LogStore|
 log||() in CDS STATIC|
@@ -1013,6 +1031,7 @@ new||($node, $official, $weight, $label, $handler) in CDS::Parser::Arrow STATIC|
 new||($node, $previous, $arrow, $value, $warnings) in CDS::Parser::State STATIC|
 new||($node, $revision, $status) in CDS::DiscoverActorGroup::Link STATIC|
 new||($object) in CDS::RecordReader STATIC|
+new||($parameters) in CDS::HTTPServer::Request STATIC|
 new||($parent, $baseFolder) in CDS::Commands::FolderStore::Logger STATIC|
 new||($parentSelector) in CDS::SubDocument STATIC|
 new||($path, $content, $contentType) in CDS::HTTPServer::StaticContentHandler STATIC|
@@ -1024,10 +1043,10 @@ new||($privateRoot, $label) in CDS::UnionList STATIC|
 new||($publicKey, $rsaPrivateKey) in CDS::KeyPair STATIC|
 new||($publicKey, $store) in CDS::ActorOnStore STATIC|
 new||($root) in CDS::HTTPServer::IdentificationHandler STATIC|
+new||($root, $actor, $store, $recipientHash) in CDS::HTTPServer::MessageGatewayHandler STATIC|
 new||($root, $folder, $defaultFile // '') in CDS::HTTPServer::StaticFilesHandler STATIC|
 new||($root, $store, $checkPutHash, $checkSignatures // 1) in CDS::HTTPServer::StoreHandler STATIC|
 new||($selector) in CDS::Document::Item STATIC|
-new||($server; %parameters) in CDS::HTTPServer::Request STATIC|
 new||($store) in CDS::Unsaved STATIC|
 new||($store, $fileHandle // *STDERR, $prefix // '') in CDS::LogStore STATIC|
 new||($store, $keyPair, $commitPool) in CDS::PutTree|
@@ -1045,7 +1064,6 @@ new||($uid) in CDS::FolderStore::PosixPermissions::User STATIC|
 new||($unionList, $id) in CDS::SentItem STATIC|
 new||($unionList, $id) in CDS::UnionList::Item STATIC|
 new||($url) in CDS::HTTPStore STATIC|
-new||($url, $identity, $recipient) in CDS::HTTPServer::MessageGatewayHandler STATIC|
 new||() in CDS::ActorGroupBuilder STATIC|
 new||() in CDS::Document::Part STATIC|
 new||() in CDS::FolderStore::PosixPermissions::World STATIC|
@@ -1097,9 +1115,13 @@ onMessageBoxInvalidEntry||($source, $reason) in CDS::Commands::ShowMessages::Pro
 onMessageBoxVerifyStore||($senderStoreUrl, $hash, $envelope, $senderHash) in CDS::CLIActor|
 onMessageBoxVerifyStore||($senderStoreUrl, $hash, $envelope, $senderHash) in CDS::Commands::ShowMessages::ProcessAccount|
 onMessageChannelSubmissionCancelled||() in CDS::GroupDataSharer|
+onMessageChannelSubmissionCancelled||() in CDS::HTTPServer::MessageGatewayHandler|
 onMessageChannelSubmissionDone||($succeeded, $failed) in CDS::GroupDataSharer|
+onMessageChannelSubmissionDone||($succeeded, $failed) in CDS::HTTPServer::MessageGatewayHandler|
 onMessageChannelSubmissionRecipientDone||($recipientActorOnStore) in CDS::GroupDataSharer|
+onMessageChannelSubmissionRecipientDone||($recipientActorOnStore) in CDS::HTTPServer::MessageGatewayHandler|
 onMessageChannelSubmissionRecipientFailed||($recipientActorOnStore) in CDS::GroupDataSharer|
+onMessageChannelSubmissionRecipientFailed||($recipientActorOnStore) in CDS::HTTPServer::MessageGatewayHandler|
 onMissingObject||($missingObject) in CDS::CLIActor|
 onPrivateBoxEntry||($source, $envelope, $contentHashAndKey, $content) in CDS::PrivateRoot|
 onPrivateBoxInvalidEntry||($source, $reason) in CDS::PrivateRoot|
@@ -1363,7 +1385,6 @@ sender||in CDS::ReceivedMessage|
 sender||in CDS::StreamHead|
 sentListReady||in CDS::ActorWithDocument|
 sentList||in CDS::ActorWithDocument|
-server||in CDS::HTTPServer::Request|
 sessionRoot||in CDS::CLIActor|
 setBoolean||($value, $hash) in CDS::Selector|
 setBytes||($bytes, $hash) in CDS::Selector|
@@ -1372,9 +1393,11 @@ setContentType||($extension, $contentType) in CDS::HTTPServer::StaticFilesHandle
 setCorsAllowEverybody||($value) in CDS::HTTPServer|
 setError||($item) in CDS::Commands::FolderStore::Logger|
 setFlag||($actorSelector, $label, $value) in CDS::Commands::ActorGroup|
+setFloat32||($value, $hash) in CDS::Selector|
+setFloat64||($value, $hash) in CDS::Selector|
 setHashAndKey||($hashAndKey) in CDS::Selector|
 setHash||($hash) in CDS::Selector|
-setHeaders||($newHeaders) in CDS::HTTPServer::Request|
+setHeader||($key, $value) in CDS::HTTPServer::Request|
 setInteger||($value, $hash) in CDS::Selector|
 setKeyPair||($keyPair) in CDS::Configuration|
 setLogger||($logger) in CDS::HTTPServer|
@@ -1390,6 +1413,7 @@ setPermissions||($cmd) in CDS::Commands::FolderStore|
 setPermissions||($permissions) in CDS::FolderStore|
 setRecipientActorGroup||($actorGroup) in CDS::MessageChannel|
 setRecipients||($recipients, $entrustedKeys) in CDS::MessageChannel|
+setRemainingData||($remainingData) in CDS::HTTPServer::Request|
 setStorageStoreUrl||($storeUrl) in CDS::Configuration|
 setText||($value, $hash) in CDS::Selector|
 setUnsigned||($value, $hash) in CDS::Selector|

@@ -1,7 +1,6 @@
 # format=pipe
 CDS|package||
 CheckSignatureStore|package||
-Configuration|package||
 DAY||in CDS|
 Duration|package||
 ErrorHandlingStore|package||
@@ -23,7 +22,6 @@ Logger|package||
 Log|package||
 MINUTE||in CDS|
 MONTH||in CDS|
-MessageGatewayHandler|package||
 MinMax|package||
 MissingObject|package||
 ObjectCache|package||
@@ -151,10 +149,9 @@ containsText||($text) in CDS::Record|
 contains||($bytes) in CDS::Record|
 context||in CDS::MissingObject|
 copyDataAndCalculateHash||($fh) in CDS::HTTPServer::Request|
+corsAllowEverybody||in CDS::HTTPServer::Request|
 corsAllowEverybody||in CDS::HTTPServer|
 countEntries||() in CDS::Record|
-createFolder||($folder) in CDS::Configuration|
-createIfNecessary||() in CDS::Configuration|
 createIfNecessary||() in CDS::FolderStore|
 create||($header, $data) in CDS::Object STATIC|
 create||() in CDS::InMemoryStore STATIC|
@@ -182,11 +179,9 @@ executeIndividually||($store, $keyPair) in CDS::StoreModifications|
 exists||() in CDS::FolderStore|
 fileHandle||in CDS::LogStore|
 fileHandle||in CDS::UI|
-file||($filename) in CDS::Configuration|
 firstChild||() in CDS::Record|
 floatFromBytes||($bytes) in CDS STATIC|
 floatValue||() in CDS::Record|
-folder||in CDS::Configuration|
 folder||in CDS::FolderStore|
 folder||in CDS::HTTPServer::StaticFilesHandler|
 forFolder||($folder) in CDS::FolderStore::PosixPermissions STATIC|
@@ -204,7 +199,6 @@ fromHex||($hashHex // return) in CDS::Hash STATIC|
 fromObject||($object // return) in CDS::Record STATIC|
 fromObject||($object) in CDS::PublicKey STATIC|
 fromRecord||($record) in CDS::StoreModifications STATIC|
-getOrCreateDefault||($ui) in CDS::Configuration STATIC|
 get||($hash, $keyPair) in CDS::CheckSignatureStore|
 get||($hash, $keyPair) in CDS::ErrorHandlingStore|
 get||($hash, $keyPair) in CDS::FolderStore|
@@ -237,6 +231,7 @@ hash||in CDS::PublicKey|
 hash||in CDS::Record|
 headers||($headers) in CDS::HTTPServer|
 headers||in CDS::HTTPServer::Request|
+header||($key) in CDS::HTTPServer::Request|
 header||() in CDS::RecordWriter|
 header||in CDS::Object|
 hexDump||($bytes) in CDS::UI|
@@ -255,7 +250,6 @@ integerValue||() in CDS::Record|
 intermediateFolders||($path) in CDS STATIC|
 isEmpty||() in CDS::StoreModifications|
 isValidBoxLabel||($label) in CDS STATIC|
-keyPair||() in CDS::Configuration|
 keyValue||($key, $firstLine; @lines) in CDS::UI|
 key||in CDS::HashAndKey|
 left||($width, $text) in CDS::LogStore|
@@ -272,6 +266,7 @@ list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::LogStore|
 list||($accountHash, $boxLabel, $timeout, $keyPair) in CDS::SplitStore|
 list||($boxLabel, $timeout, $keyPair) in CDS::ObjectCache|
 localSecondString||($time // 1000 * time) in CDS::ISODate STATIC|
+logger||in CDS::HTTPServer::Request|
 logger||in CDS::HTTPServer|
 log||($cmd, $input, $output, $elapsed) in CDS::LogStore|
 log||() in CDS STATIC|
@@ -279,7 +274,6 @@ looksLikeTimestamp||($integer) in CDS::UI::Record|
 markEntry||($entry) in CDS::InMemoryStore|
 markHash||($hash) in CDS::InMemoryStore|
 max||() in CDS STATIC|
-messagingStoreUrl||() in CDS::Configuration|
 method||in CDS::HTTPServer::Request|
 millisecondString||($time // 1000 * time) in CDS::ISODate STATIC|
 mimeTypesByExtension||in CDS::HTTPServer::StaticFilesHandler|
@@ -305,20 +299,18 @@ new||($hash, $store) in CDS::MissingObject STATIC|
 new||($id) in CDS::InMemoryStore|
 new||($key) in CDS::SplitStore STATIC|
 new||($object) in CDS::RecordReader STATIC|
+new||($parameters) in CDS::HTTPServer::Request STATIC|
 new||($path, $content, $contentType) in CDS::HTTPServer::StaticContentHandler STATIC|
 new||($root) in CDS::HTTPServer::IdentificationHandler STATIC|
 new||($root, $folder, $defaultFile // '') in CDS::HTTPServer::StaticFilesHandler STATIC|
 new||($root, $store, $checkPutHash, $checkSignatures // 1) in CDS::HTTPServer::StoreHandler STATIC|
-new||($server; %parameters) in CDS::HTTPServer::Request STATIC|
 new||($store, $fileHandle // *STDERR, $prefix // '') in CDS::LogStore STATIC|
 new||($store, $keyPair, $commitPool) in CDS::PutTree|
 new||($store, $objects) in CDS::CheckSignatureStore|
 new||($store, $url, $errorHandler) in CDS::ErrorHandlingStore STATIC|
 new||($ui, $bytes) in CDS::UI::HexDump STATIC|
-new||($ui, $folder, $defaultStoreFolder) in CDS::Configuration STATIC|
 new||($uid) in CDS::FolderStore::PosixPermissions::User STATIC|
 new||($url) in CDS::HTTPStore STATIC|
-new||($url, $identity, $recipient) in CDS::HTTPServer::MessageGatewayHandler STATIC|
 new||() in CDS::FolderStore::PosixPermissions::World STATIC|
 new||() in CDS::HTTPServer STATIC|
 new||() in CDS::RecordWriter STATIC|
@@ -364,7 +356,6 @@ printTo||($ui, $parent) in CDS::UI::Span|
 print_banner||() in CDS::HTTPServer|
 print||() in CDS::UI|
 process||($request) in CDS::HTTPServer::IdentificationHandler|
-process||($request) in CDS::HTTPServer::MessageGatewayHandler|
 process||($request) in CDS::HTTPServer::StaticContentHandler|
 process||($request) in CDS::HTTPServer::StaticFilesHandler|
 process||($request) in CDS::HTTPServer::StoreHandler|
@@ -393,7 +384,6 @@ readChildren||($record) in CDS::RecordReader|
 readData||() in CDS::HTTPServer::Request|
 readEntriesFromRecord||($entries, $record) in CDS::StoreModifications|
 readFile||($file) in CDS::HTTPServer::StaticFilesHandler|
-readFirstLine||($file) in CDS::Configuration|
 readTextFromFile||($filename) in CDS STATIC|
 readUnsigned32||() in CDS::RecordReader|
 readUnsigned64||() in CDS::RecordReader|
@@ -436,21 +426,17 @@ right||($width, $text) in CDS::UI|
 secondString||($time // 1000 * time) in CDS::ISODate STATIC|
 selectorChildren||($selector) in CDS::UI|
 selector||($selector, $rootLabel) in CDS::UI|
-server||in CDS::HTTPServer::Request|
 setContentType||($extension, $contentType) in CDS::HTTPServer::StaticFilesHandler|
 setCorsAllowEverybody||($value) in CDS::HTTPServer|
-setHeaders||($newHeaders) in CDS::HTTPServer::Request|
-setKeyPair||($keyPair) in CDS::Configuration|
+setHeader||($key, $value) in CDS::HTTPServer::Request|
 setLogger||($logger) in CDS::HTTPServer|
-setMessagingStoreUrl||($storeUrl) in CDS::Configuration|
 setPermissions||($permissions) in CDS::FolderStore|
-setStorageStoreUrl||($storeUrl) in CDS::Configuration|
+setRemainingData||($remainingData) in CDS::HTTPServer::Request|
 setup||() in CDS::HTTPServer|
 set||($bytes, $hash) in CDS::Record|
 shortHex||() in CDS::Hash|
 space||() in CDS::UI|
 span||() in CDS::UI|
-storageStoreUrl||() in CDS::Configuration|
 storeIndex||($hash) in CDS::SplitStore|
 store||in CDS::ErrorHandlingStore|
 store||in CDS::LogStore|
@@ -469,7 +455,6 @@ trailer||() in CDS::RecordReader|
 transfer||($hashes, $sourceStore, $destinationStore) in CDS::KeyPair|
 traverseHashes||($hashes) in CDS::Record|
 uid||in CDS::FolderStore::PosixPermissions|
-ui||in CDS::Configuration|
 underlined||() in CDS::UI|
 unsignedFromBytes||($bytes) in CDS STATIC|
 unsignedValue||() in CDS::Record|

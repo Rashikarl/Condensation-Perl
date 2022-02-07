@@ -1,10 +1,6 @@
-# INCLUDE HTTPServer/IdentificationHandler.pm
 # INCLUDE HTTPServer/Logger.pm
-# INCLUDE HTTPServer/MessageGatewayHandler.pm
 # INCLUDE HTTPServer/Request.pm
-# INCLUDE HTTPServer/StaticContentHandler.pm
-# INCLUDE HTTPServer/StaticFilesHandler.pm
-# INCLUDE HTTPServer/StoreHandler.pm
+
 use Encode;
 use HTTP::Date;
 use HTTP::Server::Simple;
@@ -40,11 +36,29 @@ sub print_banner($o) {
 }
 
 sub setup($o; %parameters) {
-	$o:request = CDS::HTTPServer::Request->new($o, @_);
+	my %parameters = @_;
+	$o:request = CDS::HTTPServer::Request->new({
+		logger => $o->logger,
+		method => $parameters{method},
+		path => $parameters{path},
+		protocol => $parameters{protocol},
+		queryString => $parameters{query_string},
+		peerAddress => $parameters{peeraddr},
+		peerPort => $parameters{peerport},
+		headers => {},
+		corsAllowEverybody => $o->corsAllowEverybody,
+		});
 }
 
 sub headers($o, $headers) {
-	$o:request->setHeaders($headers);
+	while (scalar @$headers) {
+		my $key = shift @$headers;
+		my $value = shift @$headers;
+		$o:request->setHeader($key, $value);
+	}
+
+	# Read the content length
+	$o:request->setRemainingData($o:request->header('content-length') // 0);
 }
 
 sub handler($o) {

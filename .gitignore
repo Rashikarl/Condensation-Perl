@@ -4,3 +4,5 @@ interface
 module/CDS-*.tar.gz
 module/.inline
 .inline
+*.orig
+examples/store

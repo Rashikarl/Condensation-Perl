@@ -1,9 +1,10 @@
-# This is the Condensation Perl Module 0.23 (cli inotify debug) built on 2022-01-17.
+# This is the Condensation Perl Module 0.26 (cli debug) built on 2022-02-07.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
 use warnings;
 use 5.010000;
+
 use Cwd;
 use Digest::SHA;
 use Encode;
@@ -13,15 +14,13 @@ use HTTP::Headers;
 use HTTP::Request;
 use HTTP::Server::Simple;
 use LWP::UserAgent;
-use Linux::Inotify2;
 use Time::Local;
 use utf8;
-
 package CDS;
 
-our $VERSION = '0.23';
-our $edition = 'cli inotify debug';
-our $releaseDate = '2022-01-17';
+our $VERSION = '0.26';
+our $edition = 'cli debug';
+our $releaseDate = '2022-02-07';
 
 #line 3 "Condensation/Duration.pm"
 sub now { time * 1000 }
@@ -198,42 +197,30 @@ sub version { 'Condensation, Perl, '.$CDS::VERSION }
 
 #line 3 "Condensation/Serialization/Static.pm"
 # Conversion of numbers and booleans to and from bytes.
-# To converte text, use Encode::encode_utf8($text) and Encode::decode_utf8($bytes).
-# To converte hex sequences, use pack('H*', $hex) and unpack('H*', $bytes).
+# To convert text, use Encode::encode_utf8($text) and Encode::decode_utf8($bytes).
+# To convert hex sequences, use pack('H*', $hex) and unpack('H*', $bytes).
 
 #line 7 "Condensation/Serialization/Static.pm"
-sub bytesFromUnsigned {
+sub bytesFromBoolean {
 	my $class = shift;
 	my $value = shift;
+	 $value ? 'y' : '' }
 
-#line 8 "Condensation/Serialization/Static.pm"
-	return '' if $value < 1;
-	return pack 'C', $value if $value < 0x100;
-	return pack 'S>', $value if $value < 0x10000;
-
-#line 12 "Condensation/Serialization/Static.pm"
-	# This works up to 64 bits
-	my $bytes = pack 'Q>', $value;
-	my $pos = 0;
-	$pos += 1 while substr($bytes, $pos, 1) eq "\0";
-	return substr($bytes, $pos);
-}
-
-#line 19 "Condensation/Serialization/Static.pm"
+#line 9 "Condensation/Serialization/Static.pm"
 sub bytesFromInteger {
 	my $class = shift;
 	my $value = shift;
 
-#line 20 "Condensation/Serialization/Static.pm"
+#line 10 "Condensation/Serialization/Static.pm"
 	return '' if $value >= 0 && $value < 1;
 	return pack 'c', $value if $value >= -0x80 && $value < 0x80;
 	return pack 's>', $value if $value >= -0x8000 && $value < 0x8000;
 
-#line 24 "Condensation/Serialization/Static.pm"
+#line 14 "Condensation/Serialization/Static.pm"
 	# This works up to 63 bits, plus 1 sign bit
 	my $bytes = pack 'q>', $value;
 
-#line 27 "Condensation/Serialization/Static.pm"
+#line 17 "Condensation/Serialization/Static.pm"
 	my $pos = 0;
 	my $first = ord(substr($bytes, 0, 1));
 	if ($value > 0) {
@@ -254,36 +241,53 @@ sub bytesFromInteger {
 		}
 	}
 
-#line 47 "Condensation/Serialization/Static.pm"
+#line 37 "Condensation/Serialization/Static.pm"
 	return substr($bytes, $pos);
 }
 
-#line 50 "Condensation/Serialization/Static.pm"
-sub bytesFromBoolean {
+#line 40 "Condensation/Serialization/Static.pm"
+sub bytesFromUnsigned {
 	my $class = shift;
 	my $value = shift;
-	 $value ? 'y' : '' }
+
+#line 41 "Condensation/Serialization/Static.pm"
+	return '' if $value < 1;
+	return pack 'C', $value if $value < 0x100;
+	return pack 'S>', $value if $value < 0x10000;
+
+#line 45 "Condensation/Serialization/Static.pm"
+	# This works up to 64 bits
+	my $bytes = pack 'Q>', $value;
+	my $pos = 0;
+	$pos += 1 while substr($bytes, $pos, 1) eq "\0";
+	return substr($bytes, $pos);
+}
 
 #line 52 "Condensation/Serialization/Static.pm"
-sub unsignedFromBytes {
+sub bytesFromFloat32 {
+	my $class = shift;
+	my $value = shift;
+	 pack('f', $value) }
+sub bytesFromFloat64 {
+	my $class = shift;
+	my $value = shift;
+	 pack('d', $value) }
+
+#line 55 "Condensation/Serialization/Static.pm"
+sub booleanFromBytes {
 	my $class = shift;
 	my $bytes = shift;
 
-#line 53 "Condensation/Serialization/Static.pm"
-	my $value = 0;
-	for my $i (0 .. length($bytes) - 1) {
-		$value *= 256;
-		$value += unpack('C', substr($bytes, $i, 1));
-	}
-	return $value;
+#line 56 "Condensation/Serialization/Static.pm"
+	return length $bytes > 0;
 }
 
-#line 61 "Condensation/Serialization/Static.pm"
+#line 59 "Condensation/Serialization/Static.pm"
 sub integerFromBytes {
 	my $class = shift;
 	my $bytes = shift;
 
-#line 62 "Condensation/Serialization/Static.pm"
+#line 60 "Condensation/Serialization/Static.pm"
 	return 0 if ! length $bytes;
 	my $value = unpack('C', substr($bytes, 0, 1));
 	$value -= 0x100 if $value & 0x80;
@@ -294,20 +298,36 @@ sub integerFromBytes {
 	return $value;
 }
 
-#line 72 "Condensation/Serialization/Static.pm"
-sub booleanFromBytes {
+#line 70 "Condensation/Serialization/Static.pm"
+sub unsignedFromBytes {
 	my $class = shift;
 	my $bytes = shift;
 
-#line 73 "Condensation/Serialization/Static.pm"
-	return length $bytes > 0;
+#line 71 "Condensation/Serialization/Static.pm"
+	my $value = 0;
+	for my $i (0 .. length($bytes) - 1) {
+		$value *= 256;
+		$value += unpack('C', substr($bytes, $i, 1));
+	}
+	return $value;
 }
 
-#line 76 "Condensation/Serialization/Static.pm"
+#line 79 "Condensation/Serialization/Static.pm"
+sub floatFromBytes {
+	my $class = shift;
+	my $bytes = shift;
+
+#line 80 "Condensation/Serialization/Static.pm"
+	return unpack('f', $bytes) if length $bytes == 4;
+	return unpack('d', $bytes) if length $bytes == 8;
+	return undef;
+}
+
+#line 85 "Condensation/Serialization/Static.pm"
 # Initial counter value for AES in CTR mode
 sub zeroCTR { "\0" x 16 }
 
-#line 79 "Condensation/Serialization/Static.pm"
+#line 88 "Condensation/Serialization/Static.pm"
 my $emptyBytesHash = CDS::Hash->fromHex('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
 sub emptyBytesHash { $emptyBytesHash }
 
@@ -10758,8 +10778,8 @@ sub show {
 	$ui->p('This is the command line interface (CLI) of Condensation ', $CDS::VERSION, ', ', $CDS::releaseDate, '. Condensation is a distributed data system with conflict-free forward merging and end-to-end security. More information is available on https://condensation.io.');
 	$ui->space;
 	$ui->p('Commands resemble short english sentences. For example, the following "sentence" will show the record of an object:');
-	$ui->line($ui->blue('  cds show record 20716a57ab520e5274230391f2874658473c2874ef8b3c2b7f67bf5b3837b69c \\'));
-	$ui->line($ui->blue('            from http://condensation.io'));
+	$ui->line($ui->blue('  cds show record e5cbfc282e1f3e6fd0f3e5fffd41964c645f44d7fae8ef5cb350c2dfd2196c9f \\'));
+	$ui->line($ui->blue('            from http://examples.condensation.io'));
 	$ui->p('Type a "?" to explore possible commands, e.g.');
 	$ui->line($ui->blue('  cds show ?'));
 	$ui->p('or use TAB or TAB-TAB for command completion.');
@@ -12646,48 +12666,31 @@ sub boxFileMode { 0666 }
 
 package CDS::FolderStore::Watcher;
 
-#line 5 "Condensation/Stores/FolderStore/Watcher.pm"
+#line 34 "Condensation/Stores/FolderStore/Watcher.pm"
 sub new {
 	my $class = shift;
 	my $folder = shift;
 
-#line 6 "Condensation/Stores/FolderStore/Watcher.pm"
-	my $inotify = Linux::Inotify2->new;
-	my $watch = $inotify->watch($folder, Linux::Inotify2::IN_MOVED_TO | Linux::Inotify2::IN_CREATE | Linux::Inotify2::IN_ONESHOT);
-	return bless {
-		folder => $folder,
-		inotify => $inotify,
-		watch => $watch
-		};
+#line 35 "Condensation/Stores/FolderStore/Watcher.pm"
+	return bless {folder => $folder};
 }
 
-#line 15 "Condensation/Stores/FolderStore/Watcher.pm"
+#line 38 "Condensation/Stores/FolderStore/Watcher.pm"
 sub wait {
 	my $o = shift;
 	my $remaining = shift;
 	my $until = shift;
 
-#line 16 "Condensation/Stores/FolderStore/Watcher.pm"
-	my $remainingSeconds = $remaining / 1000;
-	return if $remainingSeconds < 1;
-	eval {
-		local $SIG{ALRM} = sub { die 'alarm' };
-		alarm $remainingSeconds;
-		$o->{inotify}->read;
-		alarm 0;
-	};
-
-#line 25 "Condensation/Stores/FolderStore/Watcher.pm"
+#line 39 "Condensation/Stores/FolderStore/Watcher.pm"
+	return if $remaining <= 0;
+	sleep 1;
 	return 1;
 }
 
-#line 28 "Condensation/Stores/FolderStore/Watcher.pm"
+#line 44 "Condensation/Stores/FolderStore/Watcher.pm"
 sub done {
 	my $o = shift;
-
-#line 29 "Condensation/Stores/FolderStore/Watcher.pm"
-	$o->{watch}->cancel if $o->{watch};
-}
+	 }
 
 #line 1 "Condensation/ActorWithDocument/GroupDataSharer.pm"
 package CDS::GroupDataSharer;
@@ -12888,124 +12891,143 @@ sub processGroupDataMessage {
 	return 1;
 }
 
-#line 11 "Condensation/HTTPServer/HTTPServer.pm"
 package CDS::HTTPServer;
 
+#line 7 "Condensation/HTTPServer/HTTPServer.pm"
 use parent -norequire, 'HTTP::Server::Simple';
 
-#line 13 "Condensation/HTTPServer/HTTPServer.pm"
+#line 9 "Condensation/HTTPServer/HTTPServer.pm"
 sub new {
 	my $class = shift;
 
-#line 14 "Condensation/HTTPServer/HTTPServer.pm"
+#line 10 "Condensation/HTTPServer/HTTPServer.pm"
 	my $o = $class->SUPER::new(@_);
 	$o->{logger} = CDS::HTTPServer::Logger->new(*STDERR);
 	$o->{handlers} = [];
 	return $o;
 }
 
-#line 20 "Condensation/HTTPServer/HTTPServer.pm"
+#line 16 "Condensation/HTTPServer/HTTPServer.pm"
 sub addHandler {
 	my $o = shift;
 	my $handler = shift;
 
-#line 21 "Condensation/HTTPServer/HTTPServer.pm"
+#line 17 "Condensation/HTTPServer/HTTPServer.pm"
 	push @{$o->{handlers}}, $handler;
 }
 
-#line 24 "Condensation/HTTPServer/HTTPServer.pm"
+#line 20 "Condensation/HTTPServer/HTTPServer.pm"
 sub setLogger {
 	my $o = shift;
 	my $logger = shift;
 
-#line 25 "Condensation/HTTPServer/HTTPServer.pm"
+#line 21 "Condensation/HTTPServer/HTTPServer.pm"
 	$o->{logger} = $logger;
 }
 
-#line 28 "Condensation/HTTPServer/HTTPServer.pm"
+#line 24 "Condensation/HTTPServer/HTTPServer.pm"
 sub logger { shift->{logger} }
 
-#line 30 "Condensation/HTTPServer/HTTPServer.pm"
+#line 26 "Condensation/HTTPServer/HTTPServer.pm"
 sub setCorsAllowEverybody {
 	my $o = shift;
 	my $value = shift;
 
-#line 31 "Condensation/HTTPServer/HTTPServer.pm"
+#line 27 "Condensation/HTTPServer/HTTPServer.pm"
 	$o->{corsAllowEverybody} = $value;
 }
 
-#line 34 "Condensation/HTTPServer/HTTPServer.pm"
+#line 30 "Condensation/HTTPServer/HTTPServer.pm"
 sub corsAllowEverybody { shift->{corsAllowEverybody} }
 
-#line 36 "Condensation/HTTPServer/HTTPServer.pm"
+#line 32 "Condensation/HTTPServer/HTTPServer.pm"
 # *** HTTP::Server::Simple interface
 
-#line 38 "Condensation/HTTPServer/HTTPServer.pm"
+#line 34 "Condensation/HTTPServer/HTTPServer.pm"
 sub print_banner {
 	my $o = shift;
 
-#line 39 "Condensation/HTTPServer/HTTPServer.pm"
+#line 35 "Condensation/HTTPServer/HTTPServer.pm"
 	$o->{logger}->onServerStarts($o->port);
 }
 
-#line 42 "Condensation/HTTPServer/HTTPServer.pm"
+#line 38 "Condensation/HTTPServer/HTTPServer.pm"
 sub setup {
 	my $o = shift;
 
-#line 43 "Condensation/HTTPServer/HTTPServer.pm"
-	$o->{request} = CDS::HTTPServer::Request->new($o, @_);
+#line 39 "Condensation/HTTPServer/HTTPServer.pm"
+	my %parameters = @_;
+	$o->{request} = CDS::HTTPServer::Request->new({
+		logger => $o->logger,
+		method => $parameters{method},
+		path => $parameters{path},
+		protocol => $parameters{protocol},
+		queryString => $parameters{query_string},
+		peerAddress => $parameters{peeraddr},
+		peerPort => $parameters{peerport},
+		headers => {},
+		corsAllowEverybody => $o->corsAllowEverybody,
+		});
 }
 
-#line 46 "Condensation/HTTPServer/HTTPServer.pm"
+#line 53 "Condensation/HTTPServer/HTTPServer.pm"
 sub headers {
 	my $o = shift;
 	my $headers = shift;
 
-#line 47 "Condensation/HTTPServer/HTTPServer.pm"
-	$o->{request}->setHeaders($headers);
+#line 54 "Condensation/HTTPServer/HTTPServer.pm"
+	while (scalar @$headers) {
+		my $key = shift @$headers;
+		my $value = shift @$headers;
+		$o->{request}->setHeader($key, $value);
+	}
+
+#line 60 "Condensation/HTTPServer/HTTPServer.pm"
+	# Read the content length
+	$o->{request}->setRemainingData($o->{request}->header('content-length') // 0);
 }
 
-#line 50 "Condensation/HTTPServer/HTTPServer.pm"
+#line 64 "Condensation/HTTPServer/HTTPServer.pm"
 sub handler {
 	my $o = shift;
 
-#line 51 "Condensation/HTTPServer/HTTPServer.pm"
+#line 65 "Condensation/HTTPServer/HTTPServer.pm"
 	# Start writing the log line
 	$o->{logger}->onRequestStarts($o->{request});
 
-#line 54 "Condensation/HTTPServer/HTTPServer.pm"
+#line 68 "Condensation/HTTPServer/HTTPServer.pm"
 	# Process the request
 	my $responseCode = $o->process;
 	$o->{logger}->onRequestDone($o->{request}, $responseCode);
 
-#line 58 "Condensation/HTTPServer/HTTPServer.pm"
+#line 72 "Condensation/HTTPServer/HTTPServer.pm"
 	# Wrap up
 	$o->{request}->dropData;
 	$o->{request} = undef;
 	return;
 }
 
-#line 64 "Condensation/HTTPServer/HTTPServer.pm"
+#line 78 "Condensation/HTTPServer/HTTPServer.pm"
 sub process {
 	my $o = shift;
 
-#line 65 "Condensation/HTTPServer/HTTPServer.pm"
+#line 79 "Condensation/HTTPServer/HTTPServer.pm"
 	# Run the handler
 	for my $handler (@{$o->{handlers}}) {
 		my $responseCode = $handler->process($o->{request}) || next;
 		return $responseCode;
 	}
 
-#line 71 "Condensation/HTTPServer/HTTPServer.pm"
+#line 85 "Condensation/HTTPServer/HTTPServer.pm"
 	# Default handler
 	return $o->{request}->reply404;
 }
 
-#line 75 "Condensation/HTTPServer/HTTPServer.pm"
+#line 89 "Condensation/HTTPServer/HTTPServer.pm"
 sub bad_request {
 	my $o = shift;
 
-#line 76 "Condensation/HTTPServer/HTTPServer.pm"
+#line 90 "Condensation/HTTPServer/HTTPServer.pm"
 	my $content = 'Bad Request';
 	print 'HTTP/1.1 400 Bad Request', "\r\n";
 	print 'Content-Length: ', length $content, "\r\n";
@@ -13116,12 +13138,13 @@ package CDS::HTTPServer::MessageGatewayHandler;
 
 sub new {
 	my $class = shift;
-	my $url = shift;
-	my $identity = shift;
-	my $recipient = shift;
+	my $root = shift;
+	my $actor = shift;
+	my $store = shift;
+	my $recipientHash = shift; die 'wrong type '.ref($recipientHash).' for $recipientHash' if defined $recipientHash && ref $recipientHash ne 'CDS::Hash';
 
 #line 2 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
-	return bless {url => $url, identity => $identity, recipient => $recipient};
+	return bless {root => $root, actor => $actor, store => $store, recipientHash => $recipientHash};
 }
 
 #line 5 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
@@ -13130,8 +13153,8 @@ sub process {
 	my $request = shift;
 
 #line 6 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
-	$request->path =~ /^\/data$/ || return;
-	my $store = $request->server->store;
+	my $path = $request->pathAbove($o->{root}) // return;
+	return if $path ne '/';
 
 #line 9 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
 	# Options
@@ -13139,56 +13162,85 @@ sub process {
 
 #line 12 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
 	# Prepare a message
-	my $record = CDS::Record->new;
-	$record->add('time')->addInteger(CDS->now);
-	$record->add('ip')->add($request->peerAddress);
-	$record->add('method')->add($request->method);
-	$record->add('path')->add($request->path);
-	$record->add('query string')->add($request->queryString);
+	my $message = CDS::Record->new;
+	$message->add('time')->addInteger(CDS->now);
+	$message->add('ip')->add($request->peerAddress);
+	$message->add('method')->add($request->method);
+	$message->add('path')->add($request->path);
+	$message->add('query string')->add($request->queryString);
 
 #line 20 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
-	my $headersRecord = $record->add('headers');
+	my $headersRecord = $message->add('headers');
 	my $headers = $request->headers;
 	for my $key (keys %$headers) {
 		$headersRecord->add($key)->add($headers->{$key});
 	}
 
 #line 26 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
-	$record->add('data')->add($request->readData) if $request->remainingData;
+	# Prepare a channel
+	my $channel = CDS::MessageChannel->new($o->{actor}, CDS->randomBytes(8), CDS->WEEK);
+	$o->{messageChannel}->setRecipients([$o->{recipientHash}], []);
 
-#line 28 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
-	# Post it
-	my $success = $o->{identity}->sendMessageRecord($record, undef, [$o->{recipient}]);
-	return $success ? $request->reply200 : $request->reply500('Unable to send the message.');
+#line 30 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
+	# Add the data
+	if ($request->remainingData > 1024) {
+		# Store the data as a separate object
+		my $object = CDS::Object->create(CDS::Object->emptyHeader, $request->readData);
+		my $key = CDS->randomKey;
+		my $encryptedObject = $object->crypt($key);
+		my $hash = $encryptedObject->calculateHash;
+		$message->add('data')->addHash($hash);
+		$channel->addObject($hash, $encryptedObject);
+	} elsif ($request->remainingData) {
+		$message->add('data')->add($request->readData)
+	}
+
+#line 43 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
+	# Submit
+	my ($submission, $missingObject) = $channel->submit($message, $o);
+	$o->{actor}->sendMessages;
+
+#line 47 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
+	return $submission ? $request->reply200 : $request->reply500('Unable to send the message.');
 }
+
+#line 50 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
+sub onMessageChannelSubmissionCancelled {
+	my $o = shift;
+	 }
+
+#line 52 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
+sub onMessageChannelSubmissionRecipientDone {
+	my $o = shift;
+	my $recipientActorOnStore = shift; die 'wrong type '.ref($recipientActorOnStore).' for $recipientActorOnStore' if defined $recipientActorOnStore && ref $recipientActorOnStore ne 'CDS::ActorOnStore';
+	 }
+
+#line 54 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
+sub onMessageChannelSubmissionRecipientFailed {
+	my $o = shift;
+	my $recipientActorOnStore = shift; die 'wrong type '.ref($recipientActorOnStore).' for $recipientActorOnStore' if defined $recipientActorOnStore && ref $recipientActorOnStore ne 'CDS::ActorOnStore';
+	 }
+
+#line 56 "Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm"
+sub onMessageChannelSubmissionDone {
+	my $o = shift;
+	my $succeeded = shift;
+	my $failed = shift;
+	 }
 
 #line 1 "Condensation/HTTPServer/HTTPServer/Request.pm"
 package CDS::HTTPServer::Request;
 
 sub new {
 	my $class = shift;
-	my $server = shift;
+	my $parameters = shift;
 
 #line 2 "Condensation/HTTPServer/HTTPServer/Request.pm"
-	my %parameters = @_;
-	return bless {
-		server => $server,
-		method => $parameters{method},
-		path => $parameters{path},
-		protocol => $parameters{protocol},
-		queryString => $parameters{query_string},
-		localName => $parameters{localname},
-		localPort => $parameters{localport},
-		peerName => $parameters{peername},
-		peerAddress => $parameters{peeraddr},
-		peerPort => $parameters{peerport},
-		headers => {},
-		remainingData => 0,
-		};
+	return bless $parameters;
 }
 
-#line 19 "Condensation/HTTPServer/HTTPServer/Request.pm"
-sub server { shift->{server} }
+#line 5 "Condensation/HTTPServer/HTTPServer/Request.pm"
+sub logger { shift->{logger} }
 sub method { shift->{method} }
 sub path { shift->{path} }
 sub queryString { shift->{queryString} }
@@ -13196,48 +13248,40 @@ sub peerAddress { shift->{peerAddress} }
 sub peerPort { shift->{peerPort} }
 sub headers { shift->{headers} }
 sub remainingData { shift->{remainingData} }
+sub corsAllowEverybody { shift->{corsAllowEverybody} }
 
-#line 28 "Condensation/HTTPServer/HTTPServer/Request.pm"
-# *** Request configuration
+#line 15 "Condensation/HTTPServer/HTTPServer/Request.pm"
+# *** Path
 
-#line 30 "Condensation/HTTPServer/HTTPServer/Request.pm"
-sub setHeaders {
-	my $o = shift;
-	my $newHeaders = shift;
-
-#line 31 "Condensation/HTTPServer/HTTPServer/Request.pm"
-	# Set the headers
-	while (scalar @$newHeaders) {
-		my $key = shift @$newHeaders;
-		my $value = shift @$newHeaders;
-		$o->{headers}->{lc($key)} = $value;
-	}
-
-#line 38 "Condensation/HTTPServer/HTTPServer/Request.pm"
-	# Keep track of the data sent along with the request
-	$o->{remainingData} = $o->{headers}->{'content-length'} // 0;
-}
-
-#line 42 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 17 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub pathAbove {
 	my $o = shift;
 	my $root = shift;
 
-#line 43 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 18 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	$root .= '/' if $root !~ /\/$/;
 	return if substr($o->{path}, 0, length $root) ne $root;
 	return substr($o->{path}, length($root) - 1);
 }
 
-#line 48 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 23 "Condensation/HTTPServer/HTTPServer/Request.pm"
 # *** Request data
 
-#line 50 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 25 "Condensation/HTTPServer/HTTPServer/Request.pm"
+sub setRemainingData {
+	my $o = shift;
+	my $remainingData = shift;
+
+#line 26 "Condensation/HTTPServer/HTTPServer/Request.pm"
+	$o->{remainingData} = $remainingData;
+}
+
+#line 29 "Condensation/HTTPServer/HTTPServer/Request.pm"
 # Reads the request data
 sub readData {
 	my $o = shift;
 
-#line 52 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 31 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	my @buffers;
 	while ($o->{remainingData} > 0) {
 		my $read = sysread(STDIN, my $buffer, $o->{remainingData}) || return;
@@ -13245,17 +13289,17 @@ sub readData {
 		push @buffers, $buffer;
 	}
 
-#line 59 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 38 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	return join('', @buffers);
 }
 
-#line 62 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 41 "Condensation/HTTPServer/HTTPServer/Request.pm"
 # Read the request data and writes it directly to a file handle
 sub copyDataAndCalculateHash {
 	my $o = shift;
 	my $fh = shift;
 
-#line 64 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 43 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	my $sha = Digest::SHA->new(256);
 	while ($o->{remainingData} > 0) {
 		my $read = sysread(STDIN, my $buffer, $o->{remainingData}) || return;
@@ -13264,32 +13308,54 @@ sub copyDataAndCalculateHash {
 		print $fh $buffer;
 	}
 
-#line 72 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 51 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	return $sha->digest;
 }
 
-#line 75 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 54 "Condensation/HTTPServer/HTTPServer/Request.pm"
 # Reads and drops the request data
 sub dropData {
 	my $o = shift;
 
-#line 77 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 56 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	while ($o->{remainingData} > 0) {
 		$o->{remainingData} -= read(STDIN, my $buffer, $o->{remainingData}) || return;
 	}
 }
 
-#line 82 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 61 "Condensation/HTTPServer/HTTPServer/Request.pm"
+# *** Headers
+
+#line 63 "Condensation/HTTPServer/HTTPServer/Request.pm"
+sub setHeader {
+	my $o = shift;
+	my $key = shift;
+	my $value = shift;
+
+#line 64 "Condensation/HTTPServer/HTTPServer/Request.pm"
+	$o->{headers}->{lc($key)} = $value;
+}
+
+#line 67 "Condensation/HTTPServer/HTTPServer/Request.pm"
+sub header {
+	my $o = shift;
+	my $key = shift;
+
+#line 68 "Condensation/HTTPServer/HTTPServer/Request.pm"
+	return $o->{headers}->{lc($key)};
+}
+
+#line 71 "Condensation/HTTPServer/HTTPServer/Request.pm"
 # *** Query string
 
-#line 84 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 73 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub parseQueryString {
 	my $o = shift;
 
-#line 85 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 74 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	return {} if ! defined $o->{queryString};
 
-#line 87 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 76 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	my $values = {};
 	for my $pair (split /&/, $o->{queryString}) {
 		if ($pair =~ /^(.*?)=(.*)$/) {
@@ -13301,112 +13367,112 @@ sub parseQueryString {
 		}
 	}
 
-#line 98 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 87 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	return $values;
 }
 
-#line 101 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 90 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub uri_decode {
 	my $encoded = shift;
 
-#line 102 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 91 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	$encoded =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
 	return $encoded;
 }
 
-#line 106 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 95 "Condensation/HTTPServer/HTTPServer/Request.pm"
 # *** Condensation signature
 
-#line 108 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 97 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub checkSignature {
 	my $o = shift;
 	my $store = shift;
 	my $contentBytesToSign = shift;
 
-#line 109 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 98 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Check the date
 	my $dateString = $o->{headers}->{'condensation-date'} // $o->{headers}->{'date'} // return;
 	my $date = HTTP::Date::str2time($dateString) // return;
 	my $now = time;
 	return if $date < $now - 120 || $date > $now + 60;
 
-#line 115 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 104 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Get and check the actor
 	my $actorHash = CDS::Hash->fromHex($o->{headers}->{'condensation-actor'}) // return;
 	my ($publicKeyObject, $error) = $store->get($actorHash);
-	return if defined $error;
+	return if ! $publicKeyObject;
 	return if ! $publicKeyObject->calculateHash->equals($actorHash);
 	my $publicKey = CDS::PublicKey->fromObject($publicKeyObject) // return;
 
-#line 122 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 111 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Text to sign
 	my $bytesToSign = $dateString."\0".uc($o->{method})."\0".$o->{headers}->{'host'}.$o->{path};
 	$bytesToSign .= "\0".$contentBytesToSign if defined $contentBytesToSign;
 	my $hashToSign = CDS::Hash->calculateFor($bytesToSign);
 
-#line 127 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 116 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Check the signature
 	my $signatureString = $o->{headers}->{'condensation-signature'} // return;
 	$signatureString =~ /^\s*([0-9a-z]{512,512})\s*$/ // return;
 	my $signature = pack('H*', $1);
 	return if ! $publicKey->verifyHash($hashToSign, $signature);
 
-#line 133 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 122 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Return the verified actor hash
 	return $actorHash;
 }
 
-#line 137 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 126 "Condensation/HTTPServer/HTTPServer/Request.pm"
 # *** Reply functions
 
-#line 139 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 128 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub reply200 {
 	my $o = shift;
 	my $content = shift // '';
 
-#line 140 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 129 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	return length $content ? $o->reply(200, 'OK', &textContentType, $content) : $o->reply(204, 'No Content', {});
 }
 
-#line 143 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 132 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub reply200Bytes {
 	my $o = shift;
 	my $content = shift // '';
 
-#line 144 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 133 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	return length $content ? $o->reply(200, 'OK', {'Content-Type' => 'application/octet-stream'}, $content) : $o->reply(204, 'No Content', {});
 }
 
-#line 147 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 136 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub reply200HTML {
 	my $o = shift;
 	my $content = shift // '';
 
-#line 148 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 137 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	return length $content ? $o->reply(200, 'OK', {'Content-Type' => 'text/html; charset=utf-8'}, $content) : $o->reply(204, 'No Content', {});
 }
 
-#line 151 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 140 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub replyOptions {
 	my $o = shift;
 
-#line 152 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 141 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	my $headers = {};
 	$headers->{'Allow'} = join(', ', @_, 'OPTIONS');
-	$headers->{'Access-Control-Allow-Methods'} = join(', ', @_, 'OPTIONS') if $o->{server}->corsAllowEverybody && $o->{headers}->{'origin'};
+	$headers->{'Access-Control-Allow-Methods'} = join(', ', @_, 'OPTIONS') if $o->corsAllowEverybody && $o->{headers}->{'origin'};
 	return $o->reply(200, 'OK', $headers);
 }
 
-#line 158 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 147 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub replyFatalError {
 	my $o = shift;
 
-#line 159 "Condensation/HTTPServer/HTTPServer/Request.pm"
-	$o->{server}->{logger}->onRequestError($o, @_);
+#line 148 "Condensation/HTTPServer/HTTPServer/Request.pm"
+	$o->{logger}->onRequestError($o, @_);
 	return $o->reply500;
 }
 
-#line 163 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 152 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub reply303 {
 	my $o = shift;
 	my $location = shift;
@@ -13418,7 +13484,7 @@ sub reply405 { shift->reply(405, 'Method Not Allowed', &textContentType, @_) }
 sub reply500 { shift->reply(500, 'Internal Server Error', &textContentType, @_) }
 sub reply503 { shift->reply(503, 'Service Not Available', &textContentType, @_) }
 
-#line 171 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 160 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub reply {
 	my $o = shift;
 	my $responseCode = shift;
@@ -13426,19 +13492,19 @@ sub reply {
 	my $headers = shift // {};
 	my $content = shift // '';
 
-#line 172 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 161 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Content-related headers
 	$headers->{'Content-Length'} = length($content);
 
-#line 175 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 164 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Origin
-	if ($o->{server}->corsAllowEverybody && (my $origin = $o->{headers}->{'origin'})) {
+	if ($o->corsAllowEverybody && (my $origin = $o->{headers}->{'origin'})) {
 		$headers->{'Access-Control-Allow-Origin'} = $origin;
 		$headers->{'Access-Control-Allow-Headers'} = 'Content-Type';
 		$headers->{'Access-Control-Max-Age'} = '86400';
 	}
 
-#line 182 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 171 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Write the reply
 	print 'HTTP/1.1 ', $responseCode, ' ', $responseLabel, "\r\n";
 	for my $key (keys %$headers) {
@@ -13447,12 +13513,12 @@ sub reply {
 	print "\r\n";
 	print $content if $o->{method} ne 'HEAD';
 
-#line 190 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 179 "Condensation/HTTPServer/HTTPServer/Request.pm"
 	# Return the response code
 	return $responseCode;
 }
 
-#line 194 "Condensation/HTTPServer/HTTPServer/Request.pm"
+#line 183 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub textContentType { {'Content-Type' => 'text/plain; charset=utf-8'} }
 
 #line 1 "Condensation/HTTPServer/HTTPServer/StaticContentHandler.pm"
@@ -14424,30 +14490,30 @@ sub collectGarbage {
 
 #line 62 "Condensation/Stores/InMemoryStore.pm"
 	# Mark all objects as not used
-	for my $entry (values @{$o->{objects}}) {
+	for my $entry (values %{$o->{objects}}) {
 		$entry->{inUse} = 0;
 	}
 
 #line 67 "Condensation/Stores/InMemoryStore.pm"
 	# Mark all objects newer than the grace time
-	for my $entry (values @{$o->{objects}}) {
+	for my $entry (values %{$o->{objects}}) {
 		$o->markEntry($entry) if $entry->{booked} > $graceTime;
 	}
 
 #line 72 "Condensation/Stores/InMemoryStore.pm"
 	# Mark all objects referenced from a box
-	for my $account (values @{$o->{accounts}}) {
-		for my $hash (values @{$account->{messages}}) { $o->markHash($hash); }
-		for my $hash (values @{$account->{private}}) { $o->markHash($hash); }
-		for my $hash (values @{$account->{public}}) { $o->markHash($hash); }
+	for my $account (values %{$o->{accounts}}) {
+		for my $hash (values %{$account->{messages}}) { $o->markHash($hash); }
+		for my $hash (values %{$account->{private}}) { $o->markHash($hash); }
+		for my $hash (values %{$account->{public}}) { $o->markHash($hash); }
 	}
 
 #line 79 "Condensation/Stores/InMemoryStore.pm"
 	# Remove empty accounts
 	while (my ($key, $account) = each %{$o->{accounts}}) {
-		next if scalar @{$account->{messages}};
-		next if scalar @{$account->{private}};
-		next if scalar @{$account->{public}};
+		next if scalar keys %{$account->{messages}};
+		next if scalar keys %{$account->{private}};
+		next if scalar keys %{$account->{public}};
 		delete $o->{accounts}->{$key};
 	}
 
@@ -17874,6 +17940,16 @@ sub addUnsigned {
 	my $value = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	 $o->add(CDS->bytesFromUnsigned($value // 0), $hash) }
+sub addFloat32 {
+	my $o = shift;
+	my $value = shift;
+	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
+	 $o->add(CDS->bytesFromFloat32($value // 0), $hash) }
+sub addFloat64 {
+	my $o = shift;
+	my $value = shift;
+	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
+	 $o->add(CDS->bytesFromFloat64($value // 0), $hash) }
 sub addHash {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
@@ -17886,74 +17962,74 @@ sub addRecord {
 	my $o = shift;
 	 push @{$o->{children}}, @_; return; }
 
-#line 36 "Condensation/Serialization/Record.pm"
+#line 38 "Condensation/Serialization/Record.pm"
 sub addFromObject {
 	my $o = shift;
 	my $object = shift // return; die 'wrong type '.ref($object).' for $object' if defined $object && ref $object ne 'CDS::Object';
 
-#line 37 "Condensation/Serialization/Record.pm"
+#line 39 "Condensation/Serialization/Record.pm"
 	return 1 if ! length $object->data;
 	return CDS::RecordReader->new($object)->readChildren($o);
 }
 
-#line 41 "Condensation/Serialization/Record.pm"
+#line 43 "Condensation/Serialization/Record.pm"
 # *** Set value
 
-#line 43 "Condensation/Serialization/Record.pm"
+#line 45 "Condensation/Serialization/Record.pm"
 sub set {
 	my $o = shift;
 	my $bytes = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 44 "Condensation/Serialization/Record.pm"
+#line 46 "Condensation/Serialization/Record.pm"
 	$o->{bytes} = $bytes;
 	$o->{hash} = $hash;
 	return;
 }
 
-#line 49 "Condensation/Serialization/Record.pm"
+#line 51 "Condensation/Serialization/Record.pm"
 # *** Querying
 
-#line 51 "Condensation/Serialization/Record.pm"
+#line 53 "Condensation/Serialization/Record.pm"
 # Returns true if the record contains a child with the indicated bytes.
 sub contains {
 	my $o = shift;
 	my $bytes = shift;
 
-#line 53 "Condensation/Serialization/Record.pm"
+#line 55 "Condensation/Serialization/Record.pm"
 	for my $child (@{$o->{children}}) {
 		return 1 if $child->{bytes} eq $bytes;
 	}
 	return;
 }
 
-#line 59 "Condensation/Serialization/Record.pm"
+#line 61 "Condensation/Serialization/Record.pm"
 # Returns the child record for the given bytes. If no record with these bytes exists, a record with these bytes is returned (but not added).
 sub child {
 	my $o = shift;
 	my $bytes = shift;
 
-#line 61 "Condensation/Serialization/Record.pm"
+#line 63 "Condensation/Serialization/Record.pm"
 	for my $child (@{$o->{children}}) {
 		return $child if $child->{bytes} eq $bytes;
 	}
 	return $o->new($bytes);
 }
 
-#line 67 "Condensation/Serialization/Record.pm"
+#line 69 "Condensation/Serialization/Record.pm"
 # Returns the first child, or an empty record.
 sub firstChild {
 	my $o = shift;
 	 $o->{children}->[0] // $o->new }
 
-#line 70 "Condensation/Serialization/Record.pm"
+#line 72 "Condensation/Serialization/Record.pm"
 # Returns the nth child, or an empty record.
 sub nthChild {
 	my $o = shift;
 	my $i = shift;
 	 $o->{children}->[$i] // $o->new }
 
-#line 73 "Condensation/Serialization/Record.pm"
+#line 75 "Condensation/Serialization/Record.pm"
 sub containsText {
 	my $o = shift;
 	my $text = shift;
@@ -17963,17 +18039,17 @@ sub childWithText {
 	my $text = shift;
 	 $o->child(Encode::encode_utf8($text // '')) }
 
-#line 76 "Condensation/Serialization/Record.pm"
+#line 78 "Condensation/Serialization/Record.pm"
 # *** Get value
 
-#line 78 "Condensation/Serialization/Record.pm"
+#line 80 "Condensation/Serialization/Record.pm"
 sub bytes { shift->{bytes} }
 sub hash { shift->{hash} }
 sub children {
 	my $o = shift;
 	 @{$o->{children}} }
 
-#line 82 "Condensation/Serialization/Record.pm"
+#line 84 "Condensation/Serialization/Record.pm"
 sub asText {
 	my $o = shift;
 	 Encode::decode_utf8($o->{bytes}) // '' }
@@ -17986,18 +18062,21 @@ sub asInteger {
 sub asUnsigned {
 	my $o = shift;
 	 CDS->unsignedFromBytes($o->{bytes}) // 0 }
+sub asFloat {
+	my $o = shift;
+	 CDS->floatFromBytes($o->{bytes}) // 0 }
 
-#line 87 "Condensation/Serialization/Record.pm"
+#line 90 "Condensation/Serialization/Record.pm"
 sub asHashAndKey {
 	my $o = shift;
 
-#line 88 "Condensation/Serialization/Record.pm"
+#line 91 "Condensation/Serialization/Record.pm"
 	return if ! $o->{hash};
 	return if length $o->{bytes} != 32;
 	return CDS::HashAndKey->new($o->{hash}, $o->{bytes});
 }
 
-#line 93 "Condensation/Serialization/Record.pm"
+#line 96 "Condensation/Serialization/Record.pm"
 sub bytesValue {
 	my $o = shift;
 	 $o->firstChild->bytes }
@@ -18016,24 +18095,27 @@ sub integerValue {
 sub unsignedValue {
 	my $o = shift;
 	 $o->firstChild->asUnsigned }
+sub floatValue {
+	my $o = shift;
+	 $o->firstChild->asFloat }
 sub hashAndKeyValue {
 	my $o = shift;
 	 $o->firstChild->asHashAndKey }
 
-#line 101 "Condensation/Serialization/Record.pm"
+#line 105 "Condensation/Serialization/Record.pm"
 # *** Dependent hashes
 
-#line 103 "Condensation/Serialization/Record.pm"
+#line 107 "Condensation/Serialization/Record.pm"
 sub dependentHashes {
 	my $o = shift;
 
-#line 104 "Condensation/Serialization/Record.pm"
+#line 108 "Condensation/Serialization/Record.pm"
 	my $hashes = {};
 	$o->traverseHashes($hashes);
 	return values %$hashes;
 }
 
-#line 109 "Condensation/Serialization/Record.pm"
+#line 113 "Condensation/Serialization/Record.pm"
 sub traverseHashes {
 	my $o = shift;
 	my $hashes = shift;
@@ -18044,28 +18126,28 @@ sub traverseHashes {
 	}
 }
 
-#line 116 "Condensation/Serialization/Record.pm"
+#line 120 "Condensation/Serialization/Record.pm"
 # *** Size
 
-#line 118 "Condensation/Serialization/Record.pm"
+#line 122 "Condensation/Serialization/Record.pm"
 sub countEntries {
 	my $o = shift;
 
-#line 119 "Condensation/Serialization/Record.pm"
+#line 123 "Condensation/Serialization/Record.pm"
 	my $count = 1;
 	for my $child (@{$o->{children}}) { $count += $child->countEntries; }
 	return $count;
 }
 
-#line 124 "Condensation/Serialization/Record.pm"
+#line 128 "Condensation/Serialization/Record.pm"
 sub calculateSize {
 	my $o = shift;
 
-#line 125 "Condensation/Serialization/Record.pm"
+#line 129 "Condensation/Serialization/Record.pm"
 	return 4 + $o->calculateSizeContribution;
 }
 
-#line 128 "Condensation/Serialization/Record.pm"
+#line 132 "Condensation/Serialization/Record.pm"
 sub calculateSizeContribution {
 	my $o = shift;
 		# private
@@ -18079,15 +18161,15 @@ sub calculateSizeContribution {
 	return $size;
 }
 
-#line 139 "Condensation/Serialization/Record.pm"
+#line 143 "Condensation/Serialization/Record.pm"
 # *** Serialization
 
-#line 141 "Condensation/Serialization/Record.pm"
+#line 145 "Condensation/Serialization/Record.pm"
 # Serializes this record into a Condensation object.
 sub toObject {
 	my $o = shift;
 
-#line 143 "Condensation/Serialization/Record.pm"
+#line 147 "Condensation/Serialization/Record.pm"
 	my $writer = CDS::RecordWriter->new;
 	$writer->writeChildren($o);
 	return CDS::Object->create($writer->header, $writer->data);
@@ -18516,33 +18598,36 @@ sub hashValue {
 sub textValue {
 	my $o = shift;
 	 $o->firstValue->asText }
-sub unsignedValue {
-	my $o = shift;
-	 $o->firstValue->asUnsigned }
-sub integerValue {
-	my $o = shift;
-	 $o->firstValue->asInteger }
 sub booleanValue {
 	my $o = shift;
 	 $o->firstValue->asBoolean }
+sub integerValue {
+	my $o = shift;
+	 $o->firstValue->asInteger }
+sub unsignedValue {
+	my $o = shift;
+	 $o->firstValue->asUnsigned }
+sub floatValue {
+	my $o = shift;
+	 $o->firstValue->asFloat }
 sub hashAndKeyValue {
 	my $o = shift;
 	 $o->firstValue->asHashAndKey }
 
-#line 88 "Condensation/Document/Selector.pm"
+#line 89 "Condensation/Document/Selector.pm"
 # Sets a new value unless the node has that value already.
 sub setBytes {
 	my $o = shift;
 	my $bytes = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 90 "Condensation/Document/Selector.pm"
+#line 91 "Condensation/Document/Selector.pm"
 	my $record = CDS::Record->new;
 	$record->add($bytes, $hash);
 	$o->set($record);
 }
 
-#line 95 "Condensation/Document/Selector.pm"
+#line 96 "Condensation/Document/Selector.pm"
 sub setHash {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
@@ -18567,30 +18652,40 @@ sub setUnsigned {
 	my $value = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	 $o->setBytes(CDS->bytesFromUnsigned($value), $hash); };
+sub setFloat32 {
+	my $o = shift;
+	my $value = shift;
+	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
+	 $o->setBytes(CDS->bytesFromFloat32($value), $hash); };
+sub setFloat64 {
+	my $o = shift;
+	my $value = shift;
+	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
+	 $o->setBytes(CDS->bytesFromFloat64($value), $hash); };
 sub setHashAndKey {
 	my $o = shift;
 	my $hashAndKey = shift; die 'wrong type '.ref($hashAndKey).' for $hashAndKey' if defined $hashAndKey && ref $hashAndKey ne 'CDS::HashAndKey';
 	 $o->setBytes($hashAndKey->key, $hashAndKey->hash); };
 
-#line 102 "Condensation/Document/Selector.pm"
+#line 105 "Condensation/Document/Selector.pm"
 # Adding objects and merged sources
 
-#line 104 "Condensation/Document/Selector.pm"
+#line 107 "Condensation/Document/Selector.pm"
 sub addObject {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $object = shift; die 'wrong type '.ref($object).' for $object' if defined $object && ref $object ne 'CDS::Object';
 
-#line 105 "Condensation/Document/Selector.pm"
+#line 108 "Condensation/Document/Selector.pm"
 	$o->{document}->{unsaved}->state->addObject($hash, $object);
 }
 
-#line 108 "Condensation/Document/Selector.pm"
+#line 111 "Condensation/Document/Selector.pm"
 sub addMergedSource {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 109 "Condensation/Document/Selector.pm"
+#line 112 "Condensation/Document/Selector.pm"
 	$o->{document}->{unsaved}->state->addMergedSource($hash);
 }
 
@@ -20357,39 +20452,40 @@ sub guessValue {
 	}
 
 #line 62 "Condensation/CLI/UI/Record.pm"
+	push @value, $o->{ui}->gray(' = ', CDS->floatFromBytes($bytes)) if $length == 4 || $length == 8;
 	push @value, $o->{ui}->gray(' = ', CDS::Hash->fromBytes($bytes)->hex) if $length == 32;
 	push @value, $o->{ui}->gray(' (', length $bytes, ' bytes)') if length $bytes > 64;
 	return @value;
 }
 
-#line 67 "Condensation/CLI/UI/Record.pm"
+#line 68 "Condensation/CLI/UI/Record.pm"
 sub dateValue {
 	my $o = shift;
 	my $bytes = shift;
 
-#line 68 "Condensation/CLI/UI/Record.pm"
+#line 69 "Condensation/CLI/UI/Record.pm"
 	my $integer = CDS->integerFromBytes($bytes);
 	return $integer if ! $o->looksLikeTimestamp($integer);
 	return $o->{ui}->niceDateTime($integer), '  ', $o->{ui}->gray($o->{ui}->niceDateTimeLocal($integer));
 }
 
-#line 73 "Condensation/CLI/UI/Record.pm"
+#line 74 "Condensation/CLI/UI/Record.pm"
 sub revisionValue {
 	my $o = shift;
 	my $bytes = shift;
 
-#line 74 "Condensation/CLI/UI/Record.pm"
+#line 75 "Condensation/CLI/UI/Record.pm"
 	my $integer = CDS->integerFromBytes($bytes);
 	return $integer if ! $o->looksLikeTimestamp($integer);
 	return $o->{ui}->niceDateTime($integer);
 }
 
-#line 79 "Condensation/CLI/UI/Record.pm"
+#line 80 "Condensation/CLI/UI/Record.pm"
 sub looksLikeTimestamp {
 	my $o = shift;
 	my $integer = shift;
 
-#line 80 "Condensation/CLI/UI/Record.pm"
+#line 81 "Condensation/CLI/UI/Record.pm"
 	return $integer > 100000000000 && $integer < 10000000000000;
 }
 
@@ -21042,8 +21138,6 @@ sub merge {
 	push @{$o->{dataSavedHandlers}}, @{$state->{dataSavedHandlers}};
 }
 
-package UNKNOWN;
-
 package CDS::C;
 use Config;
 use Inline (C => 'DATA', CCFLAGS => $Config{ccflags}.' -DNDEBUG -std=gnu99', OPTIMIZE => '-O3');
@@ -21053,16 +21147,35 @@ Inline->init;
 
 __DATA__
 __C__
+#include <stdlib.h>
+#include <stdint.h>
+
 
 #line 1 "Condensation/../../c/configuration/default.inc.h"
 typedef uint32_t cdsLength;
 #define CDS_MAX_RECORD_DEPTH 64
 
-#line 1 "Condensation/C.inc.c"
+#line 4 "Condensation/C.inc.c"
+
+#line 1 "Condensation/../../c/random/multi-os.inc.c"
+#if defined(WIN32) || defined(_WIN32)
+
+#line 1 "Condensation/../../c/random/windows.inc.c"
+#define _CRT_RAND_S
+#include <stdlib.h>
+
+static void fillRandom(uint8_t * buffer, uint32_t length) {
+	unsigned int value;
+	for (uint32_t i = 0; i < length; i++) {
+		rand_s(&value);
+		buffer[i] = value & 0xff;
+	}
+}
+
+#line 2 "Condensation/../../c/random/multi-os.inc.c"
+#else
 
 #line 1 "Condensation/../../c/random/dev-urandom.inc.c"
-// *** Random number generation ***
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -21081,7 +21194,10 @@ static void fillRandom(uint8_t * buffer, uint32_t length) {
 	close(fh);
 }
 
-#line 2 "Condensation/C.inc.c"
+#line 4 "Condensation/../../c/random/multi-os.inc.c"
+#endif
+
+#line 5 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/littleEndian.inc.c"
 static void copyReversed4(uint8_t * destination, const uint8_t * source) {
@@ -21182,16 +21298,16 @@ double cdsGetFloat64BE(const uint8_t * bytes) {
 	return u.value;
 }
 
-// Check if we are very obviously on a big-endian architecture
 #if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || defined(__BIG_ENDIAN__) || defined(__ARMEB__) || defined(__THUMBEB__) || defined(__AARCH64EB__) || defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
 #error "This library was prepared for little-endian processor architectures. Your compiler indicates that you are compiling for a big-endian architecture."
 #endif
 
-#line 3 "Condensation/C.inc.c"
+#line 6 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/all.inc.h"
 #include <stdint.h>
 #include <stdbool.h>
+
 
 #line 1 "Condensation/../../c/Condensation/public.h"
 #include <stdbool.h>
@@ -21239,8 +21355,6 @@ struct cdsBigInteger {
 	uint32_t values[CDS_BIG_INTEGER_SIZE];
 };
 
-// Local variables for modPowSmall (about 1 kB of memory).
-// result will point to either bigInteger1 or bigInteger2.
 struct cdsRSAModPowSmall {
 	struct cdsBigInteger bigInteger1;
 	struct cdsBigInteger bigInteger2;
@@ -21248,8 +21362,6 @@ struct cdsRSAModPowSmall {
 	struct cdsBigInteger * result;
 };
 
-// Local variables for modPow (about 32 kB of memory)
-// result will point to either bigInteger1 or bigInteger2.
 struct cdsRSAModPowBig {
 	struct cdsBigInteger bigInteger1;
 	struct cdsBigInteger bigInteger2;
@@ -21341,24 +21453,20 @@ struct cdsRecord {
 
 #line 8 "Condensation/../../c/Condensation/all.inc.h"
 
-#line 4 "Condensation/C.inc.c"
+#line 7 "Condensation/C.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/all.inc.c"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
+
 #line 1 "Condensation/../../c/Condensation/minMax.inc.c"
-//static int min(int a, int b) { return a < b ? a : b; }
-//static int max(int a, int b) { return a > b ? a : b; }
 
 static cdsLength minLength(cdsLength a, cdsLength b) { return a < b ? a : b; }
 
-//static uint32_t minU32(uint32_t a, uint32_t b) { return a < b ? a : b; }
-//static uint32_t maxU32(uint32_t a, uint32_t b) { return a > b ? a : b; }
 
 static size_t minSize(size_t a, size_t b) { return a < b ? a : b; }
-//static size_t maxSize(size_t a, size_t b) {	return a > b ? a : b; }
 
 #line 5 "Condensation/../../c/Condensation/all.inc.c"
 
@@ -21450,14 +21558,10 @@ struct cdsMutableBytes cdsSetBytes(const struct cdsMutableBytes destination, cds
 #line 6 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/hex.inc.c"
-// *** Hex to byte conversion
 
 static char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 static uint8_t hexValues[] = {255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 10, 11, 12, 13, 14, 15, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255};
 
-// Converts bytes to a hex string. This function does not null-terminate the string, and can therefore be used to fill a substring.
-// OUT hex: the char sequence, at least 2 * length bytes long
-// IN bytes: the byte sequence
 char * cdsHexFromBytes(const struct cdsBytes bytes, char * buffer, cdsLength length) {
 	if (length == 0) return buffer;
 
@@ -21477,10 +21581,6 @@ char * cdsHexFromBytes(const struct cdsBytes bytes, char * buffer, cdsLength len
 	return buffer;
 }
 
-// Converts a hex string to bytes. Conversion stops with the first invalid hex digit, or when the end of the byte sequence is reached.
-// OUT bytes: the byte sequence
-// IN hex: the char sequence with the hex digits, either 2 * length long or terminated by a non-hex digit (e.g., a null-terminated string)
-// Returns the actual amount of bytes written.
 struct cdsBytes cdsBytesFromHex(const char * hex, uint8_t * buffer, cdsLength length) {
 	cdsLength i = 0;
 	while (i < length) {
@@ -21500,7 +21600,6 @@ struct cdsBytes cdsBytesFromHex(const char * hex, uint8_t * buffer, cdsLength le
 #line 7 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/random.inc.c"
-// Fills the byte array with good random numbers.
 struct cdsBytes cdsRandomBytes(uint8_t * buffer, cdsLength length) {
 	fillRandom(buffer, length);
 	return cdsBytes(buffer, length);
@@ -21508,27 +21607,21 @@ struct cdsBytes cdsRandomBytes(uint8_t * buffer, cdsLength length) {
 
 #line 8 "Condensation/../../c/Condensation/all.inc.c"
 
-#line 1 "Condensation/../../c/Condensation/AES256/AES256.inc.c"
-// *** AES 256 encryption
-// AES 256 operates with a key length of 32 bytes, and a block size of 16 byte.
 
-// AES-256 Constants
+#line 1 "Condensation/../../c/Condensation/AES256/AES256.inc.c"
+
 static int sbox[] = {99, 124, 119, 123, 242, 107, 111, 197, 48, 1, 103, 43, 254, 215, 171, 118, 202, 130, 201, 125, 250, 89, 71, 240, 173, 212, 162, 175, 156, 164, 114, 192, 183, 253, 147, 38, 54, 63, 247, 204, 52, 165, 229, 241, 113, 216, 49, 21, 4, 199, 35, 195, 24, 150, 5, 154, 7, 18, 128, 226, 235, 39, 178, 117, 9, 131, 44, 26, 27, 110, 90, 160, 82, 59, 214, 179, 41, 227, 47, 132, 83, 209, 0, 237, 32, 252, 177, 91, 106, 203, 190, 57, 74, 76, 88, 207, 208, 239, 170, 251, 67, 77, 51, 133, 69, 249, 2, 127, 80, 60, 159, 168, 81, 163, 64, 143, 146, 157, 56, 245, 188, 182, 218, 33, 16, 255, 243, 210, 205, 12, 19, 236, 95, 151, 68, 23, 196, 167, 126, 61, 100, 93, 25, 115, 96, 129, 79, 220, 34, 42, 144, 136, 70, 238, 184, 20, 222, 94, 11, 219, 224, 50, 58, 10, 73, 6, 36, 92, 194, 211, 172, 98, 145, 149, 228, 121, 231, 200, 55, 109, 141, 213, 78, 169, 108, 86, 244, 234, 101, 122, 174, 8, 186, 120, 37, 46, 28, 166, 180, 198, 232, 221, 116, 31, 75, 189, 139, 138, 112, 62, 181, 102, 72, 3, 246, 14, 97, 53, 87, 185, 134, 193, 29, 158, 225, 248, 152, 17, 105, 217, 142, 148, 155, 30, 135, 233, 206, 85, 40, 223, 140, 161, 137, 13, 191, 230, 66, 104, 65, 153, 45, 15, 176, 84, 187, 22};
 
 static int xtime[] = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168, 170, 172, 174, 176, 178, 180, 182, 184, 186, 188, 190, 192, 194, 196, 198, 200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 27, 25, 31, 29, 19, 17, 23, 21, 11, 9, 15, 13, 3, 1, 7, 5, 59, 57, 63, 61, 51, 49, 55, 53, 43, 41, 47, 45, 35, 33, 39, 37, 91, 89, 95, 93, 83, 81, 87, 85, 75, 73, 79, 77, 67, 65, 71, 69, 123, 121, 127, 125, 115, 113, 119, 117, 107, 105, 111, 109, 99, 97, 103, 101, 155, 153, 159, 157, 147, 145, 151, 149, 139, 137, 143, 141, 131, 129, 135, 133, 187, 185, 191, 189, 179, 177, 183, 181, 171, 169, 175, 173, 163, 161, 167, 165, 219, 217, 223, 221, 211, 209, 215, 213, 203, 201, 207, 205, 195, 193, 199, 197, 251, 249, 255, 253, 243, 241, 247, 245, 235, 233, 239, 237, 227, 225, 231, 229};
 
 static const int keyLength = 240;  // 16 * (14 + 1)
 
-// CTR zero counter
 uint8_t zeroCtrBuffer[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 const struct cdsBytes cdsZeroCtr = {zeroCtrBuffer, 16};
 
 void cdsInitializeEmptyAES256(struct cdsAES256 * this) { }
 
-// Prepares AES-256 encryption with a given key.
-// IN key256: the 32 byte AES key
 void cdsInitializeAES256(struct cdsAES256 * this, struct cdsBytes key256) {
-	// Prepare the key
 	int i = 0;
 	int r = 1;
 	while (i < 32) {
@@ -21600,7 +21693,6 @@ static void mixColumns(uint8_t * block) {
 	}
 }
 
-// Encrypts one block in-place.
 void cdsEncryptAES256Block(const struct cdsAES256 * this, uint8_t * block) {
 	addRoundKey(this->key, block, 0);
 	for (int i = 16; i < keyLength - 16; i += 16) {
@@ -21621,39 +21713,30 @@ void cdsIncrementCtr(uint8_t * counter) {
 	}
 }
 
-// En- or decrypts bytes.
-// IN aes: The AES instance.
-// IN bytes: The bytes to be en- or decrypted.
-// IN startCounter: The CTR counter for the first block (16 bytes).
-// MEM buffer: A buffer of bytes.length bytes to hold the result. For in-place operation, pass bytes.data.
 struct cdsBytes cdsCrypt(const struct cdsAES256 * aes, const struct cdsBytes bytes, const struct cdsBytes startCtr, uint8_t * buffer) {
-	// Prepare the counter
 	uint8_t counter[16];
 	memcpy(counter, startCtr.data, 16);
 	uint8_t encryptedCounter[16];
 
-	// Encrypt blocks in CTR mode
-	uint i = 0;
+	cdsLength i = 0;
 	for (; i + 16 < bytes.length; i += 16) {
 		memcpy(encryptedCounter, counter, 16);
 		cdsEncryptAES256Block(aes, encryptedCounter);
-		for (uint n = 0; n < 16; n++) buffer[i + n] = bytes.data[i + n] ^ encryptedCounter[n];
+		for (cdsLength n = 0; n < 16; n++) buffer[i + n] = bytes.data[i + n] ^ encryptedCounter[n];
 		cdsIncrementCtr(counter);
 	}
 
-	// Encrypt the last block
 	cdsEncryptAES256Block(aes, counter);
-	for (uint n = 0; n < bytes.length - i; n++) buffer[i + n] = bytes.data[i + n] ^ counter[n];
+	for (cdsLength n = 0; n < bytes.length - i; n++) buffer[i + n] = bytes.data[i + n] ^ counter[n];
 
 	return cdsBytes(buffer, bytes.length);
 }
 
 #line 10 "Condensation/../../c/Condensation/all.inc.c"
 
-#line 1 "Condensation/../../c/Condensation/SHA256/SHA256.inc.c"
-// *** SHA 256
 
-// Constants [4.2.2]
+#line 1 "Condensation/../../c/Condensation/SHA256/SHA256.inc.c"
+
 static uint32_t K[] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
 	0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
@@ -21665,7 +21748,6 @@ static uint32_t K[] = {
 	0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-// Byte to int conversion
 
 static uint32_t getUint32(const uint8_t * bytes) {
 	return (uint32_t)(bytes[0] << 24) | (uint32_t)(bytes[1] << 16) | (uint32_t)(bytes[2] << 8) | bytes[3];
@@ -21678,7 +21760,6 @@ static void putUint32(uint8_t * bytes, uint32_t value) {
 	bytes[3] = value & 0xff;
 }
 
-// Helper functions
 
 static uint32_t ROTR(uint32_t x, uint32_t n) {
 	return (x >> n) | (x << (32 - n));
@@ -21708,21 +21789,17 @@ static uint32_t maj(uint32_t x, uint32_t y, uint32_t z) {
 	return (x & y) ^ (x & z) ^ (y & z);
 }
 
-// Hash computation [6.1.2]
 static void sha256AddChunk(struct cdsSHA256 * this, const uint8_t * bytes) {
-	// Prepare message schedule
 	uint32_t w[64];
 	for (uint8_t i = 0; i < 16; i++)
 		w[i] = getUint32(bytes + i * 4);
 	for (uint8_t i = 16; i < 64; i++)
 		w[i] = prepareS1(w[i - 2]) + w[i - 7] + prepareS0(w[i - 15]) + w[i - 16];
 
-	// Initialize working variables
 	uint32_t s[8];
 	for (uint8_t i = 0; i < 8; i++)
 		s[i] = this->state[i];
 
-	// Main loop
 	for (uint8_t i = 0; i < 64; i++) {
 		uint32_t t1 = s[7] + roundS1(s[4]) + ch(s[4], s[5], s[6]) + K[i] + w[i];
 		uint32_t t2 = roundS0(s[0]) + maj(s[0], s[1], s[2]);
@@ -21736,12 +21813,10 @@ static void sha256AddChunk(struct cdsSHA256 * this, const uint8_t * bytes) {
 		s[0] = t1 + t2;
 	}
 
-	// New intermediate hash value
 	for (uint8_t i = 0; i < 8; i++)
 		this->state[i] += s[i];
 }
 
-// Initial hash value [5.3.1]
 uint32_t sha256InitialHash[] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
 void cdsInitializeSHA256(struct cdsSHA256 * this) {
@@ -21761,24 +21836,18 @@ static void sha256AddByte(struct cdsSHA256 * this, uint8_t byte) {
 	this->used = 0;
 }
 
-// IN bytes: the bytes to add to the stream
-// IN length: the length of the "bytes" buffer
 void cdsAddBytesToSHA256(struct cdsSHA256 * this, struct cdsBytes bytes) {
 	for (uint32_t i = 0; i < bytes.length; i++)
 		sha256AddByte(this, bytes.data[i]);
 }
 
-// OUT result: 32 bytes for the result
 void cdsFinalizeSHA256(struct cdsSHA256 * this, uint8_t * result) {
-	// Message length
 	uint32_t dataLength = this->length;
 
-	// Padding
 	sha256AddByte(this, 0x80);
 	while (this->used != 56)
 		sha256AddByte(this, 0);
 
-	// Length in bits
 	sha256AddByte(this, 0);
 	sha256AddByte(this, 0);
 	sha256AddByte(this, 0);
@@ -21788,7 +21857,6 @@ void cdsFinalizeSHA256(struct cdsSHA256 * this, uint8_t * result) {
 	sha256AddByte(this, (dataLength & 0x00001fe0) >> 5);
 	sha256AddByte(this, (dataLength & 0x0000001f) << 3);
 
-	// Write the state to the result buffer
 	for (uint8_t i = 0; i < 8; i++)
 		putUint32(result + i * 4, this->state[i]);
 }
@@ -21803,12 +21871,11 @@ struct cdsBytes cdsSHA256(const struct cdsBytes bytes, uint8_t * result) {
 
 #line 12 "Condensation/../../c/Condensation/all.inc.c"
 
+
 #line 1 "Condensation/../../c/Condensation/RSA64/production.inc.c"
-// *** Element access
 
 #define ELEMENT(x, n) x->values[n]
 
-// Shortcuts for x[n], ...
 #define X(index) ELEMENT(x, index)
 #define Y(index) ELEMENT(y, index)
 #define M(index) ELEMENT(m, index)
@@ -21819,44 +21886,34 @@ struct cdsBytes cdsSHA256(const struct cdsBytes bytes, uint8_t * result) {
 #line 14 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/RSA64/Math.inc.c"
-// *** RSA 2048
-// An integer is stored as array of uint32_t in little-endian order. The least significant bits are in element 0.
-// All cdsBigIntegers have the same size in memory (CDS_BIG_INTEGER_SIZE elements), and may be allocated on the stack. Only the lower b->length elements are in use. All other elements are ignored, and may have any value. For efficiency, the code tries to keep b->length as small as possible, but it is not always a tight bound. The most significant (non-zero) element is returned by mostSignificantElement(b).
 
-// *** General
 
-// Resets x to zero.
 static void setZero(struct cdsBigInteger * x) {
 	x->length = 0;
 }
 
-// Sets x to an unsigned 32-bit integer.
 static void setUint32(struct cdsBigInteger * x, uint32_t value) {
 	x->length = 1;
 	X(0) = value;
 }
 
-// Fills x with 32 * n random bits.
 static void setRandom(struct cdsBigInteger * x, int n) {
 	assert(n >= 0);
 	assert(n <= CDS_BIG_INTEGER_SIZE);
-	cdsRandomBytes((uint8_t *) x->values, (uint) n * 4);
+	cdsRandomBytes((uint8_t *) x->values, n * 4);
 	x->length = n;
 }
 
-// Returns the index of the most significant element, or -1 if x == 0.
 static int mostSignificantElement(const struct cdsBigInteger * x) {
 	int i = x->length - 1;
 	while (i >= 0 && X(i) == 0) i -= 1;
 	return i;
 }
 
-// Trims the length to avoid trailing zeros.
 static void trim(struct cdsBigInteger * x) {
 	while (x->length > 0 && X(x->length - 1) == 0) x->length -= 1;
 }
 
-// Expands the length to a minimum of n elements and adds zeros if necessary.
 static void expand(struct cdsBigInteger * x, int n) {
 	assert(n >= 0);
 	assert(n <= CDS_BIG_INTEGER_SIZE);
@@ -21866,22 +21923,17 @@ static void expand(struct cdsBigInteger * x, int n) {
 	}
 }
 
-// Returns the larger of the two length.
 static int maxLength(const struct cdsBigInteger * x, const struct cdsBigInteger * y) {
 	return x->length > y->length ? x->length : y->length;
 }
 
-// a <= x * 2 ^ (32 * d)
-// Preconditions: x->length < CDS_BIG_INTEGER_SIZE - d
 static void copyD(struct cdsBigInteger * a, const struct cdsBigInteger * x, int d) {
 	a->length = x->length + d;
 	for (int i = 0; i < x->length; i++) A(i + d) = X(i);
 	for (int i = 0; i < d; i++) A(i) = 0;
 }
 
-// *** Conversion from and to bytes
 
-// x <= value of the big-endian byte sequence bytes.
 void cdsBigIntegerFromBytes(struct cdsBigInteger * x, struct cdsBytes bytes) {
 	x->length = CDS_BIG_INTEGER_SIZE;
 
@@ -21902,9 +21954,8 @@ void cdsBigIntegerFromBytes(struct cdsBigInteger * x, struct cdsBytes bytes) {
 	trim(x);
 }
 
-// Writes x to a big-endian byte sequence, and returns the index of the first non-zero byte.
 struct cdsBytes cdsBytesFromBigInteger(struct cdsMutableBytes bytes, const struct cdsBigInteger * x) {
-	uint n = bytes.length;
+	uint32_t n = bytes.length;
 	for (int r = 0; r < x->length; r++) {
 		n -= 1;
 		bytes.data[n] = X(r) & 0xff;
@@ -21924,24 +21975,19 @@ struct cdsBytes cdsBytesFromBigInteger(struct cdsMutableBytes bytes, const struc
 	return cdsBytes(bytes.data + n, bytes.length - n);
 }
 
-// *** Comparison
 
-// Returns true if x is even.
 static bool isEven(const struct cdsBigInteger * x) {
 	return x->length == 0 || (X(0) & 1) == 0;
 }
 
-// x == 0
 static bool isZero(const struct cdsBigInteger * x) {
 	return mostSignificantElement(x) == -1;
 }
 
-// x == 1
 static bool isOne(const struct cdsBigInteger * x) {
 	return mostSignificantElement(x) == 0 && X(0) == 1;
 }
 
-// Compares x and y, and returns 0 if they are equal, -1 if x < y, and +1 if x > y.
 static int compare(const struct cdsBigInteger * x, const struct cdsBigInteger * y) {
 	int xk = mostSignificantElement(x);
 	int yk = mostSignificantElement(y);
@@ -21954,7 +22000,6 @@ static int compare(const struct cdsBigInteger * x, const struct cdsBigInteger * 
 	return 0;
 }
 
-// Compares x / 2 ^ (32 * d) and y
 static int compareShifted(const struct cdsBigInteger * x, const struct cdsBigInteger * y, int d) {
 	int xk = mostSignificantElement(x);
 	int yk = mostSignificantElement(y);
@@ -21967,10 +22012,7 @@ static int compareShifted(const struct cdsBigInteger * x, const struct cdsBigInt
 	return 0;
 }
 
-// *** Bit shift
 
-// a <= x << bits
-// a may be x (in-place operation), and bits may be 0.
 static void smallShiftLeft(struct cdsBigInteger * a, const struct cdsBigInteger * x, int bits) {
 	a->length = x->length;
 	int i = 0;
@@ -21985,8 +22027,6 @@ static void smallShiftLeft(struct cdsBigInteger * a, const struct cdsBigInteger 
 	A(i) = (uint32_t) cPrev;
 }
 
-// a <= x >> bits
-// a may be x (in-place operation), and bits may be 0.
 static void smallShiftRight(struct cdsBigInteger * a, const struct cdsBigInteger * x, int bits) {
 	a->length = x->length;
 	int i = 0;
@@ -21995,37 +22035,28 @@ static void smallShiftRight(struct cdsBigInteger * a, const struct cdsBigInteger
 	A(i) = X(i) >> bits;
 }
 
-// *** Addition, subtraction
 
-// x + (n * y << 32 * d) => x
 static void addN(struct cdsBigInteger * x, uint32_t n, const struct cdsBigInteger * y, int d) {
 	int yk = mostSignificantElement(y);
 
-	// Expand x if necessary
 	if (x->length > 0 && X(x->length - 1) != 0) expand(x, x->length + 1);
 	expand(x, y->length + d + 2);
-	//T("x length "), TD(x->length), NL();
 
-	// Accumulate
 	uint64_t c = 0;
 	int i = 0;
 	for (; i <= yk; i++, d++) {
 		c += X(d) + (uint64_t)n * Y(i);
-		//T("d "), TD(d), T(" c "), TH(c), NL();
 		X(d) = c & 0xffffffff;
 		c >>= 32;
 	}
 
 	for (; c != 0; d++) {
 		c += X(d);
-		//T("d "), TD(d), T(" c "), TH(c), NL();
 		X(d) = c & 0xffffffff;
 		c >>= 32;
 	}
 }
 
-// x - 1 => x
-// Preconditions: x > 0
 static void decrement(struct cdsBigInteger * x) {
 	int64_t c = -1;
 	for (int i = 0; c != 0; i++) {
@@ -22035,8 +22066,6 @@ static void decrement(struct cdsBigInteger * x) {
 	}
 }
 
-// x - (y << 32 * d) => x
-// Preconditions: x > y
 static void subD(struct cdsBigInteger * x, const struct cdsBigInteger * y, int d) {
 	int64_t c = 0;
 	int i = 0;
@@ -22052,27 +22081,19 @@ static void subD(struct cdsBigInteger * x, const struct cdsBigInteger * y, int d
 	}
 }
 
-// x + n * y * 2 ^ (28 * d) => x
-// Precondition: 0 <= n < 2 ^ 28, x > n * y * 2 ^ (28 * d)
 static void subN(struct cdsBigInteger * x, uint32_t n, const struct cdsBigInteger * y, int d) {
-	// Since x - n * y = x - (r - (r - n)) * y = x + (r - n) * y - r * y, we can carry out this subtraction using one addN followed by a simple subtraction.
-	// We use r = 2 ^ 32 = 0x100000000
 	uint32_t nNeg = (uint32_t) (0x100000000 - n);
 	addN(x, nNeg, y, d);
 	subD(x, y, d + 1);
 }
 
-// *** Multiplication
 
-// a + x * y => a
 static void mul(struct cdsBigInteger * a, const struct cdsBigInteger * x, const struct cdsBigInteger * y) {
 	for (int i = 0; i < y->length; i++)
 		if (Y(i) != 0) addN(a, Y(i), x, i);
 	trim(a);
 }
 
-// a + x * x => a
-// Specializing this yields a performance improvement of 15 - 20 % on modPow using 2048 bit coefficients.
 static void sqr(struct cdsBigInteger * a, const struct cdsBigInteger * x) {
 	int xk = mostSignificantElement(x);
 	expand(a, a->length + 1);
@@ -22080,32 +22101,25 @@ static void sqr(struct cdsBigInteger * a, const struct cdsBigInteger * x) {
 	for (int i = 0; i <= xk; i++) {
 		if (X(i) == 0) continue;
 
-		// Diagonal element
 		int r = i;
 		int w = i + r;
 		uint64_t cSum = A(w) + (uint64_t)X(r) * X(i);
 		A(w) = cSum & 0xffffffff;
-		//T("s "), TBI(a), T(" "), TH(cSum), T(" r "), TD(r), T(" w "), TD(w), T(" i "), TD(i), NL();
 		cSum >>= 32;
 		w++;
 		r++;
 
-		// All other elements
-		// c + A(w) + 2 * X(r) * X(i) may overflow. We therefore have to calculate this in two steps.
-		// We still save a lot with respect to mul(...), since the element multiplication X(r) * X(i) is carried out only once.
 		uint64_t cProduct = 0;
 		for (; r <= xk; w++, r++) {
 			cProduct += (uint64_t)X(r) * X(i);
 			cSum += A(w) + ((cProduct & 0xffffffff) << 1);
 			A(w) = cSum & 0xffffffff;
-			//T("n "), TBI(a), T(" "), TH(cSum), T(" p "), TH(cProduct), T(" = "), TH(X(r)), T(" * "), TH(X(i)), T(" r "), TD(r), T(" w "), TD(w), NL();
 			cProduct >>= 32;
 			cSum >>= 32;
 		}
 		for (; cSum != 0 || cProduct != 0; w++) {
 			cSum += A(w) + ((cProduct & 0xffffffff) << 1);
 			A(w) = cSum & 0xffffffff;
-			//T("w "), TBI(a), T(" "), TH(cSum), T(" p "), TH(cProduct), T(" r "), TD(r), T(" w "), TD(w), NL();
 			cProduct >>= 32;
 			cSum >>= 32;
 		}
@@ -22113,12 +22127,8 @@ static void sqr(struct cdsBigInteger * a, const struct cdsBigInteger * x) {
 	trim(a);
 }
 
-// *** Classic modulo
 
-// x % m => x
-// This algorithm resembles HAC 14.20.
 static void mod(struct cdsBigInteger * x, const struct cdsBigInteger * m) {
-	// Determine the normalization shift using the most significant element of y (ym)
 	int yk = mostSignificantElement(m);
 	uint32_t mse = M(yk);
 	int shift = 0;
@@ -22127,74 +22137,39 @@ static void mod(struct cdsBigInteger * x, const struct cdsBigInteger * m) {
 		shift += 1;
 	}
 
-	// Normalize m << shift => y
 	struct cdsBigInteger bi = CDS_BIG_INTEGER_ZERO;
 	struct cdsBigInteger * y = &bi;
 	smallShiftLeft(y, m, shift);
-	//T("shift "), TD(shift), NL();
-	//T("y "), TBI(y), NL();
-	//T("m "), TBI(m), NL();
 
-	// Normalize x << shift => x
 	if (shift > 0) smallShiftLeft(x, x, shift);
 
-	// Make sure that x[xk + 1] exists (and is 0) in the first iteration
 	int xk = mostSignificantElement(x);
 	expand(x, xk + 2);
 
-	// Maximum length of the quotient
-	//q->length = xk - yk + 1;		// enable quotient here
 
-	// Calculate x % y => x
 	uint64_t div = Y(yk) + 1;
 	for (int d = xk - yk; d >= 0; d--) {
-		// Approach:
-		// Let Y be y * 2 ^ (32 * d).
-		// We are trying to iteratively subtract n * Y from x, such that x >= 0 and x < Y.
-		// Thanks to the normalization step, Y(yk) >= 0x80000000, and div / Y(yk) = 1 + 0x80000001/0x80000000. Hence, this converges quickly.
-		// Without normalization, the convergence could be very bad, i.e. progressing just 1 bit at a time.
-		// This is slightly worse than HAC 14.20, but avoids overshooting.
 
-		// Start with a zero quotient
-		//Q(d) = 0;		// enable quotient here
 
-		// We can subtract at least xmsb / div
 		uint64_t xmsb = ((uint64_t)X(yk + d + 1) << 32) + X(yk + d);
 		if (xmsb > div) {
 			uint64_t n = xmsb / div;
-			//T("  "), TBI(x), T(" - 10000^"), TH(d), T(" * "), TH(n), T(" * "), TBI(y);
 			subN(x, (uint32_t) n, y, d);
-			//Q(d) += n;	// enable quotient here
 		}
 
-		// Check if we can subtract Y a few more times
 		while (compareShifted(x, y, d) >= 0) {
-			//T("    "), TBI(x), T(" - 10000^"), TH(d), T(" * "), TBI(y), NL();
 			subD(x, y, d);
-			//T(" - "), TBI(x), NL();
-			//Q(d) += 1;	// enable quotient here
 		}
 
-		// For maximum performance, keep x as small as possible (it can never grow)
 		while (xk >= 0 && X(xk) == 0) xk -= 1;
 		x->length = xk + 2;
 	}
 
-	// Remove normalization: x >> shift => x
 	if (shift > 0) smallShiftRight(x, x, shift);
 	trim(x);
-	//trim(q);	// enable quotient here
 }
 
-// *** Montgomery exponentiation
-// We are using radix 2^32 = 0x100000000.
-// In all these function, m must be odd. For RSA, this is always the case, as m = p * q, the product of two large prime numbers p and q.
 
-// Returns mp = -(q ^ -1) mod 0x100000000, where q = m mod 0x100000000.
-// x must be odd, and m is therefore odd as well.
-// This is a fast version, based on the fact that
-//       y = x^-1 mod m ====> y(2 - xy) = x^-1 mod m^2.
-// Hence we can work our way up from 2^2 to 2^32
 static uint32_t montInverse(const struct cdsBigInteger * m) {
 	uint64_t q = M(0);
 	uint32_t mp = q & 0x3;		// mp = q^-1 mod 2^2 (for odd q)
@@ -22205,45 +22180,30 @@ static uint32_t montInverse(const struct cdsBigInteger * m) {
 	return mp > 0 ? (uint32_t) (0x100000000 - mp) : -mp;
 }
 
-// Montgomery conversion
-// xR mod m => a
 static void montConversion(struct cdsBigInteger * a, const struct cdsBigInteger * x, const struct cdsBigInteger * m) {
-	// Prepare xR, with R = radix ^ l such that R > m
 	int mk = mostSignificantElement(m);
 	copyD(a, x, mk + 1);
 
-	// a % m => a
 	mod(a, m);
 }
 
-// Montgomery conversion for x = 1
-// R mod m => ans
 static void montConversionOne(struct cdsBigInteger * a, const struct cdsBigInteger * m) {
-	// Prepare R, with R = radix ^ l such that R > m
 	int mk = mostSignificantElement(m);
 	setZero(a);
 	expand(a, mk + 2);
 	A(mk + 1) = 1;
 
-	// a % m => a
 	mod(a, m);
 }
 
-// Mongomery reduction (HAC 14.32)
-// x * R mod m => ans
-// mp is the precalculated negative inverse of m.
 static void montReduction(struct cdsBigInteger * x, const struct cdsBigInteger * m, uint32_t mp) {
 	int mk = mostSignificantElement(m);
 	for (int i = 0; i <= mk; i++) {
 		uint32_t u = ((uint64_t)X(0) * mp) & 0xffffffff;
-		//T("verify "), TBI(x), T(" + "), TH(u), T(" * "), TBI(m);
 
-		// x <= (x + u * m) >> 32
 		addN(x, u, m, 0);
-		//T(" - "), TBI(x), NL();
 		for (int n = 0; n + 1 < x->length; n++) X(n) = X(n + 1);
 		x->length -= 1;
-		//T("xs "), TBI(x), NL();
 	}
 
 	if (compare(x, m) >= 0) subD(x, m, 0);
@@ -22251,11 +22211,6 @@ static void montReduction(struct cdsBigInteger * x, const struct cdsBigInteger *
 	trim(x);
 }
 
-// Montgomery multiplication (HAC 14.36)
-// x * y * R mod m => a
-// mp is the precalculated negative inverse of m.
-// x < m, y < m.
-// This is about 5 - 10 % faster than mul() followed by montReduction().
 static void montMul(struct cdsBigInteger * a, struct cdsBigInteger * x, struct cdsBigInteger * y, const struct cdsBigInteger * m, uint32_t mp) {
 	int mk = mostSignificantElement(m);
 	assert(mostSignificantElement(x) <= mk);
@@ -22269,7 +22224,6 @@ static void montMul(struct cdsBigInteger * a, struct cdsBigInteger * x, struct c
 		uint64_t u = (A(0) + cProduct) & 0xffffffff;
 		u = (u * mp) & 0xffffffff;
 
-		// a = (a + X(i) * y + u * m) >> 32
 		uint64_t cSum = A(0) + (cProduct & 0xffffffff) + u * M(0);
 		cProduct >>= 32;
 		cSum >>= 32;
@@ -22293,30 +22247,20 @@ static void montMul(struct cdsBigInteger * a, struct cdsBigInteger * x, struct c
 	trim(a);
 }
 
-// Montgomery exponentiation for small e (HAC 14.94, i.e. HAC 14.79 using Montgomery)
-// g ^ e mod m => this->result
-// This is used for RSA public key exponentiation, where e is typically 0x10001.
-// m must be odd, 0 < g < m, and e > 0.
 static void modPowSmallExp(struct cdsRSAModPowSmall * this, const struct cdsBigInteger * g, const struct cdsBigInteger * e, const struct cdsBigInteger * m) {
-	// Convert to Montgomery
 	uint32_t mp = montInverse(m);
 	struct cdsBigInteger * gR = &this->gR;
 	montConversion(gR, g, m);
 
-	// Find the first non-zero bit of e
 	int ek = mostSignificantElement(e);
 	uint32_t eMask = 0x80000000;
 	while ((E(ek) & eMask) == 0) eMask >>= 1;
-	//console.log(TBI(ans), TBI(g), TBI(gR), TBI(e), ek, eMask, TBI(m), mp);
 
-	// Exponentiation for the first bit
 	struct cdsBigInteger * aR = &this->bigInteger1;
 	copyD(aR, gR, 0);
 
-	// Exponentiation for all other bits
 	struct cdsBigInteger * tR = &this->bigInteger2;
 	while (true) {
-		// Move to the next bit of e
 		eMask >>= 1;
 		if (eMask == 0) {
 			if (ek == 0) break;
@@ -22324,36 +22268,30 @@ static void modPowSmallExp(struct cdsRSAModPowSmall * this, const struct cdsBigI
 			eMask = 0x80000000;
 		}
 
-		// aR * aR * R^-1 => tR
 		setZero(tR);
 		sqr(tR, aR);
 		montReduction(tR, m, mp);
 
 		if (E(ek) & eMask) {
-			// tR * gR * R^-1 => ans if the bit is set
 			setZero(aR);
 			montMul(aR, tR, gR, m, mp);
 		} else {
-			// tR => aR (simply by swapping the two) if the bit is not set
 			struct cdsBigInteger * temp = aR;
 			aR = tR;
 			tR = temp;
 		}
 	}
 
-	// Revert back to normal form
 	montReduction(aR, m, mp);
 	this->result = aR;
 }
 
-// tR => aR by swapping the two
 static void modPowBigSwap(struct cdsRSAModPowBig * this) {
 	struct cdsBigInteger * temp = this->aR;
 	this->aR = this->tR;
 	this->tR = temp;
 }
 
-// aR * aR * R^-1 => aR
 static void modPowBigSqrAR(struct cdsRSAModPowBig * this) {
 	setZero(this->tR);
 	assert(mostSignificantElement(this->aR) < 64);
@@ -22363,7 +22301,6 @@ static void modPowBigSqrAR(struct cdsRSAModPowBig * this) {
 	modPowBigSwap(this);
 }
 
-// Flushes the currently selected bits from e, and resets the selection.
 static void modPowBigFlushSelection(struct cdsRSAModPowBig * this) {
 	for (; this->usableBits > 0; this->usableBits--) modPowBigSqrAR(this);
 	setZero(this->tR);
@@ -22376,48 +22313,36 @@ static void modPowBigFlushSelection(struct cdsRSAModPowBig * this) {
 	this->usableSelection = 0;
 }
 
-// Returns the result of the operation. The returned result points to a value within "this".
 static void modPowBigResult(struct cdsRSAModPowBig * this) {
-	// Revert back to normal form
 	copyD(this->tR, this->aR, 0);
 	montReduction(this->tR, this->m, this->mp);
 	this->result = this->tR;
 }
 
-// Exponentiation (HAC 14.85 using Montgomery)
-// g ^ e mod m => ans
-// m must be odd (which is always the case in RSA), x > 0, and e > 0.
 static void modPowBigExp(struct cdsRSAModPowBig * this, const struct cdsBigInteger * g, const struct cdsBigInteger * e, const struct cdsBigInteger * m) {
-	// Prepare
 	this->m = m;
 	this->mp = montInverse(m);
 
-	// Precomputation for 6 bits
 	montConversion(this->gR + 1, g, m);
 	montMul(this->gR + 2, this->gR + 1, this->gR + 1, m, this->mp);
 	for (int i = 3; i < 64; i += 2)
 		montMul(this->gR + i, this->gR + (i - 2), this->gR + 2, m, this->mp);
 
-	// Start with R mod m
 	this->aR = &this->bigInteger1;
 	montConversionOne(this->aR, this->m);
 	assert(mostSignificantElement(this->aR) < 64);
 
-	// Find the first non-zero bit of e
 	int ek = mostSignificantElement(e);
 	uint32_t eMask = 0x80000000;
 	while ((E(ek) & eMask) == 0) eMask >>= 1;
 
-	// Start by selecting that one bit
 	this->selection = 1;	// = usableSelection * 2 ^ zeroBits
 	this->usableSelection = 1;
 	this->usableBits = 1;
 	this->zeroBits = 0;
 
-	// Process all other bits
 	this->tR = &this->bigInteger2;
 	while (true) {
-		// Move to the next bit of e
 		eMask >>= 1;
 		if (eMask == 0) {
 			if (ek == 0) break;
@@ -22425,36 +22350,28 @@ static void modPowBigExp(struct cdsRSAModPowBig * this, const struct cdsBigInteg
 			eMask = 0x80000000;
 		}
 
-		// Update the selection, and flush it whenever necessary
 		if (E(ek) & eMask) {
-			// Add a 1 to the selection
 			if (this->selection > 31) modPowBigFlushSelection(this);
 			this->selection = this->selection * 2 + 1;
 			this->usableSelection = this->selection;
 			this->usableBits += this->zeroBits + 1;
 			this->zeroBits = 0;
 		} else if (this->usableBits == 0) {
-			// Apply a 0 bit directly if there is no selection
 			modPowBigSqrAR(this);
 		} else {
-			// Add a 0 to the selection
 			this->selection *= 2;
 			this->zeroBits += 1;
 		}
 	}
 
-	// Flush any started selection
 	if (this->usableBits > 0) modPowBigFlushSelection(this);
 }
 
-// *** GCD and modulo inverse
 
-// Returns the sign.
 static uint32_t sign(const struct cdsBigInteger * x) {
 	return x->length > 0 && X(x->length - 1) & 0x80000000 ? 0xffffffff : 0;
 }
 
-// Expands a signed integer to n elements.
 static void expandS(struct cdsBigInteger * x, int n) {
 	assert(n <= CDS_BIG_INTEGER_SIZE);
 	uint32_t filler = sign(x);
@@ -22464,16 +22381,12 @@ static void expandS(struct cdsBigInteger * x, int n) {
 	}
 }
 
-// Trims the length of a signed integer to avoid trailing zeros.
 static void trimS(struct cdsBigInteger * x) {
 	uint32_t filler = sign(x);
 	while (x->length > 1 && X(x->length - 1) == filler && ((X(x->length - 1) ^ X(x->length - 2)) & 0x80000000) == 0) x->length -= 1;
 }
 
-// x += y
-// x is considered a signed integer, and y an unsigned integer.
 static void addSU(struct cdsBigInteger * x, struct cdsBigInteger * y) {
-	//TBIS(x), T(" + "), TBI(y);
 	expandS(x, maxLength(x, y) + 1);
 	uint64_t c = 0;
 	int i = 0;
@@ -22488,13 +22401,9 @@ static void addSU(struct cdsBigInteger * x, struct cdsBigInteger * y) {
 		c >>= 32;
 	}
 	trimS(x);
-	//T(" - "), TBIS(x), T(" # addSU"), NL();
 }
 
-// x -= y
-// Both x and y are considered a signed integers.
 static void subSS(struct cdsBigInteger * x, struct cdsBigInteger * y) {
-	//TBIS(x), T(" - "), TBIS(y);
 	expandS(x, maxLength(x, y) + 1);
 	int64_t c = 0;
 	int i = 0;
@@ -22510,49 +22419,33 @@ static void subSS(struct cdsBigInteger * x, struct cdsBigInteger * y) {
 		c >>= 32;
 	}
 	trimS(x);
-	//T(" - "), TBIS(x), T(" # subSS"), NL();
 }
 
-// x >>= 1
-// x is considered a signed integer.
 static void halveS(struct cdsBigInteger * x) {
-	//TBIS(x);
 	int i = 0;
 	for (; i + 1 < x->length; i++)
 		X(i) = X(i) >> 1 | X(i + 1) << 31;
 	X(i) = (uint32_t)((int32_t)X(i) >> 1);
 	trimS(x);
-	//T("/2 - "), TBIS(x), T(" # halveS"), NL();
 }
 
-// Extended GCD (HAC 14.61, but with -b)
-// Given x and y, calculates a, b and gcd, such that ax - by = gcd.
-// Preconditions: x > 0, y > 0, either x or y or both need to be odd
-// Postconditions: a and b are signed integers, gcd is an unsigned integer
 static void egcd(struct cdsBigInteger * x, struct cdsBigInteger * y, struct cdsBigInteger * a, struct cdsBigInteger * b, struct cdsBigInteger * gcd) {
-	// u and v are unsigned integers
 	struct cdsBigInteger * u = gcd;
 	struct cdsBigInteger v = CDS_BIG_INTEGER_ZERO;
 
-	// A, B, C and D are signed integers
 	struct cdsBigInteger * A = a;
 	struct cdsBigInteger * B = b;
 	struct cdsBigInteger C = CDS_BIG_INTEGER_ZERO;
 	struct cdsBigInteger D = CDS_BIG_INTEGER_ZERO;
 
-	// Initial values
 	copyD(u, x, 0);
 	copyD(&v, y, 0);
 
-	// Initial solution
-	// A * x - B * y = u ==> A = 1 and B = 0
-	// C * x - D * y = v ==> C = 0 and D = -1
 	setUint32(A, 1);
 	setZero(B);
 	setZero(&C);
 	setUint32(&D, 0xffffffff);
 
-	// Modify the solution until u == v
 	while (true) {
 		while (isEven(u)) {
 			smallShiftRight(u, u, 1);
@@ -22599,29 +22492,20 @@ static void egcd(struct cdsBigInteger * x, struct cdsBigInteger * y, struct cdsB
 	}
 }
 
-// x^-1 mod m => a
-// Preconditions: x > 0, m > 0, either x or m odd
 static bool modInverse(struct cdsBigInteger * a, struct cdsBigInteger * x, struct cdsBigInteger * m) {
-	// Apply the extended GCD
 	struct cdsBigInteger b = CDS_BIG_INTEGER_ZERO;
 	struct cdsBigInteger gcd = CDS_BIG_INTEGER_ZERO;
 	egcd(x, m, a, &b, &gcd);
 
-	// If gcd != 1, the inverse does not exist
 	if (! isOne(&gcd)) return false;
 
-	// Move a into [0, m[, and make it an unsigned integer
 	while (sign(a) != 0) addSU(a, m);
 	trim(a);
 	return true;
 }
 
-// *** Primality test
 
-// Decomposes x = 2^s * r.
-// Returns s, and modifies x in-place, so that it holds r when returning.
 static int removeFactorsOf2(struct cdsBigInteger * x) {
-	// Look for the smallest non-zero element
 	int d = 0;
 	while (X(d) == 0) d += 1;
 	if (d > 0) {
@@ -22629,10 +22513,8 @@ static int removeFactorsOf2(struct cdsBigInteger * x) {
 		x->length = x->length - d;
 	}
 
-	// Check if x == 0
 	if (x->length == 0) return 0;
 
-	// Look for the smallest non-zero bit
 	int s = 0;
 	uint32_t x0 = X(0);
 	if ((x0 & 0xffff) == 0) {
@@ -22657,33 +22539,26 @@ static int removeFactorsOf2(struct cdsBigInteger * x) {
 	return s + 32 * d;
 }
 
-// Miller-Rabin primality test (HAC 4.24)
 static bool millerRabin(struct cdsBigInteger * x, struct cdsRSAModPowBig * modPowBig) {
-	// Calculate x - 1
 	struct cdsBigInteger x1 = CDS_BIG_INTEGER_ZERO;
 	copyD(&x1, x, 0);
 	decrement(&x1);
 
-	// Decomposition of x - 1 == 2^s * r such that r is odd
 	struct cdsBigInteger r = CDS_BIG_INTEGER_ZERO;
 	copyD(&r, &x1, 0);
 	int s = removeFactorsOf2(&r);
 
-	// Repeat twice, so that the probability that x is composite is approx. 2^-80
 	int repeat = 2;
 	int xk = mostSignificantElement(x);
 	struct cdsBigInteger a = CDS_BIG_INTEGER_ZERO;
 	for (int i = 0; i < repeat; i++) {
-		// Pick a random a > 1
 		setRandom(&a, xk - 1);
 		while (isZero(&a) || isOne(&a)) setRandom(&a, xk - 1);
 
-		// Check if a^r mod x == 1 or a^r mod x == -1
 		modPowBigExp(modPowBig, &a, &r, x);
 		modPowBigResult(modPowBig);
 		if (isOne(modPowBig->result) || compare(modPowBig->result, &x1) == 0) continue;
 
-		// Check if a^(r * 2^j) mod x == -1
 		int j = 1;
 		for (; j < s; j++) {
 			modPowBigSqrAR(modPowBig);
@@ -22697,7 +22572,6 @@ static bool millerRabin(struct cdsBigInteger * x, struct cdsRSAModPowBig * modPo
 	return true;
 }
 
-// Returns x % y, where y is a 32-bit integer
 static uint32_t modInt(struct cdsBigInteger * x, uint32_t y) {
 	uint64_t c = 0;
 	for (int i = mostSignificantElement(x); i >= 0; i--)
@@ -22705,7 +22579,6 @@ static uint32_t modInt(struct cdsBigInteger * x, uint32_t y) {
 	return (uint32_t)c;
 }
 
-// *** Key generation
 
 #ifndef KEY_GENERATION_RESET_WATCHDOG
 #define KEY_GENERATION_RESET_WATCHDOG() ;
@@ -22715,7 +22588,6 @@ static const int elementsFor1024Bits = 32;
 static const int elementsFor2048Bits = 64;
 static int bitCount4[] = {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4};
 
-// Returns the number of 1's in an integer.
 static int bitCount(uint32_t n) {
 	int count = 0;
 	for (; n != 0; n >>= 4)
@@ -22723,9 +22595,6 @@ static int bitCount(uint32_t n) {
 	return count;
 }
 
-// GCD (HAC 14.54)
-// x <= y <= GCD(x, y)
-// Preconditions: x > 0, y > 0, either x or y or both need to be odd.
 static void gcd(struct cdsBigInteger * x, struct cdsBigInteger * y) {
 	removeFactorsOf2(x);
 	removeFactorsOf2(y);
@@ -22745,37 +22614,30 @@ static void gcd(struct cdsBigInteger * x, struct cdsBigInteger * y) {
 	}
 }
 
-static void markInSieve(uint8_t * sieve, uint s, uint interval) {
+static void markInSieve(uint8_t * sieve, uint16_t s, uint16_t interval) {
 	for (; s < 4096; s += interval) sieve[s] = 1;
 }
 
-// Fills x with a random prime, with x - 1 relatively prime to this->e.
 static void randomPrime1024(struct cdsBigInteger * x, struct cdsBigInteger * e, struct cdsRSAModPowBig * modPowBig) {
 	uint8_t sieve[4096];
 	while (true) {
-		// Generate a random 1024 bit odd integer start
 		struct cdsBigInteger start = CDS_BIG_INTEGER_ZERO;
 		setRandom(&start, elementsFor1024Bits);
 		start.values[0] |= 1;
 		start.values[elementsFor1024Bits - 1] |= 0x80000000;
 
-		// Reset the sieve
 		KEY_GENERATION_RESET_WATCHDOG();
 		memset(sieve, 0, 4096);
 
-		// Check all odd numbers between start and start + 4096 for primality and suitability for RSA
-		for (uint n = 0; n < 4096; n += 2) {
+		for (uint16_t n = 0; n < 4096; n += 2) {
 			if (sieve[n]) continue;
 
-			// x <= start + n
 			setUint32(x, n);
 			addN(x, 1, &start, 0);
 			trim(x);
 
-			// Check if x is prime
 
 #line 1 "Condensation/../../c/Condensation/RSA64/primality.inc.c"
-// This code was generated using generate-primality-check
 uint32_t m = modInt(x, 3234846615);
 if (m % 3 == 0) {
 	markInSieve(sieve, n, 3);
@@ -23692,13 +23554,11 @@ if (m % 1999 == 0) continue;
 			KEY_GENERATION_RESET_WATCHDOG();
 			if (! millerRabin(x, modPowBig)) continue;
 
-			// Check if x mod e != 1
 			struct cdsBigInteger xme = CDS_BIG_INTEGER_ZERO;
 			copyD(&xme, x, 0);
 			mod(&xme, e);
 			if (isOne(&xme)) continue;
 
-			// Check if gcd(x - 1, e) == 1
 			struct cdsBigInteger x1 = CDS_BIG_INTEGER_ZERO;
 			copyD(&x1, x, 0);
 			decrement(&x1);
@@ -23710,9 +23570,7 @@ if (m % 1999 == 0) continue;
 	}
 }
 
-// Generates a 2048 bit key.
 static void generateKey(struct cdsRSAPrivateKey * this, struct cdsRSAModPowBig * modPowBig) {
-	// Prepare
 	struct cdsBigInteger * e = &this->rsaPublicKey.e;
 	struct cdsBigInteger * p = &this->p;
 	struct cdsBigInteger * q = &this->q;
@@ -23721,53 +23579,34 @@ static void generateKey(struct cdsRSAPrivateKey * this, struct cdsRSAModPowBig *
 
 	setUint32(e, 0x10001);
 	while (true) {
-		// Pick a first prime
 		randomPrime1024(p, e, modPowBig);
-		//T("p "), TBI(p), NL();
 
 		while (true) {
-			// Pick a second prime
 			randomPrime1024(q, e, modPowBig);
-			//T("q "), TBI(q), NL();
 
-			// Make p the bigger of the two primes
 			if (compare(p, q) < 0) {
 				struct cdsBigInteger * temp = p;
 				p = q;
 				q = temp;
 			}
 
-			// Some implementations check if p - q > 2^800 (or a similar value), since pq
-			// may be easy to factorize if p ~ q. However, the probability of this is less
-			// than 2^-200, and therefore completely negligible.
-			// For comparison, note that the Miller-Rabin primality test leaves a 2^-80
-			// chance that either p or q are composite.
 
-			// Calculate the modulus n = p * q
 			setZero(&n);
 			mul(&n, p, q);
-			//T("n "), TBI(n), NL();
 
-			// If the modulus is too small, use the larger of the two primes, and continue
 			if (mostSignificantElement(&n) != elementsFor2048Bits - 1 || (n.values[elementsFor2048Bits - 1] & 0x80000000) == 0) continue;
 
-			// p and q appear to be OK
 			break;
 		}
 
-		// Check if the NAF weight is high enough, since low-weight composites may be weak
-		// See "The number field sieve for integers of low weight" by Oliver Schirokauer.
 		setZero(&n3);
 		addN(&n3, 3, &n, 0);
-		//T("n3 "), TBI(n3), NL();
 		int nk = elementsFor2048Bits - 1;  // == mostSignificantElement(n), a condition for quitting the while loop above
 		int nafCount = 0;
 		for (int i = 0; i <= nk; i++) nafCount += bitCount(n.values[i] ^ n3.values[i]);
 		if (nk + 1 < n3.length) nafCount += bitCount(n3.values[nk + 1]);
-		//T("nafCount "), TD(nafCount), NL();
 		if (nafCount < 512) continue;
 
-		// We are done
 		break;
 	}
 }
@@ -23775,21 +23614,17 @@ static void generateKey(struct cdsRSAPrivateKey * this, struct cdsRSAModPowBig *
 #line 15 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/RSA64/Encoding.inc.c"
-// *** OAEP and PSS encoding
 #include <string.h>
 
-static const uint emLength = 256;    // = 2048 / 8
-static const uint hashLength = 32;
+static const uint16_t emLength = 256;    // = 2048 / 8
+static const uint16_t hashLength = 32;
 static const uint8_t OAEPZeroLabelHash[] = {0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14, 0x9a, 0xfb, 0xf4, 0xc8, 0x99, 0x6f, 0xb9, 0x24, 0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c, 0xa4, 0x95, 0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55};
 
-// The first mask.length bytes of mgf1(seed) => mask
-// IN seed: the seed to use, max. 4092 bytes
-// OUT mask: the generated mask, whereby the length must be a multiple of 32
 static void maskGenerationFunction1(struct cdsBytes seed, struct cdsMutableBytes mask) {
 	struct cdsSHA256 sha256;
 	uint8_t counter[4] = {0, 0, 0, 0};
-	uint blocks = mask.length / 32;
-	for (uint i = 0; i < blocks; i++) {
+	cdsLength blocks = mask.length / 32;
+	for (cdsLength i = 0; i < blocks; i++) {
 		counter[3] = i;
 		cdsInitializeSHA256(&sha256);
 		cdsAddBytesToSHA256(&sha256, seed);
@@ -23798,177 +23633,132 @@ static void maskGenerationFunction1(struct cdsBytes seed, struct cdsMutableBytes
 	}
 }
 
-// SHA256(8 zeros | digest | salt) => h
-// IN digest: max. 256 bytes
-// IN salt: max. 222 bytes
-// OUT h: 32 bytes
 static void pssHash(struct cdsBytes digest, struct cdsBytes salt, uint8_t * h) {
 	uint8_t sequence[8 + 256 + 222];
-	uint sequenceLength = 8 + digest.length + salt.length;
+	cdsLength sequenceLength = 8 + digest.length + salt.length;
 	memset(sequence, 0, 8);
 	memcpy(sequence + 8, digest.data, digest.length);
 	memcpy(sequence + 8 + digest.length, salt.data, salt.length);
 	cdsSHA256(cdsBytes(sequence, sequenceLength), h);
 }
 
-// Verfies a signature for digest.
-// IN digest: the signed digest, max. 256 bytes
-// IN pss: the PSS bytes, 256 bytes
 static bool verifyPSS(struct cdsBytes digest, struct cdsBytes pss) {
 	assert(digest.length <= 256);
 	assert(pss.length == 256);
 	const uint8_t * em = pss.data;
 
-	// Check the last byte
 	if (em[emLength - 1] != 0xbc) return false;
 
-	// Unmask the salt: zeros | 0x01 | salt = maskedDB ^ mask
-	uint dbLength = emLength - hashLength - 1;	// 223
+	uint16_t dbLength = emLength - hashLength - 1;	// 223
 	uint8_t mask[224];	// rounded up to the next multiple of 32
 	maskGenerationFunction1(cdsBytes(em + (emLength - hashLength - 1), hashLength), cdsMutableBytes(mask, 224));
 	uint8_t unmasked[224];
-	for (uint i = 0; i < dbLength; i++) unmasked[i] = em[i] ^ mask[i];
+	for (uint16_t i = 0; i < dbLength; i++) unmasked[i] = em[i] ^ mask[i];
 
-	// The first byte may be incomplete
 	unmasked[0] &= 0x7f;
 
-	// Remove leading zeros
-	uint n = 0;
+	uint16_t n = 0;
 	while (unmasked[n] == 0 && n < dbLength) n++;
 
-	// The first unmasked byte must be 0x01
 	if (unmasked[n] != 0x01) return false;
 	n++;
 
-	// The rest is salt (max. 222 bytes)
 	struct cdsBytes salt = cdsBytes(unmasked + n, dbLength - n);
 
-	// Calculate H = SHA256(8 zeros | digest | salt)
 	uint8_t h[hashLength];
 	pssHash(digest, salt, h);
 
-	// Verify H
-	for (uint i = 0; i < 32; i++)
+	for (uint16_t i = 0; i < 32; i++)
 		if (h[i] != em[dbLength + i]) return false;
 
 	return true;
 }
 
-// Returns PSS(digest).
-// IN digest: the digest to sign, max. 256 bytes
-// MEM em: 256 bytes to place the return value
 static struct cdsBytes generatePSS(struct cdsBytes digest, uint8_t * em) {
 	assert(digest.length <= 256);
-	uint dbLength = emLength - hashLength - 1;	// 223
+	uint16_t dbLength = emLength - hashLength - 1;	// 223
 
-	// Prepare the salt
 	uint8_t saltBuffer[32];
 	struct cdsBytes salt = cdsRandomBytes(saltBuffer, 32);
 
-	// Calculate H = SHA256(8 zeros | digest | salt), and prepare the message = maskedDB | H | 0xbc
 	em[emLength - 1] = 0xbc;
 	pssHash(digest, salt, em + dbLength);
 
-	// Write maskedDB = (zeros | 0x01 | salt) ^ mask
 	uint8_t mask[224];
 	maskGenerationFunction1(cdsBytes(em + dbLength, hashLength), cdsMutableBytes(mask, 224));
 
-	// Zeros
-	uint n = 0;
+	uint16_t n = 0;
 	for (; n < dbLength - salt.length - 1; n++)
 		em[n] = mask[n];
 
-	// 0x01
 	em[n] = 0x01 ^ mask[n];
 	n++;
 
-	// Salt
-	for (uint i = 0; i < salt.length; i++, n++)
+	for (uint16_t i = 0; i < salt.length; i++, n++)
 		em[n] = salt.data[i] ^ mask[n];
 
-	// Set the first bit to 0, because the signature can only be 2048 - 1 bit long
 	em[0] &= 0x7f;
 
 	return cdsBytes(em, emLength);
 }
 
-// Returns OAEP(message).
-// IN message: the message to pad, max. 190 bytes
-// MEM em: 256 bytes to place the return value
 static struct cdsBytes encodeOAEP(struct cdsBytes message, uint8_t * em) {
-	// Create DB = labelHash | zeros | 0x01 | message
-	uint dbLength = emLength - hashLength - 1;	// 223
+	uint16_t dbLength = emLength - hashLength - 1;	// 223
 	uint8_t db[dbLength];
 	memcpy(db, OAEPZeroLabelHash, 32);
 	memset(db + 32, 0, dbLength - 32 - message.length - 1);
 	db[dbLength - message.length - 1] = 0x01;
 	memcpy(db + (dbLength - message.length), message.data, message.length);
 
-	// Create seed
 	uint8_t seedBuffer[hashLength];
 	struct cdsBytes seed = cdsRandomBytes(seedBuffer, hashLength);
 
-	// Write maskedDB = DB ^ MGF1(seed)
 	uint8_t dbMask[224];
 	maskGenerationFunction1(seed, cdsMutableBytes(dbMask, 224));
-	uint n = hashLength + 1;
-	for (uint i = 0; i < dbLength; i++, n++)
+	uint16_t n = hashLength + 1;
+	for (uint16_t i = 0; i < dbLength; i++, n++)
 		em[n] = db[i] ^ dbMask[i];
 
-	// Write maskedSeed = seed ^ MGF1(maskedDB)
 	uint8_t seedMask[hashLength];
 	maskGenerationFunction1(cdsBytes(em + hashLength + 1, dbLength), cdsMutableBytes(seedMask, hashLength));
 	em[0] = 0;
 	n = 1;
-	for (uint i = 0; i < hashLength; i++, n++)
+	for (uint16_t i = 0; i < hashLength; i++, n++)
 		em[n] = seed.data[i] ^ seedMask[i];
 
 	return cdsBytes(em, emLength);
 }
 
-// Returns OAEP^-1(emBytes).
-// IN oaep: the padded bytes, 256 bytes
-// MEM message: 256 bytes used to place the return value
 static struct cdsBytes decodeOAEP(struct cdsBytes oaep, uint8_t * message) {
 	assert(oaep.length == 256);
 	const uint8_t * em = oaep.data;
 
-	// Extract the seed
-	uint dbLength = emLength - hashLength - 1;	// 223
+	uint16_t dbLength = emLength - hashLength - 1;	// 223
 	uint8_t seedMask[hashLength];
 	maskGenerationFunction1(cdsBytes(em + hashLength + 1, dbLength), cdsMutableBytes(seedMask, hashLength));
 	uint8_t seed[hashLength];
-	uint n = 1;
-	for (uint i = 0; i < hashLength; i++, n++)
+	uint16_t n = 1;
+	for (uint16_t i = 0; i < hashLength; i++, n++)
 		seed[i] = em[n] ^ seedMask[i];
 
-	// Prepare the DB mask
 	uint8_t dbMask[224];
 	maskGenerationFunction1(cdsBytes(seed, hashLength), cdsMutableBytes(dbMask, 224));
 
-	// To guard against timing attacks, we just keep a correct flag, and continue processing
-	// even if the sequence is clearly wrong. (Note that on some systems, the compiler might
-	// optimize this and return directly whenever we set correct = false.)
 	bool correct = true;
 
-	// Verify the label hash
-	uint i = 0;
+	uint16_t i = 0;
 	for (; i < 32; n++, i++) {
-		//T("i "), TD(i), T(" n "), TD(n), T(" c "), TD(correct), T(" | "), TD(OAEPZeroLabelHash[i]), T(" == "), TD(em[n] ^ dbMask[i]), T(" == "), TD(em[n]), T(" ^ "), TD(dbMask[i]), NL();
 		if (OAEPZeroLabelHash[i] != (em[n] ^ dbMask[i])) correct = false;
 	}
 
-	// Consume the PS (zeros)
 	for (; em[n] == dbMask[i] && n < emLength; n++) i++;
 
-	// Consume the 0x01 byte
 	if (n >= emLength || (em[n] ^ dbMask[i]) != 0x01) correct = false;
 	n++;
 	i++;
 
-	// Unmask the message
-	uint messageLength = emLength - n;
-	for (uint k = 0; n < emLength; n++, i++, k++)
+	uint16_t messageLength = emLength - n;
+	for (uint16_t k = 0; n < emLength; n++, i++, k++)
 		message[k] = em[n] ^ dbMask[i];
 
 	return correct ? cdsBytes(message, messageLength) : cdsEmpty;
@@ -23977,47 +23767,35 @@ static struct cdsBytes decodeOAEP(struct cdsBytes oaep, uint8_t * message) {
 #line 16 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/RSA64/PrivateKey.inc.c"
-// *** RSA Private Key
 
-// Precalculates all parameters required in privateCrypt.
 static void precalculateCrtParameters(struct cdsRSAPrivateKey * this) {
-	// n = p * q
 	setZero(&this->rsaPublicKey.n);
 	mul(&this->rsaPublicKey.n, &this->p, &this->q);
 
-	// p1 = p - 1
 	struct cdsBigInteger p1 = CDS_BIG_INTEGER_ZERO;
 	copyD(&p1, &this->p, 0);
 	decrement(&p1);
 
-	// q1 = q - 1
 	struct cdsBigInteger q1 = CDS_BIG_INTEGER_ZERO;
 	copyD(&q1, &this->q, 0);
 	decrement(&q1);
 
-	// phi = p1 * q1
 	struct cdsBigInteger phi = CDS_BIG_INTEGER_ZERO;
 	mul(&phi, &p1, &q1);
 
-	// d = modInverse(e, phi)
 	modInverse(&this->d, &this->rsaPublicKey.e, &phi);
 
-	// dp = d % p1
 	copyD(&this->dp, &this->d, 0);
 	mod(&this->dp, &p1);
 
-	// dq = d % q1
 	copyD(&this->dq, &this->d, 0);
 	mod(&this->dq, &q1);
 
-	// pInv = modInverse(p, q)
 	modInverse(&this->pInv, &this->p, &this->q);
 
-	// qInv = modInverse(q, p)
 	modInverse(&this->qInv, &this->q, &this->p);
 }
 
-// Initializes a private key with an e, p, and q. All other key parameters are calculated.
 void cdsGeneratePrivateKeyWithMemory(struct cdsRSAPrivateKey * this, struct cdsRSAModPowBig * modPowBig) {
 	generateKey(this, modPowBig);
 	this->isValid = true;
@@ -24035,7 +23813,6 @@ void cdsInitializeEmptyPrivateKey(struct cdsRSAPrivateKey * this) {
 	this->rsaPublicKey.isValid = false;
 }
 
-// Initializes a private key with an e, p, and q. All other key parameters are calculated.
 void cdsInitializePrivateKey(struct cdsRSAPrivateKey * this, const struct cdsBytes e, const struct cdsBytes p, const struct cdsBytes q) {
 	cdsBigIntegerFromBytes(&this->rsaPublicKey.e, e);
 	cdsBigIntegerFromBytes(&this->p, p);
@@ -24045,21 +23822,15 @@ void cdsInitializePrivateKey(struct cdsRSAPrivateKey * this, const struct cdsByt
 	if (this->isValid) precalculateCrtParameters(this);
 }
 
-// Crypts using the private part of the key.
-// IN inputBytes: the bytes to crypt
-// MEM resultBuffer: 256 bytes to place the result
 static struct cdsBytes privateCrypt(const struct cdsRSAPrivateKey * this, const struct cdsBytes inputBytes, uint8_t * resultBuffer, struct cdsRSAPrivateCryptMemory * memory) {
-	// Convert the input bytes to a big integer
 	cdsBigIntegerFromBytes(&memory->input, inputBytes);
 
-	// mP = ((input mod p) ^ dP)) mod p
 	copyD(&memory->imodp, &memory->input, 0);
 	mod(&memory->imodp, &this->p);
 	modPowBigExp(&memory->modPowBig, &memory->imodp, &this->dp, &this->p);
 	modPowBigResult(&memory->modPowBig);
 	copyD(&memory->mP, memory->modPowBig.result, 0);
 
-	// mQ = ((input mod q) ^ dQ)) mod q
 	copyD(&memory->imodq, &memory->input, 0);
 	mod(&memory->imodq, &this->q);
 	modPowBigExp(&memory->modPowBig, &memory->imodq, &this->dq, &this->q);
@@ -24067,44 +23838,33 @@ static struct cdsBytes privateCrypt(const struct cdsRSAPrivateKey * this, const 
 	copyD(&memory->mQ, memory->modPowBig.result, 0);
 
 	if (compare(&memory->mP, &memory->mQ) > 0) {
-		// h = qInv * (mP - mQ) mod p
 		copyD(&memory->difference, &memory->mP, 0);
 		subD(&memory->difference, &memory->mQ, 0);
 		setZero(&memory->h);
 		mul(&memory->h, &this->qInv, &memory->difference);
 		mod(&memory->h, &this->p);
 
-		// result = mQ + h * q
 		copyD(&memory->result, &memory->mQ, 0);
 		mul(&memory->result, &memory->h, &this->q);
 	} else {
-		// h = pInv * (mQ - mP) mod q
 		copyD(&memory->difference, &memory->mQ, 0);
 		subD(&memory->difference, &memory->mP, 0);
 		setZero(&memory->h);
 		mul(&memory->h, &this->pInv, &memory->difference);
 		mod(&memory->h, &this->q);
 
-		// result = mP + h * p
 		copyD(&memory->result, &memory->mP, 0);
 		mul(&memory->result, &memory->h, &this->p);
 	}
 
-	// Convert the result to bytes
 	cdsBytesFromBigInteger(cdsMutableBytes(resultBuffer, 256), &memory->result);
 	return cdsBytes(resultBuffer, 256);
 };
 
-// Signs a short digest, such as a SHA256 hash.
-// IN digest: the digest to sign, max. 190 bytes
-// MEM resultBuffer: 256 bytes to place the return value
 struct cdsBytes cdsSignWithMemory(const struct cdsRSAPrivateKey * this, const struct cdsBytes digest, uint8_t * resultBuffer, struct cdsRSAPrivateCryptMemory * memory) {
-	// Encode the digest using PSS
 	uint8_t buffer[256];
 	struct cdsBytes pss = generatePSS(digest, buffer);
-	//T("sign pss "), TB(pss), NL();
 
-	// Encrypt the PSS using the private key
 	return privateCrypt(this, pss, resultBuffer, memory);
 };
 
@@ -24113,16 +23873,10 @@ struct cdsBytes cdsSign(const struct cdsRSAPrivateKey * this, const struct cdsBy
 	return cdsSignWithMemory(this, digest, resultBuffer, &memory);
 }
 
-// Decrypts an encrypted message.
-// IN encrypted: the encrypted bytes
-// MEM resultBuffer: 256 bytes to place the return value
 struct cdsBytes cdsDecryptWithMemory(const struct cdsRSAPrivateKey * this, const struct cdsBytes encrypted, uint8_t * resultBuffer, struct cdsRSAPrivateCryptMemory * memory) {
-	// Decrypt
 	uint8_t buffer[256];
 	struct cdsBytes oaep = privateCrypt(this, encrypted, buffer, memory);
-	//T("decrypt oaep "), TB(oaep), NL();
 
-	// Extract the message from the OAEP envelope
 	return decodeOAEP(oaep, resultBuffer);
 };
 
@@ -24131,76 +23885,56 @@ struct cdsBytes cdsDecrypt(const struct cdsRSAPrivateKey * this, const struct cd
 	return cdsDecryptWithMemory(this, encrypted, resultBuffer, &memory);
 }
 
+
 #line 17 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/RSA64/PublicKey.inc.c"
-// *** RSA Public Key
 
 void cdsInitializeEmptyPublicKey(struct cdsRSAPublicKey * this) {
 	this->isValid = false;
 }
 
-// Initializes a public key with e and n.
 void cdsInitializePublicKey(struct cdsRSAPublicKey * this, const struct cdsBytes e, const struct cdsBytes n) {
 	cdsBigIntegerFromBytes(&this->e, e);
 	cdsBigIntegerFromBytes(&this->n, n);
 	this->isValid = ! isZero(&this->e) && mostSignificantElement(&this->n) + 1 == elementsFor2048Bits;
 }
 
-// Crypts using the public part of the key.
-// IN inputBytes: the bytes to crypt
-// MEM resultBuffer: 256 bytes to place the result
 static struct cdsBytes publicCrypt(const struct cdsRSAPublicKey * this, const struct cdsBytes inputBytes, uint8_t * resultBuffer, struct cdsRSAPublicCryptMemory * memory) {
-	// Convert the input bytes to a big integer
 	cdsBigIntegerFromBytes(&memory->input, inputBytes);
-	//T("publicCrypt input "), TBI(&input), NL();
 
-	// Calculate
 	modPowSmallExp(&memory->modPowSmall, &memory->input, &this->e, &this->n);
-	//T("publicCrypt result "), TBI(modPow.result), NL();
 
-	// Convert the result to bytes
 	cdsBytesFromBigInteger(cdsMutableBytes(resultBuffer, 256), memory->modPowSmall.result);
 	return cdsBytes(resultBuffer, 256);
 }
 
 bool cdsVerifyWithMemory(const struct cdsRSAPublicKey * this, const struct cdsBytes digest, const struct cdsBytes signature, struct cdsRSAPublicCryptMemory * memory) {
-	// Decrypt the signature using the public key
 	uint8_t buffer[256];
 	struct cdsBytes pss = publicCrypt(this, signature, buffer, memory);
-	//T("verify pss "), TB(pss), NL();
 
-	// Verify if the PSS is valid
 	return verifyPSS(digest, pss);
 }
 
-// Verifies a signature.
-// IN digest: the signed digest, max. 256 bytes
-// IN signature: the signature (usually 256 bytes)
 bool cdsVerify(const struct cdsRSAPublicKey * this, const struct cdsBytes digest, const struct cdsBytes signature) {
 	struct cdsRSAPublicCryptMemory memory;
 	return cdsVerifyWithMemory(this, digest, signature, &memory);
 }
 
 struct cdsBytes cdsEncryptWithMemory(const struct cdsRSAPublicKey * this, const struct cdsBytes message, uint8_t * resultBuffer, struct cdsRSAPublicCryptMemory * memory) {
-	// Encode the message using OAEP
 	uint8_t buffer[256];
 	struct cdsBytes oaep = encodeOAEP(message, buffer);
-	//T("encrypt oaep "), TB(oaep), NL();
 
-	// Encrypt
 	return publicCrypt(this, oaep, resultBuffer, memory);
 }
 
-// Encrypts a short message, such as a SHA256 hash.
-// IN message: the message to encrypt, max. 190 bytes
-// MEM resultBuffer: 256 bytes to place the result
 struct cdsBytes cdsEncrypt(const struct cdsRSAPublicKey * this, const struct cdsBytes message, uint8_t * resultBuffer) {
 	struct cdsRSAPublicCryptMemory memory;
 	return cdsEncryptWithMemory(this, message, resultBuffer, &memory);
 }
 
 #line 18 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/Serialization/Hash.inc.c"
 struct cdsHash invalidHashForDebugging = {{0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x20, 0x48, 0x41, 0x53, 0x48, 0x20, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x20, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x20, 0x48, 0x41, 0x53, 0x48, 0x20}};
@@ -24340,7 +24074,7 @@ void withObjectHashes(const struct cdsObject * this, cdsHashCallback hashCallbac
 #line 22 "Condensation/../../c/Condensation/all.inc.c"
 
 #line 1 "Condensation/../../c/Condensation/Serialization/Record.inc.c"
-struct cdsRecord cdsEmptyRecord = {cdsEmpty, NULL, NULL, NULL};
+struct cdsRecord cdsEmptyRecord = {{NULL, 0}, NULL, NULL, NULL};
 
 struct cdsRecord * cdsChild(struct cdsRecord * this, struct cdsBytes bytes) {
 	struct cdsRecord * child = this->firstChild;
@@ -24525,27 +24259,20 @@ cdsLength cdsRecordWithHashLength(cdsLength length) {
 }
 
 struct cdsMutableBytes cdsAddRecord(struct cdsRecordBuilder * this, cdsLength length) {
-	// We check for the maximum header length of 9 bytes
 	if (this->used + 9 + length > this->bytes.length) return cdsMutableBytes(NULL, 0);
 
-	// Handle the tree
 	if (this->nextIsChild && this->level < CDS_MAX_RECORD_DEPTH - 1) {
-		// This is the first child of the previous record
 		this->nextIsChild -= 1;
 		this->bytes.data[this->levelPositions[this->level]] |= 0b01000000;
 		this->level += 1;
 	} else if (this->level == 0) {
-		// Start a new record
 		this->level = 1;
 	} else {
-		// This is the next sibling at this level
 		this->bytes.data[this->levelPositions[this->level]] |= 0b10000000;
 	}
 
-	// Start a new node
 	this->levelPositions[this->level] = this->used;
 
-	// Header
 	if (length < 30) {
 		this->bytes.data[this->used] = length;
 		this->used += 1;
@@ -24566,7 +24293,6 @@ struct cdsMutableBytes cdsAddRecord(struct cdsRecordBuilder * this, cdsLength le
 		this->used += 9;
 	}
 
-	// Data
 	struct cdsMutableBytes slice = cdsMutableByteSlice(this->bytes, this->used, length);
 	this->used += length;
 	return slice;
@@ -24732,29 +24458,24 @@ struct cdsBytes cdsToCryptedObject(struct cdsRecordBuilder * this, struct cdsByt
 
 #line 1 "Condensation/../../c/Condensation/Serialization/RecordParser.inc.c"
 struct cdsRecord * cdsParseRecord(const struct cdsBytes bytes, struct cdsRecord * records, int length) {
-	// Prepare the root
 	records[0].bytes = cdsEmpty;
 	records[0].hash = NULL;
 	records[0].nextSibling = NULL;
 	records[0].firstChild = NULL;
 
-	// Read the header
 	uint32_t hashesCount = cdsGetUint32BE(bytes.data);
 	cdsLength pos = 4 + (cdsLength) hashesCount * 32;
 	if (pos > bytes.length) return records;
 
-	// Parse all records
 	int usedRecords = 1;
 	int level = 1;
 	struct cdsRecord * lastSibling[CDS_MAX_RECORD_DEPTH] = {records, NULL, };
 	bool hasMoreSiblings[CDS_MAX_RECORD_DEPTH] = {true, };
 
 	while (pos < bytes.length) {
-		// Flags
 		int flags = bytes.data[pos];
 		pos += 1;
 
-		// Data
 		uint64_t byteLength = flags & 0x1f;
 		if (byteLength == 30) {
 			if (pos + 1 > bytes.length) break;
@@ -24767,28 +24488,22 @@ struct cdsRecord * cdsParseRecord(const struct cdsBytes bytes, struct cdsRecord 
 		}
 
 		if (pos + byteLength > bytes.length) break;
-		//T("Record"), TD(level), TH(flags), TD(pos), TB(cdsByteSlice(bytes, pos, byteLength)), NL();
-		//printf("Record level %d flags %d pos %d\n", level, flags, pos);
 		records[usedRecords].bytes = cdsByteSlice(bytes, pos, byteLength);
 		pos += byteLength;
 
 		if (flags & 0x20) {
-			// Hash
 			if (pos + 4 > bytes.length) break;
 			uint32_t hashIndex = cdsGetUint32BE(bytes.data + pos);
 			pos += 4;
 			if (hashIndex > hashesCount) break;
 			records[usedRecords].hash = bytes.data + 4 + hashIndex * 32;
-			//T("  Hash"), TD(hashIndex), TB(cdsBytes(records[usedRecords].hash, 32)), NL();
 		} else {
-			// No hash
 			records[usedRecords].hash = NULL;
 		}
 
 		records[usedRecords].firstChild = NULL;
 		records[usedRecords].nextSibling = NULL;
 
-		// Link sibling or parent
 		if (lastSibling[level])
 			lastSibling[level]->nextSibling = records + usedRecords;
 		else
@@ -24798,21 +24513,17 @@ struct cdsRecord * cdsParseRecord(const struct cdsBytes bytes, struct cdsRecord 
 		hasMoreSiblings[level] = flags & 0x80 ? true : false;
 
 		if (flags & 0x40) {
-			// Move down to children
 			level += 1;
 			if (level >= 64) break;
 			lastSibling[level] = NULL;
 		} else {
-			// Move up to parents
 			while (! hasMoreSiblings[level])
 				level -= 1;
 		}
 
-		// Add this record
 		usedRecords += 1;
 		if (usedRecords >= length) break;
 
-		// The record ends here
 		if (level == 0) break;
 	}
 
@@ -24820,6 +24531,7 @@ struct cdsRecord * cdsParseRecord(const struct cdsBytes bytes, struct cdsRecord 
 }
 
 #line 25 "Condensation/../../c/Condensation/all.inc.c"
+
 
 #line 1 "Condensation/../../c/Condensation/Actors/PrivateKey.inc.c"
 struct cdsBytes cdsPrivateKeyFromBytes(struct cdsRSAPrivateKey * this, const struct cdsBytes bytes) {
@@ -24854,7 +24566,6 @@ struct cdsBytes cdsSerializePrivateKey(struct cdsRSAPrivateKey * this, struct cd
 	cdsStartChildren(&builder);
 	cdsAddBytes(&builder, publicKeyObjectBytes);
 	cdsEndChildren(&builder);
-	//printf("obj byte length %d\n", this->publicKeyObject.length);
 
 	cdsAddText(&builder, "rsa key");
 	cdsStartChildren(&builder);
@@ -24912,9 +24623,7 @@ struct cdsBytes cdsSerializePublicKey(struct cdsRSAPublicKey * this, struct cdsM
 
 #line 28 "Condensation/../../c/Condensation/all.inc.c"
 
-#line 5 "Condensation/C.inc.c"
-#include <stdlib.h>
-#include <stdint.h>
+#line 8 "Condensation/C.inc.c"
 
 static struct cdsBytes bytesFromSV(SV * sv) {
 	if (! SvPOK(sv)) return cdsEmpty;
@@ -24931,9 +24640,7 @@ static SV * svFromBigInteger(struct cdsBigInteger * bigInteger) {
 	return newSVpvn((const char *) bytes.data, bytes.length);
 }
 
-// *** Random bytes ***
 
-// Generates max. 256 random bytes
 SV * randomBytes(SV * svCount) {
 	int count = SvIV(svCount);
 	if (count > 256) count = 256;
@@ -24942,7 +24649,6 @@ SV * randomBytes(SV * svCount) {
 	return svFromBytes(cdsRandomBytes(buffer, count));
 }
 
-// *** SHA256 ***
 
 SV * sha256(SV * svBytes) {
 	uint8_t buffer[32];
@@ -24950,23 +24656,19 @@ SV * sha256(SV * svBytes) {
 	return svFromBytes(hash);
 }
 
-// *** AES ***
 
 SV * aesCrypt(SV * svBytes, SV * svKey, SV * svStartCounter) {
-	// Prepare the input
 	struct cdsBytes bytes = bytesFromSV(svBytes);
 	struct cdsBytes key = bytesFromSV(svKey);
 	if (key.length != 32) return &PL_sv_undef;
 	struct cdsBytes startCounter = bytesFromSV(svStartCounter);
 	if (startCounter.length != 16) return &PL_sv_undef;
 
-	// Crypt
 	SV * svResult = newSV(bytes.length < 1 ? 1 : bytes.length);	// newSV(0) has different semantics
 	struct cdsAES256 aes;
 	cdsInitializeAES256(&aes, key);
 	cdsCrypt(&aes, bytes, startCounter, (uint8_t *) SvPVX(svResult));
 
-	// Set the "string" bit, and the length
 	SvPOK_only(svResult);
 	SvCUR_set(svResult, bytes.length);
 	return svResult;
@@ -24988,7 +24690,6 @@ SV * counterPlusInt(SV * svCounter, SV * svAdd) {
 	return svFromBytes(cdsSeal(result));
 }
 
-// *** RSA Private Key ***
 
 static struct cdsRSAPrivateKey * privateKeyFromSV(SV * sv) {
 	if (! SvPOK(sv)) return NULL;
@@ -25073,7 +24774,6 @@ SV * privateKeyDecrypt(SV * svThis, SV * svMessage) {
 	return svFromBytes(decrypted);
 }
 
-// *** RSA Public Key ***
 
 static struct cdsRSAPublicKey * publicKeyFromSV(SV * sv) {
 	if (! SvPOK(sv)) return NULL;
@@ -25085,7 +24785,6 @@ static struct cdsRSAPublicKey * publicKeyFromSV(SV * sv) {
 SV * publicKeyFromPrivateKey(SV * svPrivateKey) {
 	struct cdsRSAPrivateKey * key = privateKeyFromSV(svPrivateKey);
 
-	// Make a copy of the public key
 	struct cdsRSAPublicKey publicKey;
 	memcpy(&publicKey.e, &key->rsaPublicKey.e, sizeof(struct cdsBigInteger));
 	memcpy(&publicKey.n, &key->rsaPublicKey.n, sizeof(struct cdsBigInteger));
@@ -25133,11 +24832,10 @@ SV * publicKeyEncrypt(SV * svThis, SV * svMessage) {
 	return svFromBytes(encrypted);
 }
 
-// *** Performance timer ***
 
 SV * performanceStart() {
 	struct timespec ts;
-	clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+	clock_gettime(CLOCK_MONOTONIC, &ts);
 	SV * obj = newSVpvn((char *) &ts, sizeof(struct timespec));
 	SvREADONLY_on(obj);
 	return obj;
@@ -25155,7 +24853,7 @@ SV * performanceElapsed(SV * svThis) {
 	if (this == NULL) return &PL_sv_undef;
 
 	struct timespec ts;
-	clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+	clock_gettime(CLOCK_MONOTONIC, &ts);
 	time_t dsec = ts.tv_sec - this->tv_sec;
 	long dnano = ts.tv_nsec - this->tv_nsec;
 

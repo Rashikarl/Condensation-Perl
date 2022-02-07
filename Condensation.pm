@@ -118,6 +118,11 @@
 # INCLUDE Condensation/CLI/Commands/WhatIs.pm
 
 # INCLUDE Condensation/HTTPServer/HTTPServer.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/IdentificationHandler.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/MessageGatewayHandler.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/StaticContentHandler.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/StaticFilesHandler.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/StoreHandler.pm
 
 # IF cli & sftp
 
@@ -128,5 +133,8 @@
 
 # INCLUDE Condensation/Actors/PublicKey.pm
 # INCLUDE Condensation/HTTPServer/HTTPServer.pm
-# INCLUDE Condensation/CLI/Configuration.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/IdentificationHandler.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/StaticContentHandler.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/StaticFilesHandler.pm
+# INCLUDE Condensation/HTTPServer/HTTPServer/StoreHandler.pm
 # INCLUDE Condensation/CLI/UI.pm

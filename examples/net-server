@@ -2,12 +2,13 @@
 use strict;
 use warnings;
 #use Carp::Always;
-#use lib 'editions/cli';
+use lib '../editions/cli';
 use CDS;
 use Net::Server;
 
-# This script requires CDS version 0.25.
+# This script requires CDS version 0.26.
 # Check out the git repository (https://github.com/CondensationDS/Condensation-Perl) for newer versions.
+die 'Wrong CDS version (required 0.26+)' if $CDS::VERSION < 0.26;
 
 # Prepare the store
 mkdir 'store' if ! -f 'store';
@@ -35,23 +36,27 @@ sub process_http_request {
 	# Shows the environment variables when requesting /debug
 	return $o->SUPER::process_http_request if $ENV{PATH_INFO} eq '/debug';
 
-	# Create a request
-	my $request = CDS::HTTPServer::Request->new($o,
-		method => $ENV{REQUEST_METHOD},
-		path => $ENV{PATH_INFO},
-		query_string => $ENV{QUERY_STRING},
-		peeraddr => $ENV{REMOTE_ADDR},
-		peerport => $ENV{REMOTE_PORT},
-		);
-
 	# Prepare the headers
-	$request->{remainingData} = $ENV{CONTENT_LENGTH} // 0;
+	my $headers = {};
 	for my $key (keys %ENV) {
 		$key =~ /^HTTP_(.*)$/ || next;
 		my $header = lc($1);
 		$header =~ s/_/-/g;
-		$request->headers->{$header} = $ENV{$key};
+		$headers->{$header} = $ENV{$key};
 	}
+
+	# Create a request
+	my $request = CDS::HTTPServer::Request->new({
+		logger => $logger,
+		method => $ENV{REQUEST_METHOD},
+		path => $ENV{PATH_INFO},
+		queryString => $ENV{QUERY_STRING},
+		peerAddress => $ENV{REMOTE_ADDR},
+		peerPort => $ENV{REMOTE_PORT},
+		headers => $headers,
+		remainingData => $ENV{CONTENT_LENGTH} // 0,
+		corsAllowEverybody => 0,
+		});
 
 	# Process the request
 	$logger->onRequestStarts($request);
@@ -73,8 +78,5 @@ sub processRequest {
 	# Default handler
 	return $request->reply404;
 }
-
-sub corsAllowEverybody { 0 }
-sub logger { $logger }
 
 1;

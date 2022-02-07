@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.24 (actor) built on 2022-02-05.
+# This is the Condensation Perl Module 0.26 (actor) built on 2022-02-07.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -14,9 +14,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.24';
+our $VERSION = '0.26';
 our $edition = 'actor';
-our $releaseDate = '2022-02-05';
+our $releaseDate = '2022-02-07';
 
 sub now { time * 1000 }
 
@@ -7058,6 +7058,7 @@ sub guessValue {
 		push @value, $o->{ui}->gray(' = ', $integer, $o->looksLikeTimestamp($integer) ? ' = '.$o->{ui}->niceDateTime($integer).' = '.$o->{ui}->niceDateTimeLocal($integer) : '');
 	}
 
+	push @value, $o->{ui}->gray(' = ', CDS->floatFromBytes($bytes)) if $length == 4 || $length == 8;
 	push @value, $o->{ui}->gray(' = ', CDS::Hash->fromBytes($bytes)->hex) if $length == 32;
 	push @value, $o->{ui}->gray(' (', length $bytes, ' bytes)') if length $bytes > 64;
 	return @value;

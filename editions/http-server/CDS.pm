@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.24 (http-server) built on 2022-02-05.
+# This is the Condensation Perl Module 0.26 (http-server) built on 2022-02-07.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -16,9 +16,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.24';
+our $VERSION = '0.26';
 our $edition = 'http-server';
-our $releaseDate = '2022-02-05';
+our $releaseDate = '2022-02-07';
 
 sub now { time * 1000 }
 
@@ -378,117 +378,6 @@ sub modify {
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
 	return $modifications->executeIndividually($o, $keyPair);
-}
-
-package CDS::Configuration;
-
-our $xdgConfigurationFolder = ($ENV{XDG_CONFIG_HOME} || $ENV{HOME}.'/.config').'/condensation';
-our $xdgDataFolder = ($ENV{XDG_DATA_HOME} || $ENV{HOME}.'/.local/share').'/condensation';
-
-sub getOrCreateDefault {
-	my $class = shift;
-	my $ui = shift;
-
-	my $configuration = $class->new($ui, $xdgConfigurationFolder, $xdgDataFolder);
-	$configuration->createIfNecessary();
-	return $configuration;
-}
-
-sub new {
-	my $class = shift;
-	my $ui = shift;
-	my $folder = shift;
-	my $defaultStoreFolder = shift;
-
-	return bless {ui => $ui, folder => $folder, defaultStoreFolder => $defaultStoreFolder};
-}
-
-sub ui { shift->{ui} }
-sub folder { shift->{folder} }
-
-sub createIfNecessary {
-	my $o = shift;
-
-	my $keyPairFile = $o->{folder}.'/key-pair';
-	return 1 if -f $keyPairFile;
-
-	$o->{ui}->progress('Creating configuration folders …');
-	$o->createFolder($o->{folder}) // return $o->{ui}->error('Failed to create the folder "', $o->{folder}, '".');
-	$o->createFolder($o->{defaultStoreFolder}) // return $o->{ui}->error('Failed to create the folder "', $o->{defaultStoreFolder}, '".');
-	CDS::FolderStore->new($o->{defaultStoreFolder})->createIfNecessary;
-
-	$o->{ui}->progress('Generating key pair …');
-	my $keyPair = CDS::KeyPair->generate;
-	$keyPair->writeToFile($keyPairFile) // return $o->{ui}->error('Failed to write the configuration file "', $keyPairFile, '". Make sure that this location is writable.');
-	$o->{ui}->removeProgress;
-	return 1;
-}
-
-sub createFolder {
-	my $o = shift;
-	my $folder = shift;
-
-	for my $path (CDS->intermediateFolders($folder)) {
-		mkdir $path;
-	}
-
-	return -d $folder;
-}
-
-sub file {
-	my $o = shift;
-	my $filename = shift;
-
-	return $o->{folder}.'/'.$filename;
-}
-
-sub messagingStoreUrl {
-	my $o = shift;
-
-	return $o->readFirstLine('messaging-store') // 'file://'.$o->{defaultStoreFolder};
-}
-
-sub storageStoreUrl {
-	my $o = shift;
-
-	return $o->readFirstLine('store') // 'file://'.$o->{defaultStoreFolder};
-}
-
-sub setMessagingStoreUrl {
-	my $o = shift;
-	my $storeUrl = shift;
-
-	CDS->writeTextToFile($o->file('messaging-store'), $storeUrl);
-}
-
-sub setStorageStoreUrl {
-	my $o = shift;
-	my $storeUrl = shift;
-
-	CDS->writeTextToFile($o->file('store'), $storeUrl);
-}
-
-sub keyPair {
-	my $o = shift;
-
-	return CDS::KeyPair->fromFile($o->file('key-pair'));
-}
-
-sub setKeyPair {
-	my $o = shift;
-	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
-
-	$keyPair->writeToFile($o->file('key-pair'));
-}
-
-sub readFirstLine {
-	my $o = shift;
-	my $file = shift;
-
-	my $content = CDS->readTextFromFile($o->file($file)) // return;
-	$content = $1 if $content =~ /^(.*)\n/;
-	$content = $1 if $content =~ /^\s*(.*?)\s*$/;
-	return $content;
 }
 
 package CDS::ErrorHandlingStore;
@@ -1176,14 +1065,32 @@ sub print_banner {
 sub setup {
 	my $o = shift;
 
-	$o->{request} = CDS::HTTPServer::Request->new($o, @_);
+	my %parameters = @_;
+	$o->{request} = CDS::HTTPServer::Request->new({
+		logger => $o->logger,
+		method => $parameters{method},
+		path => $parameters{path},
+		protocol => $parameters{protocol},
+		queryString => $parameters{query_string},
+		peerAddress => $parameters{peeraddr},
+		peerPort => $parameters{peerport},
+		headers => {},
+		corsAllowEverybody => $o->corsAllowEverybody,
+		});
 }
 
 sub headers {
 	my $o = shift;
 	my $headers = shift;
 
-	$o->{request}->setHeaders($headers);
+	while (scalar @$headers) {
+		my $key = shift @$headers;
+		my $value = shift @$headers;
+		$o->{request}->setHeader($key, $value);
+	}
+
+	# Read the content length
+	$o->{request}->setRemainingData($o->{request}->header('content-length') // 0);
 }
 
 sub handler {
@@ -1306,72 +1213,16 @@ sub onRequestDone {
 	$o->{lineStarted} = 0;
 }
 
-package CDS::HTTPServer::MessageGatewayHandler;
-
-sub new {
-	my $class = shift;
-	my $url = shift;
-	my $identity = shift;
-	my $recipient = shift;
-
-	return bless {url => $url, identity => $identity, recipient => $recipient};
-}
-
-sub process {
-	my $o = shift;
-	my $request = shift;
-
-	$request->path =~ /^\/data$/ || return;
-	my $store = $request->server->store;
-
-	# Options
-	return $request->replyOptions('HEAD', 'GET', 'PUT', 'POST', 'DELETE') if $request->method eq 'OPTIONS';
-
-	# Prepare a message
-	my $record = CDS::Record->new;
-	$record->add('time')->addInteger(CDS->now);
-	$record->add('ip')->add($request->peerAddress);
-	$record->add('method')->add($request->method);
-	$record->add('path')->add($request->path);
-	$record->add('query string')->add($request->queryString);
-
-	my $headersRecord = $record->add('headers');
-	my $headers = $request->headers;
-	for my $key (keys %$headers) {
-		$headersRecord->add($key)->add($headers->{$key});
-	}
-
-	$record->add('data')->add($request->readData) if $request->remainingData;
-
-	# Post it
-	my $success = $o->{identity}->sendMessageRecord($record, undef, [$o->{recipient}]);
-	return $success ? $request->reply200 : $request->reply500('Unable to send the message.');
-}
-
 package CDS::HTTPServer::Request;
 
 sub new {
 	my $class = shift;
-	my $server = shift;
+	my $parameters = shift;
 
-	my %parameters = @_;
-	return bless {
-		server => $server,
-		method => $parameters{method},
-		path => $parameters{path},
-		protocol => $parameters{protocol},
-		queryString => $parameters{query_string},
-		localName => $parameters{localname},
-		localPort => $parameters{localport},
-		peerName => $parameters{peername},
-		peerAddress => $parameters{peeraddr},
-		peerPort => $parameters{peerport},
-		headers => {},
-		remainingData => 0,
-		};
+	return bless $parameters;
 }
 
-sub server { shift->{server} }
+sub logger { shift->{logger} }
 sub method { shift->{method} }
 sub path { shift->{path} }
 sub queryString { shift->{queryString} }
@@ -1379,23 +1230,9 @@ sub peerAddress { shift->{peerAddress} }
 sub peerPort { shift->{peerPort} }
 sub headers { shift->{headers} }
 sub remainingData { shift->{remainingData} }
+sub corsAllowEverybody { shift->{corsAllowEverybody} }
 
-# *** Request configuration
-
-sub setHeaders {
-	my $o = shift;
-	my $newHeaders = shift;
-
-	# Set the headers
-	while (scalar @$newHeaders) {
-		my $key = shift @$newHeaders;
-		my $value = shift @$newHeaders;
-		$o->{headers}->{lc($key)} = $value;
-	}
-
-	# Keep track of the data sent along with the request
-	$o->{remainingData} = $o->{headers}->{'content-length'} // 0;
-}
+# *** Path
 
 sub pathAbove {
 	my $o = shift;
@@ -1407,6 +1244,13 @@ sub pathAbove {
 }
 
 # *** Request data
+
+sub setRemainingData {
+	my $o = shift;
+	my $remainingData = shift;
+
+	$o->{remainingData} = $remainingData;
+}
 
 # Reads the request data
 sub readData {
@@ -1445,6 +1289,23 @@ sub dropData {
 	while ($o->{remainingData} > 0) {
 		$o->{remainingData} -= read(STDIN, my $buffer, $o->{remainingData}) || return;
 	}
+}
+
+# *** Headers
+
+sub setHeader {
+	my $o = shift;
+	my $key = shift;
+	my $value = shift;
+
+	$o->{headers}->{lc($key)} = $value;
+}
+
+sub header {
+	my $o = shift;
+	my $key = shift;
+
+	return $o->{headers}->{lc($key)};
 }
 
 # *** Query string
@@ -1491,7 +1352,7 @@ sub checkSignature {
 	# Get and check the actor
 	my $actorHash = CDS::Hash->fromHex($o->{headers}->{'condensation-actor'}) // return;
 	my ($publicKeyObject, $error) = $store->get($actorHash);
-	return if defined $error;
+	return if ! $publicKeyObject;
 	return if ! $publicKeyObject->calculateHash->equals($actorHash);
 	my $publicKey = CDS::PublicKey->fromObject($publicKeyObject) // return;
 
@@ -1538,14 +1399,14 @@ sub replyOptions {
 
 	my $headers = {};
 	$headers->{'Allow'} = join(', ', @_, 'OPTIONS');
-	$headers->{'Access-Control-Allow-Methods'} = join(', ', @_, 'OPTIONS') if $o->{server}->corsAllowEverybody && $o->{headers}->{'origin'};
+	$headers->{'Access-Control-Allow-Methods'} = join(', ', @_, 'OPTIONS') if $o->corsAllowEverybody && $o->{headers}->{'origin'};
 	return $o->reply(200, 'OK', $headers);
 }
 
 sub replyFatalError {
 	my $o = shift;
 
-	$o->{server}->{logger}->onRequestError($o, @_);
+	$o->{logger}->onRequestError($o, @_);
 	return $o->reply500;
 }
 
@@ -1571,7 +1432,7 @@ sub reply {
 	$headers->{'Content-Length'} = length($content);
 
 	# Origin
-	if ($o->{server}->corsAllowEverybody && (my $origin = $o->{headers}->{'origin'})) {
+	if ($o->corsAllowEverybody && (my $origin = $o->{headers}->{'origin'})) {
 		$headers->{'Access-Control-Allow-Origin'} = $origin;
 		$headers->{'Access-Control-Allow-Headers'} = 'Content-Type';
 		$headers->{'Access-Control-Max-Age'} = '86400';
@@ -4349,6 +4210,7 @@ sub guessValue {
 		push @value, $o->{ui}->gray(' = ', $integer, $o->looksLikeTimestamp($integer) ? ' = '.$o->{ui}->niceDateTime($integer).' = '.$o->{ui}->niceDateTimeLocal($integer) : '');
 	}
 
+	push @value, $o->{ui}->gray(' = ', CDS->floatFromBytes($bytes)) if $length == 4 || $length == 8;
 	push @value, $o->{ui}->gray(' = ', CDS::Hash->fromBytes($bytes)->hex) if $length == 32;
 	push @value, $o->{ui}->gray(' (', length $bytes, ' bytes)') if length $bytes > 64;
 	return @value;

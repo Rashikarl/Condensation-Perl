@@ -4,9 +4,9 @@ use File::Basename;
 
 package Build;
 
-sub read($class, $version, @flags) {
+sub read($class, $version; @flags) {
 	my $o = bless {
-		edition => [@flags],
+		edition => [@_],
 		flags => {},
 		sections => {},
 		use => {},
@@ -16,7 +16,7 @@ sub read($class, $version, @flags) {
 		cCode => [],
 		};
 
-	for my $flag (@flags) {
+	for my $flag (@_) {
 		$o:flags->{$flag} = 1;
 	}
 

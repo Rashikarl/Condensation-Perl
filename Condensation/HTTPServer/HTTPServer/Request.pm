@@ -1,22 +1,8 @@
-sub new($class, $server; %parameters) {
-	my %parameters = @_;
-	return bless {
-		server => $server,
-		method => $parameters{method},
-		path => $parameters{path},
-		protocol => $parameters{protocol},
-		queryString => $parameters{query_string},
-		localName => $parameters{localname},
-		localPort => $parameters{localport},
-		peerName => $parameters{peername},
-		peerAddress => $parameters{peeraddr},
-		peerPort => $parameters{peerport},
-		headers => {},
-		remainingData => 0,
-		};
+sub new($class, $parameters) {
+	return bless $parameters;
 }
 
-sub server;
+sub logger;
 sub method;
 sub path;
 sub queryString;
@@ -24,20 +10,9 @@ sub peerAddress;
 sub peerPort;
 sub headers;
 sub remainingData;
+sub corsAllowEverybody;
 
-# *** Request configuration
-
-sub setHeaders($o, $newHeaders) {
-	# Set the headers
-	while (scalar @$newHeaders) {
-		my $key = shift @$newHeaders;
-		my $value = shift @$newHeaders;
-		$o:headers->{lc($key)} = $value;
-	}
-
-	# Keep track of the data sent along with the request
-	$o:remainingData = $o:headers->{'content-length'} // 0;
-}
+# *** Path
 
 sub pathAbove($o, $root) {
 	$root .= '/' if $root !~ /\/$/;
@@ -46,6 +21,10 @@ sub pathAbove($o, $root) {
 }
 
 # *** Request data
+
+sub setRemainingData($o, $remainingData) {
+	$o:remainingData = $remainingData;
+}
 
 # Reads the request data
 sub readData($o) {
@@ -77,6 +56,16 @@ sub dropData($o) {
 	while ($o:remainingData > 0) {
 		$o:remainingData -= read(STDIN, my $buffer, $o:remainingData) || return;
 	}
+}
+
+# *** Headers
+
+sub setHeader($o, $key, $value) {
+	$o:headers->{lc($key)} = $value;
+}
+
+sub header($o, $key) {
+	return $o:headers->{lc($key)};
 }
 
 # *** Query string
@@ -151,12 +140,12 @@ sub reply200HTML($o, $content // '') {
 sub replyOptions($o; @methods) {
 	my $headers = {};
 	$headers->{'Allow'} = join(', ', @_, 'OPTIONS');
-	$headers->{'Access-Control-Allow-Methods'} = join(', ', @_, 'OPTIONS') if $o:server->corsAllowEverybody && $o:headers->{'origin'};
+	$headers->{'Access-Control-Allow-Methods'} = join(', ', @_, 'OPTIONS') if $o->corsAllowEverybody && $o:headers->{'origin'};
 	return $o->reply(200, 'OK', $headers);
 }
 
 sub replyFatalError($o; @error) {
-	$o:server:logger->onRequestError($o, @_);
+	$o:logger->onRequestError($o, @_);
 	return $o->reply500;
 }
 
@@ -173,7 +162,7 @@ sub reply($o, $responseCode, $responseLabel, $headers // {}, $content // '') {
 	$headers->{'Content-Length'} = length($content);
 
 	# Origin
-	if ($o:server->corsAllowEverybody && (my $origin = $o:headers->{'origin'})) {
+	if ($o->corsAllowEverybody && (my $origin = $o:headers->{'origin'})) {
 		$headers->{'Access-Control-Allow-Origin'} = $origin;
 		$headers->{'Access-Control-Allow-Headers'} = 'Content-Type';
 		$headers->{'Access-Control-Max-Age'} = '86400';
