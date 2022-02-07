@@ -115,7 +115,7 @@ sub checkSignature($o, $store, $contentBytesToSign) {
 	# Get and check the actor
 	my $actorHash = CDS::Hash->fromHex($o:headers->{'condensation-actor'}) // return;
 	my ($publicKeyObject, $error) = $store->get($actorHash);
-	return if defined $error;
+	return if ! $publicKeyObject;
 	return if ! $publicKeyObject->calculateHash->equals($actorHash);
 	my $publicKey = CDS::PublicKey->fromObject($publicKeyObject) // return;
 

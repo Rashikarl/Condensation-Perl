@@ -1,0 +1,80 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+#use Carp::Always;
+#use lib 'editions/cli';
+use CDS;
+use Net::Server;
+
+# This script requires CDS version 0.25.
+# Check out the git repository (https://github.com/CondensationDS/Condensation-Perl) for newer versions.
+
+# Prepare the store
+mkdir 'store' if ! -f 'store';
+my $store = CDS::FolderStore->new('store');
+$store->createIfNecessary;
+
+# Prepare the request handlers
+my $verifyHashes = 1;
+my $verifySignatures = 0;
+my $logger = CDS::HTTPServer::Logger->new(*STDERR);
+my @requestHandlers = (
+	CDS::HTTPServer::IdentificationHandler->new('/'),
+	CDS::HTTPServer::StoreHandler->new('/', $store, $verifyHashes, $verifySignatures),
+	);
+
+# Run the server
+Server->run(port => 8080);
+
+package Server;
+use base 'Net::Server::HTTP';
+
+sub process_http_request {
+	my $o = shift;
+
+	# Shows the environment variables when requesting /debug
+	return $o->SUPER::process_http_request if $ENV{PATH_INFO} eq '/debug';
+
+	# Create a request
+	my $request = CDS::HTTPServer::Request->new($o,
+		method => $ENV{REQUEST_METHOD},
+		path => $ENV{PATH_INFO},
+		query_string => $ENV{QUERY_STRING},
+		peeraddr => $ENV{REMOTE_ADDR},
+		peerport => $ENV{REMOTE_PORT},
+		);
+
+	# Prepare the headers
+	$request->{remainingData} = $ENV{CONTENT_LENGTH} // 0;
+	for my $key (keys %ENV) {
+		$key =~ /^HTTP_(.*)$/ || next;
+		my $header = lc($1);
+		$header =~ s/_/-/g;
+		$request->headers->{$header} = $ENV{$key};
+	}
+
+	# Process the request
+	$logger->onRequestStarts($request);
+	my $responseCode = $o->processRequest($request);
+	$logger->onRequestDone($request, $responseCode);
+	$request->dropData;
+}
+
+sub processRequest {
+	my $o = shift;
+	my $request = shift;
+
+	# Run the handler
+	for my $handler (@requestHandlers) {
+		my $responseCode = $handler->process($request) || next;
+		return $responseCode;
+	}
+
+	# Default handler
+	return $request->reply404;
+}
+
+sub corsAllowEverybody { 0 }
+sub logger { $logger }
+
+1;
