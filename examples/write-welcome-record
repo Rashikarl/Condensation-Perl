@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Carp::Always;
-use lib 'editions/cli';
+use lib '../editions/cli';
 use CDS;
 
 my $record = CDS::Record->new;

@@ -56,7 +56,7 @@ sub toRecord($o) {
 	my $record = CDS::Record->new;
 
 	# Objects
-	my $objectsRecord = $record->add('puts');
+	my $objectsRecord = $record->add('put');
 	for my $entry (values %$o:objects) {
 		$objectsRecord->add($entry:hash->bytes)->add($entry:object->bytes);
 	}
@@ -105,8 +105,8 @@ sub fromRecord($class, $record) {
 	}
 
 	# Read additions and removals
-	readEntriesFromRecord($modifications:addition, $record->child('add')) // return;
-	readEntriesFromRecord($modifications:removal, $record->child('remove')) // return;
+	&readEntriesFromRecord($modifications:additions, $record->child('add')) // return;
+	&readEntriesFromRecord($modifications:removals, $record->child('remove')) // return;
 
 	return $modifications;
 }

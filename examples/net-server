@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 use strict;
 use warnings;
-#use Carp::Always;
+use Carp::Always;
 use lib '../editions/cli';
 use CDS;
 use Net::Server;

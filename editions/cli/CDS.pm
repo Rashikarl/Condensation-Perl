@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.26 (cli) built on 2022-02-07.
+# This is the Condensation Perl Module 0.26 (cli) built on 2022-02-08.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -20,7 +20,7 @@ package CDS;
 
 our $VERSION = '0.26';
 our $edition = 'cli';
-our $releaseDate = '2022-02-07';
+our $releaseDate = '2022-02-08';
 
 sub now { time * 1000 }
 
@@ -16241,7 +16241,7 @@ sub toRecord {
 	my $record = CDS::Record->new;
 
 	# Objects
-	my $objectsRecord = $record->add('puts');
+	my $objectsRecord = $record->add('put');
 	for my $entry (values %{$o->{objects}}) {
 		$objectsRecord->add($entry->{hash}->bytes)->add($entry->{object}->bytes);
 	}
@@ -16299,8 +16299,8 @@ sub fromRecord {
 	}
 
 	# Read additions and removals
-	readEntriesFromRecord($modifications->{addition}, $record->child('add')) // return;
-	readEntriesFromRecord($modifications->{removal}, $record->child('remove')) // return;
+	&readEntriesFromRecord($modifications->{additions}, $record->child('add')) // return;
+	&readEntriesFromRecord($modifications->{removals}, $record->child('remove')) // return;
 
 	return $modifications;
 }
