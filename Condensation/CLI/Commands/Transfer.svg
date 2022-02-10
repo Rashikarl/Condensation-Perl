@@ -35,9 +35,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="-181"
-     inkscape:cy="728"
+     inkscape:zoom="2"
+     inkscape:cx="222.92428"
+     inkscape:cy="408"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -67,7 +67,7 @@
        rx="4"
        y="80"
        x="380"
-       height="110"
+       height="290"
        width="20"
        id="rect4207"
        style="fill:#cccccc" />
@@ -75,15 +75,15 @@
        style="fill:#999999"
        id="rect3066"
        width="20"
-       height="130"
+       height="290"
        x="720"
        y="80"
        rx="4" />
     <rect
        rx="4"
-       y="180"
-       x="580"
-       height="30"
+       y="160"
+       x="600"
+       height="190"
        width="20"
        id="rect3068"
        style="fill:#cccccc" />
@@ -154,7 +154,7 @@
          sodipodi:role="line">leniently</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
-       d="M 503,159.5 H 717"
+       d="M 403,359.5 H 717"
        id="path4453"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -178,31 +178,31 @@
     <text
        xml:space="preserve"
        style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
-       x="507"
-       y="156"
+       x="407"
+       y="356"
        id="text4477"><desc
-         id="desc4547">push @$o:hashes, $value;</desc><tspan
+         id="desc4547">push @$o:objectHashes, $value;</desc><tspan
          sodipodi:role="line"
          id="tspan4479"
-         x="507"
-         y="156">HASH*</tspan></text>
+         x="407"
+         y="356">HASH*</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
-       d="M 603,199.5 H 717"
+       d="m 623,179.5 h 94"
        id="path4513"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
-       x="607"
-       y="196"
+       x="627"
+       y="176"
        id="text4515"><desc
          id="desc4545">$o:fromStore = $value;</desc><tspan
          sodipodi:role="line"
          id="tspan4517"
-         x="607"
-         y="196">from STORE</tspan></text>
+         x="627"
+         y="176">from STORE</tspan></text>
     <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
@@ -324,8 +324,7 @@ $o:thoroughly = 1;</desc><tspan
        x="407"
        style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
        xml:space="preserve"><desc
-         id="desc4213">push @$o:objectTokens, $value;
-$o:type = 'tree';</desc><tspan
+         id="desc4213">push @$o:objectTokens, $value;</desc><tspan
          y="96"
          x="407"
          id="tspan4215"
@@ -334,44 +333,27 @@ $o:type = 'tree';</desc><tspan
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4217"
-       d="m 503,199.5 h 74"
+       d="m 523,179.5 h 74"
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
     <text
        id="text4219"
-       y="196"
-       x="507"
+       y="176"
+       x="527"
        style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
        xml:space="preserve"><desc
-         id="desc4221">push @$o:hashes, $value;</desc><tspan
-         y="196"
-         x="507"
+         id="desc4221">push @$o:accountHashes, $value;</desc><tspan
+         y="176"
+         x="527"
          id="tspan4223"
-         sodipodi:role="line">HASH*</tspan></text>
+         sodipodi:role="line">of HASH*</tspan></text>
     <rect
        rx="4"
-       y="140"
-       x="480"
-       height="70"
+       y="160"
+       x="500"
+       height="150"
        width="20"
        id="rect895"
        style="fill:#cccccc" />
-    <path
-       sodipodi:nodetypes="cc"
-       inkscape:connector-curvature="0"
-       id="path929"
-       d="m 403,159.5 h 74"
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
-    <text
-       id="text933"
-       y="156"
-       x="407"
-       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
-       xml:space="preserve"><desc
-         id="desc1013">$o:type = 'tree';</desc><tspan
-         y="156"
-         x="407"
-         id="tspan931"
-         sodipodi:role="line">tree</tspan></text>
     <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
@@ -384,8 +366,7 @@ $o:type = 'tree';</desc><tspan
        x="407"
        style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
        xml:space="preserve"><desc
-         id="desc937">push @$o:accountTokens, $value;
-$o:type = 'account';</desc><tspan
+         id="desc937">push @$o:accountTokens, $value;</desc><tspan
          y="116"
          x="407"
          id="tspan939"
@@ -394,7 +375,7 @@ $o:type = 'account';</desc><tspan
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path1007"
-       d="m 403,179.5 h 74"
+       d="m 403,179.5 h 94"
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
     <text
        id="text1011"
@@ -402,10 +383,146 @@ $o:type = 'account';</desc><tspan
        x="407"
        style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
        xml:space="preserve"><desc
-         id="desc1015">$o:type = 'account';</desc><tspan
+         id="desc1015">push @$o:boxLabels, 'public', 'private', 'messages';</desc><tspan
          y="176"
          x="407"
          id="tspan1009"
-         sodipodi:role="line">account</tspan></text>
+         sodipodi:role="line">all</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path908"
+       d="M 403,139.5 H 717"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text914"
+       y="136"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc910">push @$o:boxTokens, $value;</desc><tspan
+         y="136"
+         x="407"
+         id="tspan912"
+         sodipodi:role="line">BOX*</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path916"
+       d="m 403,199.5 h 94"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text922"
+       y="196"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc918">push @$o:boxLabels, 'messages';</desc><tspan
+         y="196"
+         x="407"
+         id="tspan920"
+         sodipodi:role="line">message box</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 403,339.5 H 597"
+       id="path932"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="407"
+       y="336"
+       id="text938"><desc
+         id="desc934">push @$o:objectHashes, $value;</desc><tspan
+         sodipodi:role="line"
+         id="tspan936"
+         x="407"
+         y="336">HASH*</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path917"
+       d="m 403,219.5 h 94"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text923"
+       y="216"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#b3b3b3;"
+       xml:space="preserve"><desc
+         id="desc919">push @$o:boxLabels, 'messages';</desc><tspan
+         y="216"
+         x="407"
+         id="tspan921"
+         sodipodi:role="line">messages</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path925"
+       d="m 403,239.5 h 94"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text931"
+       y="236"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc927">push @$o:boxLabels, 'private';</desc><tspan
+         y="236"
+         x="407"
+         id="tspan929"
+         sodipodi:role="line">private box</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path933"
+       d="m 403,259.5 h 94"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text939"
+       y="256"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#b3b3b3;"
+       xml:space="preserve"><desc
+         id="desc935">push @$o:boxLabels, 'private';</desc><tspan
+         y="256"
+         x="407"
+         id="tspan937"
+         sodipodi:role="line">private</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path941"
+       d="m 403,279.5 h 94"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text947"
+       y="276"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc943">push @$o:boxLabels, 'public';</desc><tspan
+         y="276"
+         x="407"
+         id="tspan945"
+         sodipodi:role="line">public box</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path949"
+       d="m 403,299.5 h 94"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text955"
+       y="296"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#b3b3b3;"
+       xml:space="preserve"><desc
+         id="desc951">push @$o:boxLabels, 'public';</desc><tspan
+         y="296"
+         x="407"
+         id="tspan953"
+         sodipodi:role="line">public</tspan></text>
   </g>
 </svg>

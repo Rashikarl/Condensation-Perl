@@ -3,9 +3,7 @@ use strict;
 use warnings;
 use Carp::Always;
 use File::Basename;
-#use lib dirname (__FILE__);	# enable this if CDS.pm is in the same folder as "cds"
-#use lib '/path/to/CDS.pm';		# enable this if CDS.pm is in a specific folder
-use lib dirname(__FILE__).'/../editions/cli';
+use lib dirname(__FILE__).'/../editions/cli-debug'; # for testing locally without installation (this line is removed when building the module)
 use CDS;
 
 my $isTTY = -t STDOUT;

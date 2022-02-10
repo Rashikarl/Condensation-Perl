@@ -5,6 +5,24 @@ use strict;
 use warnings;
 use 5.010000;
 
+=pod
+
+=head1 CDS - Condensation Data System
+
+Condensation is a general-purpose distributed data system with conflict-free synchronization, and inherent end-to-end security.
+
+This is the Perl implementation. It comes with a Perl module:
+
+    use CDS;
+
+and a command line tool:
+
+    cds
+
+More information is available on L<condensation.io|https://condensation.io>.
+
+=cut
+
 use Cwd;
 use Digest::SHA;
 use Encode;
@@ -10178,9 +10196,14 @@ sub register {
 	my $node009 = CDS::Parser::Node->new(0);
 	my $node010 = CDS::Parser::Node->new(0);
 	my $node011 = CDS::Parser::Node->new(0);
-	my $node012 = CDS::Parser::Node->new(1);
+	my $node012 = CDS::Parser::Node->new(0);
 	my $node013 = CDS::Parser::Node->new(0);
-	my $node014 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&transfer});
+	my $node014 = CDS::Parser::Node->new(0);
+	my $node015 = CDS::Parser::Node->new(0);
+	my $node016 = CDS::Parser::Node->new(0);
+	my $node017 = CDS::Parser::Node->new(1);
+	my $node018 = CDS::Parser::Node->new(0);
+	my $node019 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&transfer});
 	$cds->addArrow($node000, 1, 0, 'thoroughly');
 	$cds->addArrow($node001, 0, 0, 'leniently');
 	$cds->addDefault($node003);
@@ -10192,158 +10215,208 @@ sub register {
 	$node003->addArrow($node004, 1, 0, 'transfer');
 	$node004->addDefault($node005);
 	$node004->addDefault($node006);
-	$node004->addArrow($node007, 1, 0, 'account', \&collectAccount);
-	$node004->addArrow($node007, 1, 0, 'tree', \&collectTree);
-	$node005->addArrow($node005, 1, 0, 'OBJECT', \&collectObject);
-	$node005->addArrow($node012, 1, 0, 'OBJECT', \&collectObject);
-	$node006->addArrow($node006, 1, 0, 'ACCOUNT', \&collectAccount1);
-	$node006->addArrow($node012, 1, 0, 'ACCOUNT', \&collectAccount1);
-	$node007->addDefault($node008);
-	$node007->addDefault($node009);
-	$node008->addArrow($node008, 1, 0, 'HASH', \&collectHash);
-	$node008->addArrow($node012, 1, 0, 'HASH', \&collectHash);
-	$node009->addArrow($node009, 1, 0, 'HASH', \&collectHash);
-	$node009->addArrow($node010, 1, 0, 'HASH', \&collectHash);
-	$node010->addArrow($node011, 1, 0, 'from');
-	$node011->addArrow($node012, 1, 0, 'STORE', \&collectStore);
-	$node012->addArrow($node013, 1, 0, 'to');
-	$node013->addArrow($node013, 1, 0, 'STORE', \&collectStore1);
-	$node013->addArrow($node014, 1, 0, 'STORE', \&collectStore1);
+	$node004->addDefault($node007);
+	$node004->addDefault($node008);
+	$node004->addArrow($node009, 1, 0, 'message');
+	$node004->addDefault($node010);
+	$node004->addArrow($node011, 1, 0, 'private');
+	$node004->addArrow($node012, 1, 0, 'public');
+	$node004->addArrow($node013, 1, 0, 'all', \&collectAll);
+	$node004->addArrow($node013, 0, 0, 'messages', \&collectMessages);
+	$node004->addArrow($node013, 0, 0, 'private', \&collectPrivate);
+	$node004->addArrow($node013, 0, 0, 'public', \&collectPublic);
+	$node005->addArrow($node005, 1, 0, 'HASH', \&collectHash);
+	$node005->addArrow($node017, 1, 0, 'HASH', \&collectHash);
+	$node006->addArrow($node006, 1, 0, 'OBJECT', \&collectObject);
+	$node006->addArrow($node017, 1, 0, 'OBJECT', \&collectObject);
+	$node007->addArrow($node007, 1, 0, 'ACCOUNT', \&collectAccount);
+	$node007->addArrow($node017, 1, 0, 'ACCOUNT', \&collectAccount);
+	$node008->addArrow($node008, 1, 0, 'BOX', \&collectBox);
+	$node008->addArrow($node017, 1, 0, 'BOX', \&collectBox);
+	$node009->addArrow($node013, 1, 0, 'box', \&collectMessages);
+	$node010->addArrow($node010, 1, 0, 'HASH', \&collectHash);
+	$node010->addArrow($node015, 1, 0, 'HASH', \&collectHash);
+	$node011->addArrow($node013, 1, 0, 'box', \&collectPrivate);
+	$node012->addArrow($node013, 1, 0, 'box', \&collectPublic);
+	$node013->addArrow($node014, 1, 0, 'of');
+	$node014->addArrow($node014, 1, 0, 'HASH', \&collectHash1);
+	$node014->addArrow($node015, 1, 0, 'HASH', \&collectHash1);
+	$node015->addArrow($node016, 1, 0, 'from');
+	$node016->addArrow($node017, 1, 0, 'STORE', \&collectStore);
+	$node017->addArrow($node018, 1, 0, 'to');
+	$node018->addArrow($node018, 1, 0, 'STORE', \&collectStore1);
+	$node018->addArrow($node019, 1, 0, 'STORE', \&collectStore1);
 }
 
-#line 49 "Condensation/CLI/Commands/Transfer.pm"
+#line 68 "Condensation/CLI/Commands/Transfer.pm"
 sub collectAccount {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 50 "Condensation/CLI/Commands/Transfer.pm"
-	$o->{type} = 'account';
-}
-
-#line 53 "Condensation/CLI/Commands/Transfer.pm"
-sub collectAccount1 {
-	my $o = shift;
-	my $label = shift;
-	my $value = shift;
-
-#line 54 "Condensation/CLI/Commands/Transfer.pm"
+#line 69 "Condensation/CLI/Commands/Transfer.pm"
 	push @{$o->{accountTokens}}, $value;
-	$o->{type} = 'account';
 }
-
-#line 58 "Condensation/CLI/Commands/Transfer.pm"
-sub collectHash {
-	my $o = shift;
-	my $label = shift;
-	my $value = shift;
-
-#line 59 "Condensation/CLI/Commands/Transfer.pm"
-	push @{$o->{hashes}}, $value;
-}
-
-#line 62 "Condensation/CLI/Commands/Transfer.pm"
-sub collectLeniently {
-	my $o = shift;
-	my $label = shift;
-	my $value = shift;
-
-#line 63 "Condensation/CLI/Commands/Transfer.pm"
-	$o->{leniently} = 1;
-}
-
-#line 66 "Condensation/CLI/Commands/Transfer.pm"
-sub collectLeniently1 {
-	my $o = shift;
-	my $label = shift;
-	my $value = shift;
-
-#line 67 "Condensation/CLI/Commands/Transfer.pm"
-	$o->{leniently} = 1;
-	$o->{thoroughly} = 1;
-}
-
-#line 71 "Condensation/CLI/Commands/Transfer.pm"
-sub collectObject {
-	my $o = shift;
-	my $label = shift;
-	my $value = shift;
 
 #line 72 "Condensation/CLI/Commands/Transfer.pm"
-	push @{$o->{objectTokens}}, $value;
-	$o->{type} = 'tree';
+sub collectAll {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 73 "Condensation/CLI/Commands/Transfer.pm"
+	push @{$o->{boxLabels}}, 'public', 'private', 'messages';
 }
 
 #line 76 "Condensation/CLI/Commands/Transfer.pm"
-sub collectStore {
+sub collectBox {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
 #line 77 "Condensation/CLI/Commands/Transfer.pm"
-	$o->{fromStore} = $value;
+	push @{$o->{boxTokens}}, $value;
 }
 
 #line 80 "Condensation/CLI/Commands/Transfer.pm"
-sub collectStore1 {
+sub collectHash {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
 #line 81 "Condensation/CLI/Commands/Transfer.pm"
-	push @{$o->{toStores}}, $value;
+	push @{$o->{objectHashes}}, $value;
 }
 
 #line 84 "Condensation/CLI/Commands/Transfer.pm"
-sub collectThoroughly {
+sub collectHash1 {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
 #line 85 "Condensation/CLI/Commands/Transfer.pm"
-	$o->{thoroughly} = 1;
+	push @{$o->{accountHashes}}, $value;
 }
 
 #line 88 "Condensation/CLI/Commands/Transfer.pm"
-sub collectTree {
+sub collectLeniently {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
 #line 89 "Condensation/CLI/Commands/Transfer.pm"
-	$o->{type} = 'tree';
+	$o->{leniently} = 1;
 }
 
 #line 92 "Condensation/CLI/Commands/Transfer.pm"
+sub collectLeniently1 {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 93 "Condensation/CLI/Commands/Transfer.pm"
+	$o->{leniently} = 1;
+	$o->{thoroughly} = 1;
+}
+
+#line 97 "Condensation/CLI/Commands/Transfer.pm"
+sub collectMessages {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 98 "Condensation/CLI/Commands/Transfer.pm"
+	push @{$o->{boxLabels}}, 'messages';
+}
+
+#line 101 "Condensation/CLI/Commands/Transfer.pm"
+sub collectObject {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 102 "Condensation/CLI/Commands/Transfer.pm"
+	push @{$o->{objectTokens}}, $value;
+}
+
+#line 105 "Condensation/CLI/Commands/Transfer.pm"
+sub collectPrivate {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 106 "Condensation/CLI/Commands/Transfer.pm"
+	push @{$o->{boxLabels}}, 'private';
+}
+
+#line 109 "Condensation/CLI/Commands/Transfer.pm"
+sub collectPublic {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 110 "Condensation/CLI/Commands/Transfer.pm"
+	push @{$o->{boxLabels}}, 'public';
+}
+
+#line 113 "Condensation/CLI/Commands/Transfer.pm"
+sub collectStore {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 114 "Condensation/CLI/Commands/Transfer.pm"
+	$o->{fromStore} = $value;
+}
+
+#line 117 "Condensation/CLI/Commands/Transfer.pm"
+sub collectStore1 {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 118 "Condensation/CLI/Commands/Transfer.pm"
+	push @{$o->{toStores}}, $value;
+}
+
+#line 121 "Condensation/CLI/Commands/Transfer.pm"
+sub collectThoroughly {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+#line 122 "Condensation/CLI/Commands/Transfer.pm"
+	$o->{thoroughly} = 1;
+}
+
+#line 125 "Condensation/CLI/Commands/Transfer.pm"
 sub new {
 	my $class = shift;
 	my $actor = shift;
 	 bless {actor => $actor, ui => $actor->ui} }
 
-#line 94 "Condensation/CLI/Commands/Transfer.pm"
+#line 127 "Condensation/CLI/Commands/Transfer.pm"
 # END AUTOGENERATED
 
-#line 96 "Condensation/CLI/Commands/Transfer.pm"
+#line 129 "Condensation/CLI/Commands/Transfer.pm"
 # HTML FOLDER NAME transfer
 # HTML TITLE Transfer
 sub help {
 	my $o = shift;
 	my $cmd = shift;
 
-#line 99 "Condensation/CLI/Commands/Transfer.pm"
+#line 132 "Condensation/CLI/Commands/Transfer.pm"
 	my $ui = $o->{ui};
 	$ui->space;
+	$ui->command('cds transfer BOX* to STORE*');
 	$ui->command('cds transfer ACCOUNT* to STORE*');
-	$ui->command('cds transfer account HASH* from STORE to STORE*');
-	$ui->p('Copies an account including all referenced trees from one store to another.');
+	$ui->command('cds transfer all of HASH* from STORE to STORE*');
+	$ui->command('cds transfer BOXLABEL of HASH* from STORE to STORE*');
+	$ui->p('Copies an account (or some of its boxes) including all referenced trees from one store to another. If the source store is omitted, the selected store is used.');
 	$ui->space;
 	$ui->command('cds transfer OBJECT* to STORE*');
-	$ui->command('cds transfer tree HASH* from STORE to STORE*');
-	$ui->p('Copies a tree from one store to another.');
-	$ui->space;
-	$ui->command('cds transfer account HASH* to STORE*');
-	$ui->command('cds transfer tree HASH* to STORE*');
-	$ui->p('As above, but uses the selected store as source store.');
+	$ui->command('cds transfer HASH* from STORE to STORE*');
+	$ui->p('Copies a tree from one store to another. If the source store is omitted, the selected store is used.');
 	$ui->space;
 	$ui->command('cds ', $ui->underlined('leniently'), ' transfer …');
 	$ui->p('Warns about missing objects, but ignores them and proceeds with the rest.');
@@ -10353,50 +10426,65 @@ sub help {
 	$ui->space;
 }
 
-#line 121 "Condensation/CLI/Commands/Transfer.pm"
+#line 152 "Condensation/CLI/Commands/Transfer.pm"
 sub transfer {
 	my $o = shift;
 	my $cmd = shift;
 
-#line 122 "Condensation/CLI/Commands/Transfer.pm"
+#line 153 "Condensation/CLI/Commands/Transfer.pm"
 	# Collect the arguments
 	$o->{keyPairToken} = $o->{actor}->preferredKeyPairToken;
 	$o->{accountTokens} = [];
+	$o->{accountHashes} = [];
+	$o->{boxTokens} = [];
+	$o->{boxLabels} = [];
 	$o->{objectTokens} = [];
-	$o->{hashes} = [];
+	$o->{objectHashes} = [];
 	$o->{toStores} = [];
 	$cmd->collect($o);
 
-#line 130 "Condensation/CLI/Commands/Transfer.pm"
+#line 164 "Condensation/CLI/Commands/Transfer.pm"
 	# Use the selected store
-	$o->{fromStore} = $o->{actor}->preferredStore if scalar @{$o->{hashes}} && ! $o->{fromStore};
+	$o->{fromStore} = $o->{actor}->preferredStore if (scalar @{$o->{accountHashes}} || scalar @{$o->{objectHashes}}) && ! $o->{fromStore};
 
-#line 133 "Condensation/CLI/Commands/Transfer.pm"
-	# Prepare the accounts and objects
-	if ($o->{type} eq 'tree') {
-		for my $hash (@{$o->{hashes}}) {
-			push @{$o->{objectTokens}}, CDS::ObjectToken->new($o->{fromStore}, $hash);
-		}
-	} else {
-		for my $hash (@{$o->{hashes}}) {
-			push @{$o->{accountTokens}}, CDS::ObjectToken->new($o->{fromStore}, $hash);
-		}
+#line 167 "Condensation/CLI/Commands/Transfer.pm"
+	# Prepare the object tokens
+	for my $hash (@{$o->{objectHashes}}) {
+		push @{$o->{objectTokens}}, CDS::ObjectToken->new($o->{fromStore}, $hash);
 	}
 
-#line 144 "Condensation/CLI/Commands/Transfer.pm"
-	# Copy the public key of every account first
+#line 172 "Condensation/CLI/Commands/Transfer.pm"
+	# Prepare the account tokens
+	for my $hash (@{$o->{accountHashes}}) {
+		push @{$o->{accountTokens}}, CDS::AccountToken->new($o->{fromStore}, $hash);
+	}
+
+#line 177 "Condensation/CLI/Commands/Transfer.pm"
+	# Prepare the box tokens
 	for my $accountToken (@{$o->{accountTokens}}) {
-		push @{$o->{objectTokens}}, CDS::ObjectToken->new($accountToken->cliStore, $accountToken->hash);
+		for my $boxLabel (@{$o->{boxLabels}}) {
+			push @{$o->{boxTokens}}, CDS::BoxToken->new($accountToken, $boxLabel);
+		}
 	}
 
-#line 149 "Condensation/CLI/Commands/Transfer.pm"
+#line 184 "Condensation/CLI/Commands/Transfer.pm"
+	# Copy the public key of every account first
+	my %done;
+	for my $boxToken (@{$o->{boxTokens}}) {
+		my $actorHash = $boxToken->accountToken->actorHash;
+		next if $done{$actorHash->bytes};
+		$done{$actorHash->bytes} = 1;
+		push @{$o->{objectTokens}}, CDS::ObjectToken->new($boxToken->accountToken->cliStore, $actorHash);
+	}
+
+#line 193 "Condensation/CLI/Commands/Transfer.pm"
 	# Prepare the destination stores
 	my $toStores = [];
 	for my $toStore (@{$o->{toStores}}) {
 		push @$toStores, {store => $toStore, storeError => undef, needed => [1]};
 	}
 
-#line 155 "Condensation/CLI/Commands/Transfer.pm"
+#line 199 "Condensation/CLI/Commands/Transfer.pm"
 	# Print the stores
 	$o->{ui}->space;
 	my $n = scalar @$toStores;
@@ -10405,7 +10493,7 @@ sub transfer {
 		$o->{ui}->line($o->{ui}->gray(' │' x $i, ' ┌', '──' x ($n - $i), ' ', $toStore->{store}->url));
 	}
 
-#line 163 "Condensation/CLI/Commands/Transfer.pm"
+#line 207 "Condensation/CLI/Commands/Transfer.pm"
 	# Process all trees
 	$o->{objects} = {};
 	$o->{missingObjects} = {};
@@ -10414,30 +10502,28 @@ sub transfer {
 		$o->process($objectToken->hash, $objectToken->cliStore, $toStores, 1);
 	}
 
-#line 171 "Condensation/CLI/Commands/Transfer.pm"
+#line 215 "Condensation/CLI/Commands/Transfer.pm"
 	# Process all accounts
 	my $keyPair = $o->{keyPairToken}->keyPair;
-	for my $accountToken (@{$o->{accountTokens}}) {
-		for my $boxLabel ('public', 'private', 'messages') {
-			$o->{ui}->line($o->{ui}->gray(' │' x $n));
-			$o->{ui}->line($o->{ui}->gray(' │' x $n, ' Transferring ', $boxLabel, ' box of ', $accountToken->hash->hex));
-			my ($hashes, $listError) = $accountToken->cliStore->list($accountToken->hash, $boxLabel, 0, $keyPair);
-			next if $listError;
+	for my $boxToken (@{$o->{boxTokens}}) {
+		$o->{ui}->line($o->{ui}->gray(' │' x $n));
+		$o->{ui}->line($o->{ui}->gray(' │' x $n, ' Transferring ', $boxToken->boxLabel, ' box of ', $boxToken->accountToken->actorHash->hex));
+		my ($hashes, $listError) = $boxToken->accountToken->cliStore->list($boxToken->accountToken->actorHash, $boxToken->boxLabel, 0, $keyPair);
+		next if $listError;
 
-#line 180 "Condensation/CLI/Commands/Transfer.pm"
-			for my $hash (@$hashes) {
-				$o->process($hash, $accountToken->cliStore, $toStores, 1) // next;
+#line 223 "Condensation/CLI/Commands/Transfer.pm"
+		for my $hash (@$hashes) {
+			$o->process($hash, $boxToken->accountToken->cliStore, $toStores, 1) // next;
 
-#line 183 "Condensation/CLI/Commands/Transfer.pm"
-				for my $toStore (@$toStores) {
-					next if defined $toStore->{storeError};
-					$toStore->{storeError} = $toStore->{store}->add($accountToken->hash, $boxLabel, $hash, $keyPair);
-				}
+#line 226 "Condensation/CLI/Commands/Transfer.pm"
+			for my $toStore (@$toStores) {
+				next if defined $toStore->{storeError};
+				$toStore->{storeError} = $toStore->{store}->add($boxToken->accountToken->actorHash, $boxToken->boxLabel, $hash, $keyPair);
 			}
 		}
 	}
 
-#line 191 "Condensation/CLI/Commands/Transfer.pm"
+#line 233 "Condensation/CLI/Commands/Transfer.pm"
 	# Print the stores again, with their errors
 	$o->{ui}->line($o->{ui}->gray(' │' x $n));
 	for my $i (reverse 0 .. $n - 1) {
@@ -10445,7 +10531,7 @@ sub transfer {
 		$o->{ui}->line($o->{ui}->gray(' │' x $i, ' └', '──' x ($n - $i), ' ', $toStore->{store}->url), ' ', defined $toStore->{storeError} ? $o->{ui}->red($toStore->{storeError}) : '');
 	}
 
-#line 198 "Condensation/CLI/Commands/Transfer.pm"
+#line 240 "Condensation/CLI/Commands/Transfer.pm"
 	# Report the total size
 	my $totalSize = 0;
 	my $totalDataSize = 0;
@@ -10456,7 +10542,7 @@ sub transfer {
 	$o->{ui}->space;
 }
 
-#line 208 "Condensation/CLI/Commands/Transfer.pm"
+#line 250 "Condensation/CLI/Commands/Transfer.pm"
 sub process {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
@@ -10464,18 +10550,18 @@ sub process {
 	my $toStores = shift;
 	my $depth = shift;
 
-#line 209 "Condensation/CLI/Commands/Transfer.pm"
+#line 251 "Condensation/CLI/Commands/Transfer.pm"
 	my $hashHex = $hash->hex;
 	my $keyPair = $o->{keyPairToken}->keyPair;
 
-#line 212 "Condensation/CLI/Commands/Transfer.pm"
+#line 254 "Condensation/CLI/Commands/Transfer.pm"
 	# Check if we retrieved this object before
 	if (exists $o->{objects}->{$hashHex}) {
 		$o->report($hash->hex, $toStores, $depth, $o->{ui}->green('copied before'));
 		return 1;
 	}
 
-#line 218 "Condensation/CLI/Commands/Transfer.pm"
+#line 260 "Condensation/CLI/Commands/Transfer.pm"
 	# Try to book the object on all active stores
 	my $countNeeded = 0;
 	my $hasActiveStore = 0;
@@ -10484,55 +10570,55 @@ sub process {
 		$hasActiveStore = 1;
 		next if ! $o->{thoroughly} && ! $toStore->{needed}->[$depth - 1];
 
-#line 226 "Condensation/CLI/Commands/Transfer.pm"
+#line 268 "Condensation/CLI/Commands/Transfer.pm"
 		my ($found, $bookError) = $toStore->{store}->book($hash);
 		if (defined $bookError) {
 			$toStore->{storeError} = $bookError;
 			next;
 		}
 
-#line 232 "Condensation/CLI/Commands/Transfer.pm"
+#line 274 "Condensation/CLI/Commands/Transfer.pm"
 		next if $found;
 		$toStore->{needed}->[$depth] = 1;
 		$countNeeded += 1;
 	}
 
-#line 237 "Condensation/CLI/Commands/Transfer.pm"
+#line 279 "Condensation/CLI/Commands/Transfer.pm"
 	# Return if all stores reported an error
 	return if ! $hasActiveStore;
 
-#line 240 "Condensation/CLI/Commands/Transfer.pm"
+#line 282 "Condensation/CLI/Commands/Transfer.pm"
 	# Ignore existing subtrees at the destination unless "thoroughly" is set
 	if (! $o->{thoroughly} && ! $countNeeded) {
 		$o->report($hashHex, $toStores, $depth, $o->{ui}->gray('skipping subtree'));
 		return 1;
 	}
 
-#line 246 "Condensation/CLI/Commands/Transfer.pm"
+#line 288 "Condensation/CLI/Commands/Transfer.pm"
 	# Retrieve the object
 	my ($object, $getError) = $fromStore->get($hash, $keyPair);
 	return if defined $getError;
 
-#line 250 "Condensation/CLI/Commands/Transfer.pm"
+#line 292 "Condensation/CLI/Commands/Transfer.pm"
 	if (! defined $object) {
 		$o->{missingObjects}->{$hashHex} = 1;
 		$o->report($hashHex, $toStores, $depth, $o->{ui}->orange('is missing'));
 		return if ! $o->{leniently};
 	}
 
-#line 256 "Condensation/CLI/Commands/Transfer.pm"
+#line 298 "Condensation/CLI/Commands/Transfer.pm"
 	# Display
 	my $size = $object->byteLength;
 	$o->{objects}->{$hashHex} = {needed => $countNeeded, size => $size, dataSize => length $object->data};
 	$o->report($hashHex, $toStores, $depth, $o->{ui}->bold($o->{ui}->niceFileSize($size)), ' ', $o->{ui}->gray($object->hashesCount, ' hashes'));
 
-#line 261 "Condensation/CLI/Commands/Transfer.pm"
+#line 303 "Condensation/CLI/Commands/Transfer.pm"
 	# Process all children
 	foreach my $hash ($object->hashes) {
 		$o->process($hash, $fromStore, $toStores, $depth + 1) // return;
 	}
 
-#line 266 "Condensation/CLI/Commands/Transfer.pm"
+#line 308 "Condensation/CLI/Commands/Transfer.pm"
 	# Write the object to all active stores
 	for my $toStore (@$toStores) {
 		next if defined $toStore->{storeError};
@@ -10541,18 +10627,18 @@ sub process {
 		$toStore->{storeError} = $putError if $putError;
 	}
 
-#line 274 "Condensation/CLI/Commands/Transfer.pm"
+#line 316 "Condensation/CLI/Commands/Transfer.pm"
 	return 1;
 }
 
-#line 277 "Condensation/CLI/Commands/Transfer.pm"
+#line 319 "Condensation/CLI/Commands/Transfer.pm"
 sub report {
 	my $o = shift;
 	my $hashHex = shift;
 	my $toStores = shift;
 	my $depth = shift;
 
-#line 278 "Condensation/CLI/Commands/Transfer.pm"
+#line 320 "Condensation/CLI/Commands/Transfer.pm"
 	my @text;
 	for my $toStore (@$toStores) {
 		if ($toStore->{storeError}) {
@@ -10564,7 +10650,7 @@ sub report {
 		}
 	}
 
-#line 289 "Condensation/CLI/Commands/Transfer.pm"
+#line 331 "Condensation/CLI/Commands/Transfer.pm"
 	push @text, ' ', '  ' x ($depth - 1), $hashHex;
 	push @text, ' ', @_;
 	$o->{ui}->line(@text);

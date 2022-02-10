@@ -1,3 +1,6 @@
+# INCLUDE Condensation/CDS.pod
+# INCLUDE Condensation/C.inc.c
+
 # INCLUDE Condensation/Duration.pm
 # INCLUDE Condensation/File.pm
 # INCLUDE Condensation/ISODate.pm

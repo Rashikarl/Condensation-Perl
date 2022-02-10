@@ -29,13 +29,10 @@ sub read($class, $version; @flags) {
 	push @$staticCode, 'our $edition = \''.join(' ', @$o:edition).'\';';
 	push @$staticCode, 'our $releaseDate = \''.$o:releaseDate.'\';';
 
-	# Prepare the perl code
-	$o->includePerl('Condensation.pm');
+	# Prepare the code
+	$o->include('Condensation.pm');
 	$o->addPackageNamesToGeanyTags;
 	$o->reportMissingPackages;
-
-	# Prepare the C code
-	$o->includeC('Condensation/C.inc.c');
 
 	return $o;
 }
@@ -61,12 +58,20 @@ sub section($o, $name) {
 	return $o:sections->{$name};
 }
 
-sub includePerl($o, $file) {
+sub include($o, $file) {
 	$file = $1.$2 while $file =~ /^(.*)\.\/(.*)$/;
 	$file = $1.$2 while $file =~ /^(.*)[^\/]+\/\.\.\/(.*)$/;
 	return if $o:includedFiles{$file};
 	$o:includedFiles{$file} = 1;
 
+	# Other
+	return $o->includePerl($file) if $file =~ /\.pm$/;
+	return $o->includePod($file) if $file =~ /\.pod$/;
+	return $o->includeC($file) if $file =~ /\.c$/;
+	die 'Unexpected extension: '.$file;
+}
+
+sub includePerl($o, $file) {
 	# Read
 	my @lines = $o->readLines($file);
 	die 'File "'.$file.'" not found.' if ! scalar @lines;
@@ -91,7 +96,7 @@ sub includePerl($o, $file) {
 		next if ! $selected;
 
 		if ($line =~ /^#\s*INCLUDE\s+(.*?)\s*$/) {
-			$o->includePerl($folder.'/'.$1);
+			$o->include($folder.'/'.$1);
 			next;
 		} elsif ($line =~ /^#\s*EXTEND\s+(.*?)\s*$/) {
 			$packageName = $1;
@@ -272,6 +277,20 @@ sub onePackage($o, $packageName) {
 	}
 
 	return $o->compressEmptyLines($output);
+}
+
+# POD
+
+sub includePod($o, $file) {
+	# Read
+	my @lines = $o->readLines($file);
+	die 'File "'.$file.'" not found.' if ! scalar @lines;
+
+	push @$o:podCode, @lines;
+}
+
+sub pod($o) {
+	return $o->compressEmptyLines($o:podCode);
 }
 
 # C code

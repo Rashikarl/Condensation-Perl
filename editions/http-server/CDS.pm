@@ -5,6 +5,24 @@ use strict;
 use warnings;
 use 5.010000;
 
+=pod
+
+=head1 CDS - Condensation Data System
+
+Condensation is a general-purpose distributed data system with conflict-free synchronization, and inherent end-to-end security.
+
+This is the Perl implementation. It comes with a Perl module:
+
+    use CDS;
+
+and a command line tool:
+
+    cds
+
+More information is available on L<condensation.io|https://condensation.io>.
+
+=cut
+
 use Digest::SHA;
 use Encode;
 use HTTP::Date;

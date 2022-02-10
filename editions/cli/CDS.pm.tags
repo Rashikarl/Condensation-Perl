@@ -337,7 +337,6 @@ cliStore||in CDS::AccountToken|
 cliStore||in CDS::ObjectToken|
 cmd||($processed) in CDS::Parser|
 cmp||($this, $that) in CDS::Hash|
-collectAccount1||($label, $value) in CDS::Commands::Transfer|
 collectAccount||($label, $value) in CDS::Commands::ActorGroup|
 collectAccount||($label, $value) in CDS::Commands::Announce|
 collectAccount||($label, $value) in CDS::Commands::DiscoverActorGroup|
@@ -380,11 +379,13 @@ collectActor||($label, $value) in CDS::Commands::ShowMessages|
 collectAeskey||($label, $value) in CDS::Commands::Get|
 collectAeskey||($label, $value) in CDS::Commands::Put|
 collectAeskey||($label, $value) in CDS::Commands::ShowObject|
+collectAll||($label, $value) in CDS::Commands::Transfer|
 collectAnd||($label, $value) in CDS::Commands::Curl|
 collectArrows||($arrows) in CDS::Parser::Node|
 collectBackup||($label, $value) in CDS::Commands::ActorGroup|
 collectBox||($label, $value) in CDS::Commands::List|
 collectBox||($label, $value) in CDS::Commands::Modify|
+collectBox||($label, $value) in CDS::Commands::Transfer|
 collectBytes||($label, $value) in CDS::Commands::ShowObject|
 collectData||($label, $value) in CDS::Commands::ShowObject|
 collectDate||($label, $value) in CDS::Commands::ShowPrivateData|
@@ -410,6 +411,7 @@ collectHash1||($label, $value) in CDS::Commands::Curl|
 collectHash1||($label, $value) in CDS::Commands::Get|
 collectHash1||($label, $value) in CDS::Commands::Modify|
 collectHash1||($label, $value) in CDS::Commands::ShowObject|
+collectHash1||($label, $value) in CDS::Commands::Transfer|
 collectHash2||($label, $value) in CDS::Commands::Curl|
 collectHash2||($label, $value) in CDS::Commands::ShowObject|
 collectHashes||($label, $value) in CDS::Commands::ShowObject|
@@ -448,6 +450,7 @@ collectMessages1||($label, $value) in CDS::Commands::Curl|
 collectMessages||($label, $value) in CDS::Commands::Curl|
 collectMessages||($label, $value) in CDS::Commands::List|
 collectMessages||($label, $value) in CDS::Commands::Modify|
+collectMessages||($label, $value) in CDS::Commands::Transfer|
 collectMe||($label, $value) in CDS::Commands::DiscoverActorGroup|
 collectMy||($label, $value) in CDS::Commands::List|
 collectObject1||($label, $value) in CDS::Commands::Get|
@@ -468,10 +471,12 @@ collectPrivate1||($label, $value) in CDS::Commands::Curl|
 collectPrivate||($label, $value) in CDS::Commands::Curl|
 collectPrivate||($label, $value) in CDS::Commands::List|
 collectPrivate||($label, $value) in CDS::Commands::Modify|
+collectPrivate||($label, $value) in CDS::Commands::Transfer|
 collectPublic1||($label, $value) in CDS::Commands::Curl|
 collectPublic||($label, $value) in CDS::Commands::Curl|
 collectPublic||($label, $value) in CDS::Commands::List|
 collectPublic||($label, $value) in CDS::Commands::Modify|
+collectPublic||($label, $value) in CDS::Commands::Transfer|
 collectPurge||($label, $value) in CDS::Commands::Modify|
 collectRecord||($label, $value) in CDS::Commands::ShowObject|
 collectRevoked||($label, $value) in CDS::Commands::ActorGroup|
@@ -512,7 +517,6 @@ collectText||($label, $value) in CDS::Commands::Remember|
 collectText||($label, $value) in CDS::Commands::StartHTTPServer|
 collectText||($label, $value) in CDS::Commands::WhatIs|
 collectThoroughly||($label, $value) in CDS::Commands::Transfer|
-collectTree||($label, $value) in CDS::Commands::Transfer|
 collectUser||($label, $value) in CDS::Commands::FolderStore|
 collectWatch||($label, $value) in CDS::Commands::Curl|
 collectWatch||($label, $value) in CDS::Commands::List|

@@ -16,6 +16,7 @@ my @output = (
 	'use strict;',
 	'use warnings;',
 	'use 5.010000;',
+	@{$build->pod},
 	@{$build->allPackages},
 	'',
 	'package CDS::C;',

@@ -47,6 +47,7 @@ my @output = (
 	'use warnings;',
 	'use 5.010000;',
 	'use CDS::C;',
+	@{$build->pod},
 	@{$build->allPackages},
 	);
 
@@ -95,7 +96,7 @@ my $firstLine = shift @cdsScript;
 	'',
 	@note,
 	'',
-	@cdsScript,
+	grep { $_ !~ /^use lib / } @cdsScript,
 	);
 
 $build->writeLines('module/scripts/cds', @output);
