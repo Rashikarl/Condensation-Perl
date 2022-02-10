@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.26 (cli) built on 2022-02-08.
+# This is the Condensation Perl Module 0.27 (cli) built on 2022-02-10.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -18,9 +18,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 our $edition = 'cli';
-our $releaseDate = '2022-02-08';
+our $releaseDate = '2022-02-10';
 
 sub now { time * 1000 }
 
@@ -8652,9 +8652,11 @@ sub register {
 	my $node007 = CDS::Parser::Node->new(0);
 	my $node008 = CDS::Parser::Node->new(0);
 	my $node009 = CDS::Parser::Node->new(0);
-	my $node010 = CDS::Parser::Node->new(1);
+	my $node010 = CDS::Parser::Node->new(0);
 	my $node011 = CDS::Parser::Node->new(0);
-	my $node012 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&transfer});
+	my $node012 = CDS::Parser::Node->new(1);
+	my $node013 = CDS::Parser::Node->new(0);
+	my $node014 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&transfer});
 	$cds->addArrow($node000, 1, 0, 'thoroughly');
 	$cds->addArrow($node001, 0, 0, 'leniently');
 	$cds->addDefault($node003);
@@ -8666,18 +8668,40 @@ sub register {
 	$node003->addArrow($node004, 1, 0, 'transfer');
 	$node004->addDefault($node005);
 	$node004->addDefault($node006);
-	$node004->addDefault($node007);
-	$node005->addArrow($node005, 1, 0, 'HASH', \&collectHash);
-	$node005->addArrow($node010, 1, 0, 'HASH', \&collectHash);
-	$node006->addArrow($node006, 1, 0, 'OBJECT', \&collectObject);
-	$node006->addArrow($node010, 1, 0, 'OBJECT', \&collectObject);
-	$node007->addArrow($node007, 1, 0, 'HASH', \&collectHash);
-	$node007->addArrow($node008, 1, 0, 'HASH', \&collectHash);
-	$node008->addArrow($node009, 1, 0, 'from');
-	$node009->addArrow($node010, 1, 0, 'STORE', \&collectStore);
-	$node010->addArrow($node011, 1, 0, 'to');
-	$node011->addArrow($node011, 1, 0, 'STORE', \&collectStore1);
-	$node011->addArrow($node012, 1, 0, 'STORE', \&collectStore1);
+	$node004->addArrow($node007, 1, 0, 'account', \&collectAccount);
+	$node004->addArrow($node007, 1, 0, 'tree', \&collectTree);
+	$node005->addArrow($node005, 1, 0, 'OBJECT', \&collectObject);
+	$node005->addArrow($node012, 1, 0, 'OBJECT', \&collectObject);
+	$node006->addArrow($node006, 1, 0, 'ACCOUNT', \&collectAccount1);
+	$node006->addArrow($node012, 1, 0, 'ACCOUNT', \&collectAccount1);
+	$node007->addDefault($node008);
+	$node007->addDefault($node009);
+	$node008->addArrow($node008, 1, 0, 'HASH', \&collectHash);
+	$node008->addArrow($node012, 1, 0, 'HASH', \&collectHash);
+	$node009->addArrow($node009, 1, 0, 'HASH', \&collectHash);
+	$node009->addArrow($node010, 1, 0, 'HASH', \&collectHash);
+	$node010->addArrow($node011, 1, 0, 'from');
+	$node011->addArrow($node012, 1, 0, 'STORE', \&collectStore);
+	$node012->addArrow($node013, 1, 0, 'to');
+	$node013->addArrow($node013, 1, 0, 'STORE', \&collectStore1);
+	$node013->addArrow($node014, 1, 0, 'STORE', \&collectStore1);
+}
+
+sub collectAccount {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+	$o->{type} = 'account';
+}
+
+sub collectAccount1 {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+	push @{$o->{accountTokens}}, $value;
+	$o->{type} = 'account';
 }
 
 sub collectHash {
@@ -8711,6 +8735,7 @@ sub collectObject {
 	my $value = shift;
 
 	push @{$o->{objectTokens}}, $value;
+	$o->{type} = 'tree';
 }
 
 sub collectStore {
@@ -8737,6 +8762,14 @@ sub collectThoroughly {
 	$o->{thoroughly} = 1;
 }
 
+sub collectTree {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
+	$o->{type} = 'tree';
+}
+
 sub new {
 	my $class = shift;
 	my $actor = shift;
@@ -8752,11 +8785,16 @@ sub help {
 
 	my $ui = $o->{ui};
 	$ui->space;
+	$ui->command('cds transfer ACCOUNT* to STORE*');
+	$ui->command('cds transfer account HASH* from STORE to STORE*');
+	$ui->p('Copies an account including all referenced trees from one store to another.');
+	$ui->space;
 	$ui->command('cds transfer OBJECT* to STORE*');
-	$ui->command('cds transfer HASH* from STORE to STORE*');
+	$ui->command('cds transfer tree HASH* from STORE to STORE*');
 	$ui->p('Copies a tree from one store to another.');
 	$ui->space;
-	$ui->command('cds transfer HASH* to STORE*');
+	$ui->command('cds transfer account HASH* to STORE*');
+	$ui->command('cds transfer tree HASH* to STORE*');
 	$ui->p('As above, but uses the selected store as source store.');
 	$ui->space;
 	$ui->command('cds ', $ui->underlined('leniently'), ' transfer …');
@@ -8771,7 +8809,9 @@ sub transfer {
 	my $o = shift;
 	my $cmd = shift;
 
+	# Collect the arguments
 	$o->{keyPairToken} = $o->{actor}->preferredKeyPairToken;
+	$o->{accountTokens} = [];
 	$o->{objectTokens} = [];
 	$o->{hashes} = [];
 	$o->{toStores} = [];
@@ -8779,6 +8819,22 @@ sub transfer {
 
 	# Use the selected store
 	$o->{fromStore} = $o->{actor}->preferredStore if scalar @{$o->{hashes}} && ! $o->{fromStore};
+
+	# Prepare the accounts and objects
+	if ($o->{type} eq 'tree') {
+		for my $hash (@{$o->{hashes}}) {
+			push @{$o->{objectTokens}}, CDS::ObjectToken->new($o->{fromStore}, $hash);
+		}
+	} else {
+		for my $hash (@{$o->{hashes}}) {
+			push @{$o->{accountTokens}}, CDS::ObjectToken->new($o->{fromStore}, $hash);
+		}
+	}
+
+	# Copy the public key of every account first
+	for my $accountToken (@{$o->{accountTokens}}) {
+		push @{$o->{objectTokens}}, CDS::ObjectToken->new($accountToken->cliStore, $accountToken->hash);
+	}
 
 	# Prepare the destination stores
 	my $toStores = [];
@@ -8801,9 +8857,25 @@ sub transfer {
 		$o->{ui}->line($o->{ui}->gray(' │' x $n));
 		$o->process($objectToken->hash, $objectToken->cliStore, $toStores, 1);
 	}
-	for my $hash (@{$o->{hashes}}) {
-		$o->{ui}->line($o->{ui}->gray(' │' x $n));
-		$o->process($hash, $o->{fromStore}, $toStores, 1);
+
+	# Process all accounts
+	my $keyPair = $o->{keyPairToken}->keyPair;
+	for my $accountToken (@{$o->{accountTokens}}) {
+		for my $boxLabel ('public', 'private', 'messages') {
+			$o->{ui}->line($o->{ui}->gray(' │' x $n));
+			$o->{ui}->line($o->{ui}->gray(' │' x $n, ' Transferring ', $boxLabel, ' box of ', $accountToken->hash->hex));
+			my ($hashes, $listError) = $accountToken->cliStore->list($accountToken->hash, $boxLabel, 0, $keyPair);
+			next if $listError;
+
+			for my $hash (@$hashes) {
+				$o->process($hash, $accountToken->cliStore, $toStores, 1) // next;
+
+				for my $toStore (@$toStores) {
+					next if defined $toStore->{storeError};
+					$toStore->{storeError} = $toStore->{store}->add($accountToken->hash, $boxLabel, $hash, $keyPair);
+				}
+			}
+		}
 	}
 
 	# Print the stores again, with their errors

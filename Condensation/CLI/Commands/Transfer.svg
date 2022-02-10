@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,7 +11,7 @@
    height="1000"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
    sodipodi:docname="Transfer.svg">
   <defs
      id="defs4">
@@ -43,11 +41,12 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="3747"
-     inkscape:window-height="2125"
+     inkscape:window-width="3759"
+     inkscape:window-height="2131"
      inkscape:window-x="81"
      inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -68,7 +67,7 @@
        rx="4"
        y="80"
        x="380"
-       height="90"
+       height="110"
        width="20"
        id="rect4207"
        style="fill:#cccccc" />
@@ -76,14 +75,14 @@
        style="fill:#999999"
        id="rect3066"
        width="20"
-       height="90"
-       x="640"
+       height="130"
+       x="720"
        y="80"
        rx="4" />
     <rect
        rx="4"
-       y="140"
-       x="500"
+       y="180"
+       x="580"
        height="30"
        width="20"
        id="rect3068"
@@ -110,7 +109,7 @@
     <rect
        rx="4"
        y="80"
-       x="780"
+       x="860"
        height="30"
        width="20"
        id="rect4481"
@@ -128,7 +127,7 @@
        style="fill:#cccccc" />
     <text
        xml:space="preserve"
-       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
        x="50"
        y="100"
        id="text4435"><tspan
@@ -146,7 +145,7 @@
        id="text4449"
        y="96"
        x="87"
-       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
        xml:space="preserve"><desc
          id="desc4541">$o:leniently = 1;</desc><tspan
          y="96"
@@ -154,8 +153,8 @@
          id="tspan4451"
          sodipodi:role="line">leniently</tspan></text>
     <path
-       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px"
-       d="M 403,99.5 H 637"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 503,159.5 H 717"
        id="path4453"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -163,47 +162,47 @@
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4469"
-       d="M 663,99.5 H 777"
-       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px" />
+       d="M 743,99.5 H 857"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
     <text
        id="text4471"
        y="96"
-       x="667"
-       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       x="747"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
        xml:space="preserve"><desc
          id="desc4543">push @$o:toStores, $value;</desc><tspan
          y="96"
-         x="667"
+         x="747"
          id="tspan4473"
          sodipodi:role="line">to STORE*</tspan></text>
     <text
        xml:space="preserve"
-       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
-       x="407"
-       y="96"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       x="507"
+       y="156"
        id="text4477"><desc
          id="desc4547">push @$o:hashes, $value;</desc><tspan
          sodipodi:role="line"
          id="tspan4479"
-         x="407"
-         y="96">HASH*</tspan></text>
+         x="507"
+         y="156">HASH*</tspan></text>
     <path
-       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px"
-       d="M 523,159.5 H 637"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)"
+       d="M 603,199.5 H 717"
        id="path4513"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
-       x="527"
-       y="156"
+       x="607"
+       y="196"
        id="text4515"><desc
          id="desc4545">$o:fromStore = $value;</desc><tspan
          sodipodi:role="line"
          id="tspan4517"
-         x="527"
-         y="156">from STORE</tspan></text>
+         x="607"
+         y="196">from STORE</tspan></text>
     <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
@@ -275,7 +274,7 @@ $o:thoroughly = 1;</desc><tspan
        id="text3052"
        y="40"
        x="50"
-       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:center;text-anchor:middle"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:center;text-anchor:middle;fill:#000000"
        xml:space="preserve"><tspan
          y="40"
          x="50"
@@ -317,16 +316,17 @@ $o:thoroughly = 1;</desc><tspan
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4209"
-       d="M 403,119.5 H 637"
-       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px" />
+       d="M 403,99.5 H 717"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
     <text
        id="text4211"
-       y="116"
+       y="96"
        x="407"
-       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
        xml:space="preserve"><desc
-         id="desc4213">push @$o:objectTokens, $value;</desc><tspan
-         y="116"
+         id="desc4213">push @$o:objectTokens, $value;
+$o:type = 'tree';</desc><tspan
+         y="96"
          x="407"
          id="tspan4215"
          sodipodi:role="line">OBJECT*</tspan></text>
@@ -334,18 +334,78 @@ $o:thoroughly = 1;</desc><tspan
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4217"
-       d="m 403,159.5 h 94"
-       style="fill:none;marker-end:url(#arrow000000);stroke:#000000;stroke-linecap:butt;stroke-width:1px" />
+       d="m 503,199.5 h 74"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
     <text
        id="text4219"
-       y="156"
-       x="407"
-       style="-inkscape-font-specification:'Lato Semi-Light';fill:#000000;font-family:'Source Sans Pro';font-size:13px;text-align:start;text-anchor:start"
+       y="196"
+       x="507"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
        xml:space="preserve"><desc
          id="desc4221">push @$o:hashes, $value;</desc><tspan
-         y="156"
-         x="407"
+         y="196"
+         x="507"
          id="tspan4223"
          sodipodi:role="line">HASH*</tspan></text>
+    <rect
+       rx="4"
+       y="140"
+       x="480"
+       height="70"
+       width="20"
+       id="rect895"
+       style="fill:#cccccc" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path929"
+       d="m 403,159.5 h 74"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text933"
+       y="156"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc1013">$o:type = 'tree';</desc><tspan
+         y="156"
+         x="407"
+         id="tspan931"
+         sodipodi:role="line">tree</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path935"
+       d="M 403,119.5 H 717"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text941"
+       y="116"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc937">push @$o:accountTokens, $value;
+$o:type = 'account';</desc><tspan
+         y="116"
+         x="407"
+         id="tspan939"
+         sodipodi:role="line">ACCOUNT*</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path1007"
+       d="m 403,179.5 h 74"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;marker-end:url(#arrow000000)" />
+    <text
+       id="text1011"
+       y="176"
+       x="407"
+       style="font-size:13px;font-family:'Source Sans Pro';-inkscape-font-specification:'Lato Semi-Light';text-align:start;text-anchor:start;fill:#000000"
+       xml:space="preserve"><desc
+         id="desc1015">$o:type = 'account';</desc><tspan
+         y="176"
+         x="407"
+         id="tspan1009"
+         sodipodi:role="line">account</tspan></text>
   </g>
 </svg>

@@ -337,6 +337,7 @@ cliStore||in CDS::AccountToken|
 cliStore||in CDS::ObjectToken|
 cmd||($processed) in CDS::Parser|
 cmp||($this, $that) in CDS::Hash|
+collectAccount1||($label, $value) in CDS::Commands::Transfer|
 collectAccount||($label, $value) in CDS::Commands::ActorGroup|
 collectAccount||($label, $value) in CDS::Commands::Announce|
 collectAccount||($label, $value) in CDS::Commands::DiscoverActorGroup|
@@ -349,6 +350,7 @@ collectAccount||($label, $value) in CDS::Commands::Remember|
 collectAccount||($label, $value) in CDS::Commands::Select|
 collectAccount||($label, $value) in CDS::Commands::ShowCard|
 collectAccount||($label, $value) in CDS::Commands::ShowMessages|
+collectAccount||($label, $value) in CDS::Commands::Transfer|
 collectActive||($label, $value) in CDS::Commands::ActorGroup|
 collectActive||($label, $value) in CDS::Commands::Announce|
 collectActor1||($label, $value) in CDS::Commands::ActorGroup|
@@ -510,6 +512,7 @@ collectText||($label, $value) in CDS::Commands::Remember|
 collectText||($label, $value) in CDS::Commands::StartHTTPServer|
 collectText||($label, $value) in CDS::Commands::WhatIs|
 collectThoroughly||($label, $value) in CDS::Commands::Transfer|
+collectTree||($label, $value) in CDS::Commands::Transfer|
 collectUser||($label, $value) in CDS::Commands::FolderStore|
 collectWatch||($label, $value) in CDS::Commands::Curl|
 collectWatch||($label, $value) in CDS::Commands::List|

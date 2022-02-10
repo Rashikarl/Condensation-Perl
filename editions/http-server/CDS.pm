@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.26 (http-server) built on 2022-02-08.
+# This is the Condensation Perl Module 0.27 (http-server) built on 2022-02-10.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -16,9 +16,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 our $edition = 'http-server';
-our $releaseDate = '2022-02-08';
+our $releaseDate = '2022-02-10';
 
 sub now { time * 1000 }
 
