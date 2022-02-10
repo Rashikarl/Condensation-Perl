@@ -1,0 +1,46 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use lib '.';
+use SourceFilter;
+use Build;
+
+my $version = shift // die 'Usage: ./build-standalone VERSION FLAGS*';
+my $build = Build->read($version, @ARGV);
+
+# Prepare the final code
+my @output = (
+	'#! /usr/bin/perl',
+	'',
+	'# This is the Condensation Perl Module '.$build->version.' ('.$build->editionString.') built on '.$build->releaseDate.'.',
+	'# See https://condensation.io for information about the Condensation Data System.',
+	'',
+	'use strict;',
+	'use warnings;',
+	'use 5.010000;',
+	@{$build->pod},
+	@{$build->allPackages},
+	'',
+	'package CDS::C;',
+	'use Config;',
+	'use Inline (C => <<ENDC, CCFLAGS => $Config{ccflags}.\' -DNDEBUG -std=gnu99\', OPTIMIZE => \'-O3\');',
+	@{$build->cCode},
+	'ENDC',
+	'Inline->init;',
+	'',
+	'package main;',
+	'',
+	'my $exitCode = CDS::CLI->run;',
+	'exit($exitCode);',
+	);
+
+# Create the output folder if necessary
+mkdir 'editions';
+my $editionFolder = 'editions/single-file-'.$build->editionString('-');
+mkdir $editionFolder;
+
+# Write the CDS.pm and tags file
+$build->writeLines($editionFolder.'/cds', @output);
+chmod 0755, $editionFolder.'/cds';
+
+print 'cds (single file) ', $build->version, ' ', $build->editionString, ' built, ', $build->countSections, ' packages', "\n";

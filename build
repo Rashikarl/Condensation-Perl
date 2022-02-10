@@ -1,10 +1,11 @@
 #! /usr/bin/perl
 use strict;
 
-my $version = '0.27';
-system('./build-edition', $version, 'http-server');
-system('./build-edition', $version, 'actor');
+my $version = '0.28';
+#system('./build-edition', $version, 'http-server');
+#system('./build-edition', $version, 'actor');
 system('./build-edition', $version, 'cli');
 system('./build-edition', $version, 'cli', 'debug');
 system('./build-module', $version, 'cli');
+system('./build-single-file', $version, 'cli');
 system('cp', 'editions/cli-debug/CDS.pm.tags', $ENV{HOME}.'/.config/geany/tags/CDS.pm.tags');

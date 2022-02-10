@@ -1,10 +1,12 @@
 #! /usr/bin/perl
 
-# This is the Condensation Perl Module 0.28 (cli) built on 2022-02-10.
+# This is the Condensation Perl Module 0.28 (cli debug) built on 2022-02-10.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
 use warnings;
+use File::Basename;
+use lib dirname(__FILE__);
 use CDS;
 
 my $exitCode = CDS::CLI->run;

@@ -117,4 +117,43 @@ use CDS;
 
 The examples folder contains a few Perl scripts using the Perl module.
 
+## Installation
+
+There are three ways to install this module and the command line tools:
+
+1. Using [CPAN](https://linux.die.net/man/3/cpan), to install the Perl module and the command line tools.
+2. By manually downloading the Perl module *CDS.pm* and the command line tools *cds*.
+3. By downloading the single-file *cds* script.
+
+### 1. Installing via CPAN
+
+To install via CPAN, open a terminal and type:
+
+```sh
+cpan install CDS
+```
+
+or:
+
+```sh
+sudo cpan install CDS
+```
+
+### 2. Downloading the files manually
+
+Download the following files:
+
+- [CDS.pm](https://github.com/CondensationDS/Condensation-Perl/blob/master/editions/cli/CDS.pm)
+- [cds](https://github.com/CondensationDS/Condensation-Perl/blob/master/editions/cli/cds)
+
+and store the files in the same folder. To use the cds command from anywhere, add that folder to your PATH variable.
+
+### 3. Downloading the single-file command line tools
+
+Download the following file:
+
+- [cds](https://github.com/CondensationDS/Condensation-Perl/blob/master/editions/single-file-cli/cds)
+
+and store it in a folder which is in your PATH environment.
+
 [Learn more about the project on our main repository](https://github.com/CondensationDS/Condensation)

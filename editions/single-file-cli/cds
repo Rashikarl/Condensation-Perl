@@ -1,3 +1,5 @@
+#! /usr/bin/perl
+
 # This is the Condensation Perl Module 0.28 (cli) built on 2022-02-10.
 # See https://condensation.io for information about the Condensation Data System.
 
@@ -18123,13 +18125,7 @@ sub merge {
 
 package CDS::C;
 use Config;
-use Inline (C => 'DATA', CCFLAGS => $Config{ccflags}.' -DNDEBUG -std=gnu99', OPTIMIZE => '-O3');
-Inline->init;
-
-1;
-
-__DATA__
-__C__
+use Inline (C => <<ENDC, CCFLAGS => $Config{ccflags}.' -DNDEBUG -std=gnu99', OPTIMIZE => '-O3');
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -21843,3 +21839,10 @@ SV * performanceElapsed(SV * svThis) {
 	long diff = (long) dsec * 1000 * 1000 + dnano / 1000;
 	return newSViv(diff);
 }
+ENDC
+Inline->init;
+
+package main;
+
+my $exitCode = CDS::CLI->run;
+exit($exitCode);

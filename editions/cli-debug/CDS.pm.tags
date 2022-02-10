@@ -12,6 +12,7 @@ BoxToken|package||
 CDS|package||
 CLIActor|package||
 CLIStoreManager|package||
+CLI|package||
 Card|package||
 CheckKeyPair|package||
 CheckLogger|package||
@@ -590,6 +591,7 @@ decryptAesKey||($envelope) in CDS::Commands::OpenEnvelope|
 decryptKeyOnEnvelope||($envelope) in CDS::KeyPair|
 decrypt||($bytes) in CDS::KeyPair|
 defaultFile||in CDS::HTTPServer::StaticFilesHandler|
+default||($cmd) in CDS::CLI|
 delegate||in CDS::PrivateBoxReader|
 delegate||in CDS::PrivateRoot|
 deleteEnvelope||($file) in CDS::Commands::CollectGarbage::Delete|
@@ -962,6 +964,7 @@ modify||($modifications, $keyPair) in CDS::SplitStore|
 modify||($modifications, $keyPair) in CDS::UI::ProgressStore|
 modify||(@$removals, $keyPair) in CDS::ObjectCache|
 new||($accountToken, $boxLabel) in CDS::BoxToken STATIC|
+new||($actor) in CDS::CLI STATIC|
 new||($actor) in CDS::Commands::ActorGroup STATIC|
 new||($actor) in CDS::Commands::Announce STATIC|
 new||($actor) in CDS::Commands::Book STATIC|
@@ -1364,6 +1367,7 @@ root||in CDS::Document|
 rsaPrivateKey||in CDS::KeyPair|
 runHandler||() in CDS::Parser::State|
 run||($handler) in CDS::Commands::CollectGarbage|
+run||() in CDS::CLI STATIC|
 saveOrShowError||() in CDS::CLIActor|
 savePrivateDataAndShareGroupData||() in CDS::ActorWithDocument|
 save||($entrustedKeys) in CDS::PrivateRoot|

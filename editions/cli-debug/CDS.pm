@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.27 (cli debug) built on 2022-02-10.
+# This is the Condensation Perl Module 0.28 (cli debug) built on 2022-02-10.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -36,7 +36,7 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 our $edition = 'cli debug';
 our $releaseDate = '2022-02-10';
 
@@ -1477,6 +1477,156 @@ sub boxLabel { shift->{boxLabel} }
 sub url {
 	my $o = shift;
 	 $o->{accountToken}->url.'/'.$o->{boxLabel} }
+
+#line 1 "Condensation/CLI/CLI.pm"
+package CDS::CLI;
+
+sub run {
+	my $class = shift;
+
+#line 2 "Condensation/CLI/CLI.pm"
+	my $isTTY = -t STDOUT;
+	my $isCompletion = exists $ENV{COMP_LINE};
+	my $ui = CDS::UI->new(*STDOUT, $isCompletion || ! $isTTY);
+
+#line 6 "Condensation/CLI/CLI.pm"
+	my $actor = CDS::CLIActor->openOrCreateDefault($ui) // return 1;
+	my $parser = CDS::Parser->new($actor, 'cds');
+	my $cds = CDS::Parser::Node->new(0, {constructor => \&CDS::CLI::new, function => \&CDS::CLI::default});
+	my $help = CDS::Parser::Node->new(1, {constructor => \&CDS::Commands::Help::new, function => \&CDS::Commands::Help::help});
+	$cds->addArrow($help, 1, 0, 'help');
+	$parser->start->addDefault($cds);
+
+#line 13 "Condensation/CLI/CLI.pm"
+	CDS::Commands::ActorGroup->register($cds, $help);
+	CDS::Commands::Announce->register($cds, $help);
+	CDS::Commands::Book->register($cds, $help);
+	CDS::Commands::CheckKeyPair->register($cds, $help);
+	CDS::Commands::CollectGarbage->register($cds, $help);
+	CDS::Commands::CreateKeyPair->register($cds, $help);
+	CDS::Commands::Curl->register($cds, $help);
+	CDS::Commands::DiscoverActorGroup->register($cds, $help);
+	CDS::Commands::EntrustedActors->register($cds, $help);
+	CDS::Commands::FolderStore->register($cds, $help);
+	CDS::Commands::Get->register($cds, $help);
+	CDS::Commands::Help->register($cds, $help);
+	CDS::Commands::List->register($cds, $help);
+	CDS::Commands::Modify->register($cds, $help);
+	CDS::Commands::OpenEnvelope->register($cds, $help);
+	CDS::Commands::Put->register($cds, $help);
+	CDS::Commands::Remember->register($cds, $help);
+	CDS::Commands::Select->register($cds, $help);
+	CDS::Commands::ShowCard->register($cds, $help);
+	CDS::Commands::ShowKeyPair->register($cds, $help);
+	CDS::Commands::ShowMessages->register($cds, $help);
+	CDS::Commands::ShowObject->register($cds, $help);
+	CDS::Commands::ShowPrivateData->register($cds, $help);
+	CDS::Commands::ShowTree->register($cds, $help);
+	CDS::Commands::StartHTTPServer->register($cds, $help);
+	CDS::Commands::Transfer->register($cds, $help);
+	CDS::Commands::UseCache->register($cds, $help);
+	CDS::Commands::UseStore->register($cds, $help);
+	CDS::Commands::Welcome->register($cds, $help);
+	CDS::Commands::WhatIs->register($cds, $help);
+
+#line 44 "Condensation/CLI/CLI.pm"
+	if ($isCompletion) {
+		my $line = $ENV{COMP_LINE};
+		$line = substr($line, 0, $ENV{COMP_POINT}) if exists $ENV{COMP_POINT};
+		$parser->showCompletions($line);
+	} else {
+		$actor->ui->pushIndent;
+		$parser->execute(@ARGV);
+		$actor->ui->popIndent;
+		$actor->ui->removeProgress;
+		return 1 if $actor->ui->hasError;
+	}
+
+#line 56 "Condensation/CLI/CLI.pm"
+	return 0;
+}
+
+#line 59 "Condensation/CLI/CLI.pm"
+sub new {
+	my $class = shift;
+	my $actor = shift;
+
+#line 60 "Condensation/CLI/CLI.pm"
+	return bless {actor => $actor};
+}
+
+#line 63 "Condensation/CLI/CLI.pm"
+sub default {
+	my $o = shift;
+	my $cmd = shift;
+
+#line 64 "Condensation/CLI/CLI.pm"
+	my $ui = $o->{actor}->ui;
+
+#line 66 "Condensation/CLI/CLI.pm"
+	# Version
+	$ui->space;
+	$ui->title('Condensation CLI');
+	$ui->line('Version ', $CDS::VERSION, ', ', $CDS::releaseDate, '.');
+
+#line 71 "Condensation/CLI/CLI.pm"
+	# Welcome message
+	my $welcome = CDS::Commands::Welcome->new($o->{actor});
+	if ($welcome->isEnabled) {
+		$welcome->show;
+	} else {
+		$ui->line('Type "cds help" to get help.');
+	}
+
+#line 79 "Condensation/CLI/CLI.pm"
+	# Actor info
+	$ui->space;
+	$ui->title('Your key pair');
+	CDS::Commands::ShowKeyPair->new($o->{actor})->show($o->{actor}->keyPairToken);
+
+#line 84 "Condensation/CLI/CLI.pm"
+	$ui->space;
+	$ui->title('Your stores');
+	$ui->line($ui->darkBold('Storage store    '), $o->{actor}->storageStore->url);
+	$ui->line($ui->darkBold('Messaging store  '), $o->{actor}->messagingStoreUrl);
+
+#line 89 "Condensation/CLI/CLI.pm"
+	# Read messages to merge any data before displaying the rest
+	$ui->space;
+	$o->{actor}->readMessages;
+
+#line 93 "Condensation/CLI/CLI.pm"
+	$ui->space;
+	$ui->title('Your actor group');
+	$o->{actor}->registerIfNecessary;
+	CDS::Commands::ActorGroup->new($o->{actor})->show;
+
+#line 98 "Condensation/CLI/CLI.pm"
+	$ui->space;
+	$ui->title('Your entrusted actors');
+	CDS::Commands::EntrustedActors->new($o->{actor})->show;
+
+#line 102 "Condensation/CLI/CLI.pm"
+	$ui->space;
+	$ui->title('Selection (in this terminal)');
+	CDS::Commands::Select->new($o->{actor})->showSelection;
+
+#line 106 "Condensation/CLI/CLI.pm"
+	$ui->space;
+	$ui->title('Remembered values');
+	CDS::Commands::Remember->new($o->{actor})->showRememberedValues;
+
+#line 110 "Condensation/CLI/CLI.pm"
+	# Announce if necessary
+	$ui->space;
+	$o->{actor}->announceIfNecessary;
+
+#line 114 "Condensation/CLI/CLI.pm"
+	# Save any changes
+	$o->{actor}->saveOrShowError;
+	$ui->space;
+	return;
+}
 
 #line 1 "Condensation/CLI/CLIActor.pm"
 package CDS::CLIActor;

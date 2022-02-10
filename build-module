@@ -88,15 +88,19 @@ push @manifest, 'lib/CDS/C/Inline.pm';
 
 # cds script
 mkdir 'module/scripts';
-my @cdsScript = Build->readLines('scripts/cds');
-my $firstLine = shift @cdsScript;
 
 @output = (
-	$firstLine,
+	'#! /usr/bin/perl',
 	'',
-	@note,
+	'# This is the Condensation Perl Module '.$build->version.' ('.$build->editionString.') built on '.$build->releaseDate.'.',
+	'# See https://condensation.io for information about the Condensation Data System.',
 	'',
-	grep { $_ !~ /^use lib / } @cdsScript,
+	'use strict;',
+	'use warnings;',
+	'use CDS;',
+	'',
+	'my $exitCode = CDS::CLI->run;',
+	'exit($exitCode);',
 	);
 
 $build->writeLines('module/scripts/cds', @output);

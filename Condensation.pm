@@ -81,6 +81,7 @@
 # INCLUDE Condensation/CLI/AccountToken.pm
 # INCLUDE Condensation/CLI/ActorGroupToken.pm
 # INCLUDE Condensation/CLI/BoxToken.pm
+# INCLUDE Condensation/CLI/CLI.pm
 # INCLUDE Condensation/CLI/CLIActor.pm
 # INCLUDE Condensation/CLI/CLIStoreManager.pm
 # INCLUDE Condensation/CLI/KeyPairToken.pm

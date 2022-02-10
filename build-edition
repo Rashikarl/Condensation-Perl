@@ -41,4 +41,24 @@ mkdir $editionFolder;
 $build->writeLines($editionFolder.'/CDS.pm', @output);
 $build->writeGeanyTags($editionFolder.'/CDS.pm.tags');
 
+# Write the cds file
+@output = (
+	'#! /usr/bin/perl',
+	'',
+	'# This is the Condensation Perl Module '.$build->version.' ('.$build->editionString.') built on '.$build->releaseDate.'.',
+	'# See https://condensation.io for information about the Condensation Data System.',
+	'',
+	'use strict;',
+	'use warnings;',
+	'use File::Basename;',
+	'use lib dirname(__FILE__);',
+	'use CDS;',
+	'',
+	'my $exitCode = CDS::CLI->run;',
+	'exit($exitCode);',
+	);
+
+$build->writeLines($editionFolder.'/cds', @output);
+chmod 0755, $editionFolder.'/cds';
+
 print 'CDS.pm ', $build->version, ' ', $build->editionString, ' built, ', $build->countSections, ' packages', "\n";
