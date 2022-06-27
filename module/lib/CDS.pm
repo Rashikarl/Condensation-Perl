@@ -1,4 +1,4 @@
-# This is part of the Condensation Perl Module 0.28 (cli) built on 2022-02-10.
+# This is part of the Condensation Perl Module 0.29 (cli) built on 2022-03-07.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -37,9 +37,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.28';
+our $VERSION = '0.29';
 our $edition = 'cli';
-our $releaseDate = '2022-02-10';
+our $releaseDate = '2022-03-07';
 
 sub now { time * 1000 }
 
@@ -6343,6 +6343,9 @@ sub processMessageEnvelope {
 	}
 
 	# Content
+	$o->{ui}->space;
+	$o->{ui}->title('AES Key');
+	$o->{ui}->line(unpack('H*', $aesKey));
 	$o->{ui}->space;
 	$o->{ui}->title('Content');
 	$o->{ui}->recordChildren($content, $senderStore ? $o->{actor}->storeReference($senderStore) : undef);

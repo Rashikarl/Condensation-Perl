@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.28 (cli debug) built on 2022-02-10.
+# This is the Condensation Perl Module 0.29 (cli debug) built on 2022-03-07.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -36,9 +36,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.28';
+our $VERSION = '0.29';
 our $edition = 'cli debug';
-our $releaseDate = '2022-02-10';
+our $releaseDate = '2022-03-07';
 
 #line 3 "Condensation/Duration.pm"
 sub now { time * 1000 }
@@ -7464,33 +7464,36 @@ sub processMessageEnvelope {
 #line 242 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Content
 	$o->{ui}->space;
+	$o->{ui}->title('AES Key');
+	$o->{ui}->line(unpack('H*', $aesKey));
+	$o->{ui}->space;
 	$o->{ui}->title('Content');
 	$o->{ui}->recordChildren($content, $senderStore ? $o->{actor}->storeReference($senderStore) : undef);
 
-#line 247 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 250 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	return $o->processMessageEnvelope2($envelope);
 }
 
-#line 250 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 253 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub processMessageEnvelope2 {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 
-#line 251 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 254 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Encrypted for
 	$o->showEncryptedFor($envelope);
 
-#line 254 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 257 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Updated by
 	$o->{ui}->space;
 	$o->{ui}->title('May be removed or updated by');
 
-#line 258 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 261 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	for my $child ($envelope->child('updated by')->children) {
 		$o->showActorHash24($child->bytes);
 	}
 
-#line 262 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 265 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Expires
 	$o->{ui}->space;
 	$o->{ui}->title('Expires');
@@ -7499,22 +7502,22 @@ sub processMessageEnvelope2 {
 	$o->{ui}->space;
 }
 
-#line 270 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 273 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub processStreamHead {
 	my $o = shift;
 	my $head = shift;
 
-#line 271 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 274 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->space;
 	$o->{ui}->title('Stream head');
 	return $o->{ui}->pRed('The envelope does not mention a stream head.') if ! $head;
 	$o->{ui}->line($o->{ui}->gold('cds open envelope ', $head->hex, ' on ', $o->{actor}->storeReference($o->{store})));
 
-#line 276 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 279 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the envelope
 	my $envelope = $o->{actor}->uiGetRecord($head, $o->{store}, $o->{keyPairToken}) // return;
 
-#line 279 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 282 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Decrypt the content
 	my $encryptedContentBytes = $envelope->child('content')->bytesValue;
 	my $aesKey = $o->decryptAesKey($envelope) // return;
@@ -7522,14 +7525,14 @@ sub processStreamHead {
 	my $signedHash = CDS::Hash->calculateFor($encryptedContentBytes);
 	my $content = CDS::Record->fromObject($contentObject) // return {aesKey => $aesKey};
 
-#line 286 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 289 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Sender
 	my $senderHash = $content->child('sender')->hashValue;
 	my $senderStoreRecord = $content->child('store');
 	my $senderStore = $o->{actor}->storeForUrl($senderStoreRecord->textValue);
 	return {aesKey => $aesKey, senderHash => $senderHash, senderStore => $senderStore} if ! $senderHash || ! $senderStore;
 
-#line 292 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 295 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->pushIndent;
 	$o->{ui}->space;
 	$o->{ui}->title('Signed by');
@@ -7537,7 +7540,7 @@ sub processStreamHead {
 	$o->{ui}->line($o->{actor}->blueAccountReference($senderToken));
 	$o->showSignature($envelope, $senderHash, $senderStore, $signedHash);
 
-#line 299 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 302 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Recipients
 	$o->{ui}->space;
 	$o->{ui}->title('Encrypted for');
@@ -7545,31 +7548,31 @@ sub processStreamHead {
 		$o->showActorHash24($child->bytes);
 	}
 
-#line 306 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 309 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->popIndent;
 	return {aesKey => $aesKey, senderHash => $senderHash, senderStore => $senderStore, isValid => 1};
 }
 
-#line 310 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 313 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub processStreamEnvelope {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 
-#line 311 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 314 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->space;
 	$o->{ui}->title('Stream envelope');
 	$o->{ui}->line($o->{ui}->gold('cds show record ', $o->{hash}->hex, ' on ', $o->{actor}->storeReference($o->{store})));
 
-#line 315 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 318 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the head
 	my $streamHead = $o->processStreamHead($envelope->child('head')->hashValue);
 	$o->{ui}->pRed('The stream head cannot be opened. Open the stream head envelope for details.') if ! $streamHead || ! $streamHead->{isValid};
 
-#line 319 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 322 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the content
 	my $encryptedBytes = $envelope->child('content')->bytesValue;
 
-#line 322 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 325 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the CTR
 	$o->{ui}->space;
 	$o->{ui}->title('CTR');
@@ -7580,11 +7583,11 @@ sub processStreamEnvelope {
 		$o->{ui}->pRed('The CTR value is invalid.');
 	}
 
-#line 332 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 335 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	return $o->{ui}->space if ! $streamHead;
 	return $o->{ui}->space if ! $streamHead->{aesKey};
 
-#line 335 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 338 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get and verify the MAC
 	$o->{ui}->space;
 	$o->{ui}->title('Message authentication (MAC)');
@@ -7597,7 +7600,7 @@ sub processStreamEnvelope {
 		$o->{ui}->pRed('The MAC is invalid.');
 	}
 
-#line 347 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 350 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Decrypt the content
 	$o->{ui}->space;
 	$o->{ui}->title('Content');
@@ -7608,41 +7611,41 @@ sub processStreamEnvelope {
 		return;
 	}
 
-#line 357 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 360 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $content = CDS::Record->fromObject($contentObject);
 	return $o->{ui}->pRed('The content is not a record.') if ! $content;
 	$o->{ui}->recordChildren($content, $streamHead->{senderStore} ? $o->{actor}->storeReference($streamHead->{senderStore}) : undef);
 	$o->{ui}->space;
 
-#line 362 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 365 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# The envelope is valid
 	#my $source = CDS::Source->new($o->{pool}->{keyPair}, $o->{actorOnStore}, 'messages', $entry->{hash});
 	#return CDS::ReceivedMessage->new($o, $entry, $source, $envelope, $streamHead->senderStoreUrl, $streamHead->sender, $content, $streamHead);
 
-#line 366 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 369 "Condensation/CLI/Commands/OpenEnvelope.pm"
 }
 
-#line 368 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 371 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub showActorHash24 {
 	my $o = shift;
 	my $actorHashBytes = shift;
 
-#line 369 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 372 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $actorHashHex = unpack('H*', $actorHashBytes);
 	return $o->{ui}->line($o->{ui}->red($actorHashHex, ' (', length $actorHashBytes, ' instead of 24 bytes)')) if length $actorHashBytes != 24;
 
-#line 372 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 375 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $actorName = $o->{actor}->actorLabelByHashStartBytes($actorHashBytes);
 	$actorHashHex .= '·' x 16;
 
-#line 375 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 378 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $keyPairHashBytes = $o->{keyPairToken}->keyPair->publicKey->hash->bytes;
 	my $isMe = substr($keyPairHashBytes, 0, 24) eq $actorHashBytes;
 	$o->{ui}->line($isMe ? $o->{ui}->violet($actorHashHex) : $actorHashHex, (defined $actorName ? $o->{ui}->blue('  '.$actorName) : ''));
 	return $isMe;
 }
 
-#line 381 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 384 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub showSignature {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
@@ -7650,12 +7653,12 @@ sub showSignature {
 	my $senderStore = shift;
 	my $signedHash = shift; die 'wrong type '.ref($signedHash).' for $signedHash' if defined $signedHash && ref $signedHash ne 'CDS::Hash';
 
-#line 382 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 385 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the public key
 	my $publicKey = $o->getPublicKey($senderHash, $senderStore);
 	return $o->{ui}->line($o->{ui}->orange('The signature cannot be verified, because the signer\'s public key is not available.')) if ! $publicKey;
 
-#line 386 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 389 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Verify the signature
 	if (CDS->verifyEnvelopeSignature($envelope, $publicKey, $signedHash)) {
 		$o->{ui}->pGreen('The signature is valid.');
@@ -7664,58 +7667,58 @@ sub showSignature {
 	}
 }
 
-#line 394 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 397 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub getPublicKey {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $store = shift;
 
-#line 395 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 398 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	return $o->{keyPairToken}->keyPair->publicKey if $hash->equals($o->{keyPairToken}->keyPair->publicKey->hash);
 	return $o->{actor}->uiGetPublicKey($hash, $store, $o->{keyPairToken});
 }
 
-#line 399 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 402 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub showEncryptedFor {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 
-#line 400 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 403 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->space;
 	$o->{ui}->title('Encrypted for');
 
-#line 403 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 406 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $canDecrypt = 0;
 	for my $child ($envelope->child('encrypted for')->children) {
 		$canDecrypt = 1 if $o->showActorHash24($child->bytes);
 	}
 
-#line 408 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 411 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	return if $canDecrypt;
 	$o->{ui}->space;
 	my $keyPairHash = $o->{keyPairToken}->keyPair->publicKey->hash;
 	$o->{ui}->pOrange('This envelope is not encrypted for you (', $keyPairHash->shortHex, '). If you possess one of the keypairs mentioned above, add "… using KEYPAIR" to open this envelope.');
 }
 
-#line 414 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 417 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub decryptAesKey {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 
-#line 415 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 418 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $keyPair = $o->{keyPairToken}->keyPair;
 	my $hashBytes24 = substr($keyPair->publicKey->hash->bytes, 0, 24);
 	my $child = $envelope->child('encrypted for')->child($hashBytes24);
 
-#line 419 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 422 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $encryptedAesKey = $child->bytesValue;
 	return if ! length $encryptedAesKey;
 
-#line 422 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 425 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $aesKey = $keyPair->decrypt($encryptedAesKey);
 	return $aesKey if defined $aesKey && length $aesKey == 32;
 
-#line 425 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 428 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->pRed('The AES key failed to decrypt. It either wasn\'t encrypted properly, or the encryption was performed with the wrong public key.');
 	return;
 }
