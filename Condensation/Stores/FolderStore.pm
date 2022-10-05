@@ -90,7 +90,7 @@ sub listFolder($o, $boxFolder) {	# private
 sub add($o, $accountHash, $boxLabel, $hash, $keyPair) {
 	my $permissions = $o:permissions;
 
-	next if ! CDS->isValidBoxLabel($boxLabel);
+	return if ! CDS->isValidBoxLabel($boxLabel);
 	my $accountFolder = $o:folder.'/accounts/'.$accountHash->hex;
 	$permissions->mkdir($accountFolder, $permissions->accountFolderMode);
 	my $boxFolder = $accountFolder.'/'.$boxLabel;
@@ -103,10 +103,10 @@ sub add($o, $accountHash, $boxLabel, $hash, $keyPair) {
 }
 
 sub remove($o, $accountHash, $boxLabel, $hash, $keyPair) {
-	next if ! CDS->isValidBoxLabel($boxLabel);
+	return if ! CDS->isValidBoxLabel($boxLabel);
 	my $accountFolder = $o:folder.'/accounts/'.$accountHash->hex;
 	my $boxFolder = $accountFolder.'/'.$boxLabel;
-	next if ! -d $boxFolder;
+	return if ! -d $boxFolder;
 	unlink $boxFolder.'/'.$hash->hex;
 	return;
 }
