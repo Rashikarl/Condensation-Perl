@@ -150,12 +150,12 @@ sub replyFatalError($o; @error) {
 }
 
 sub reply303($o, $location) { $o->reply(303, 'See Other', {'Location' => $location}) }
-sub reply400 { shift->reply(400, 'Bad Request', &textContentType, @_) }
-sub reply403 { shift->reply(403, 'Forbidden', &textContentType, @_) }
-sub reply404 { shift->reply(404, 'Not Found', &textContentType, @_) }
-sub reply405 { shift->reply(405, 'Method Not Allowed', &textContentType, @_) }
-sub reply500 { shift->reply(500, 'Internal Server Error', &textContentType, @_) }
-sub reply503 { shift->reply(503, 'Service Not Available', &textContentType, @_) }
+sub reply400($o) { $o->reply(400, 'Bad Request', &textContentType, @_) }
+sub reply403($o) { $o->reply(403, 'Forbidden', &textContentType, @_) }
+sub reply404($o) { $o->reply(404, 'Not Found', &textContentType, @_) }
+sub reply405($o) { $o->reply(405, 'Method Not Allowed', &textContentType, @_) }
+sub reply500($o) { $o->reply(500, 'Internal Server Error', &textContentType, @_) }
+sub reply503($o) { $o->reply(503, 'Service Not Available', &textContentType, @_) }
 
 sub reply($o, $responseCode, $responseLabel, $headers // {}, $content // '') {
 	# Content-related headers

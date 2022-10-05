@@ -67,7 +67,7 @@ function traverseFile(file) {
 			for (var n = 0; n < args.length; n++) {
 				var arg = args[n];
 				if (arg.match(/^\s*$/)) continue;
-				var m = arg.match(/^\s*[\$\@]+([a-zA-Z0-9]*)/);
+				var m = arg.match(/^\s*[\$\@\%]+([a-zA-Z0-9]*)/);
 				if (! m) {
 					error(file, 'Weird argument: ' + arg);
 					continue;
@@ -99,7 +99,7 @@ function traverseFile(file) {
 			continue;
 		}
 
-		var subMatch = line.match(/^sub ([a-zA-Z0-9]*) {\s*(.*?)\s*}/);
+		var subMatch = line.match(/^sub ([a-zA-Z0-9]*) {\s*(.*?)\s*}$/);
 		if (subMatch) {
 			addConstant(classname, subMatch[1], subMatch[2]);
 			continue;
@@ -131,9 +131,20 @@ function addConstant(classname, name, value) {
 	functions.push(classname + '\t' + 'CONSTANT' + '\t' + name);
 
 	var packageName = classname.replace(/\//g, '::');
-	var displayValue = value.match(/^\$/) ? '' : '   # = ' + value;
+	var displayValue = value.match(/^\$/) ? '' : '   # = ' + encodeHtml(value);
 	var call = packageName + '-&gt;' + name + displayValue;
 	calls.push({order: classname + ' A ' + name + ' 0', classname: classname, call: call});
+}
+
+function encodeHtml(text) {
+	return text.replace(/(&|<|>)/g, replace);
+
+	function replace(a) {
+		if (a == '&') return '&amp;';
+		if (a == '<') return '&lt;';
+		if (a == '>') return '&gt;';
+		return '';
+	}
 }
 
 function writeFunctions() {
