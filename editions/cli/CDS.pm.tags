@@ -963,6 +963,7 @@ modify||($modifications, $keyPair) in CDS::LogStore|
 modify||($modifications, $keyPair) in CDS::SplitStore|
 modify||($modifications, $keyPair) in CDS::UI::ProgressStore|
 modify||(@$removals, $keyPair) in CDS::ObjectCache|
+needsSignature||() in CDS::StoreModifications|
 new||($accountToken, $boxLabel) in CDS::BoxToken STATIC|
 new||($actor) in CDS::CLI STATIC|
 new||($actor) in CDS::Commands::ActorGroup STATIC|
@@ -1341,18 +1342,18 @@ reply200Bytes||($content // '') in CDS::HTTPServer::Request|
 reply200HTML||($content // '') in CDS::HTTPServer::Request|
 reply200||($content // '') in CDS::HTTPServer::Request|
 reply303||($location) in CDS::HTTPServer::Request|
-reply400||in CDS::HTTPServer::Request|
-reply403||in CDS::HTTPServer::Request|
-reply404||in CDS::HTTPServer::Request|
-reply405||in CDS::HTTPServer::Request|
-reply500||in CDS::HTTPServer::Request|
-reply503||in CDS::HTTPServer::Request|
+reply400||() in CDS::HTTPServer::Request|
+reply403||() in CDS::HTTPServer::Request|
+reply404||() in CDS::HTTPServer::Request|
+reply405||() in CDS::HTTPServer::Request|
+reply500||() in CDS::HTTPServer::Request|
+reply503||() in CDS::HTTPServer::Request|
 replyFatalError||() in CDS::HTTPServer::Request|
 replyOptions||() in CDS::HTTPServer::Request|
 reply||($responseCode, $responseLabel, $headers // {}, $content // '') in CDS::HTTPServer::Request|
 reportGarbage||($cmd) in CDS::Commands::CollectGarbage|
 report||($hashHex, $toStores, $depth; @message) in CDS::Commands::Transfer|
-request||($method, $url, $headers, $keyPair, $data, $signData) in CDS::HTTPStore STATIC|
+request||($method, $url, $headers, $keyPair, $data, $addSignature, $signData) in CDS::HTTPStore STATIC|
 reset||in CDS::UI::HexDump|
 revisionValue||($bytes) in CDS::UI::Record|
 revision||() in CDS::Selector|
@@ -1589,6 +1590,7 @@ verbose||() in CDS::UI|
 verifyAddition||($actorHash, $accountHash, $boxLabel, $hash) in CDS::HTTPServer::StoreHandler|
 verifyEnvelopeSignature||($envelope, $publicKey, $hash) in CDS STATIC|
 verifyHash||($hash, $signature) in CDS::PublicKey|
+verifyList||($actorHash, $accountHash, $boxLabel) in CDS::HTTPServer::StoreHandler|
 verifyModifications||($actorHash, $modifications) in CDS::HTTPServer::StoreHandler|
 verifyRemoval||($actorHash, $accountHash, $boxLabel, $hash) in CDS::HTTPServer::StoreHandler|
 version||($cmd) in CDS::Commands::Help|

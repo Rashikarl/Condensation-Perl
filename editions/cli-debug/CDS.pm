@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.29 (cli debug) built on 2022-03-07.
+# This is the Condensation Perl Module 0.30 (cli debug) built on 2022-10-11.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -36,9 +36,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 our $edition = 'cli debug';
-our $releaseDate = '2022-03-07';
+our $releaseDate = '2022-10-11';
 
 #line 3 "Condensation/Duration.pm"
 sub now { time * 1000 }
@@ -7464,36 +7464,33 @@ sub processMessageEnvelope {
 #line 242 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Content
 	$o->{ui}->space;
-	$o->{ui}->title('AES Key');
-	$o->{ui}->line(unpack('H*', $aesKey));
-	$o->{ui}->space;
 	$o->{ui}->title('Content');
 	$o->{ui}->recordChildren($content, $senderStore ? $o->{actor}->storeReference($senderStore) : undef);
 
-#line 250 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 247 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	return $o->processMessageEnvelope2($envelope);
 }
 
-#line 253 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 250 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub processMessageEnvelope2 {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 
-#line 254 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 251 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Encrypted for
 	$o->showEncryptedFor($envelope);
 
-#line 257 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 254 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Updated by
 	$o->{ui}->space;
 	$o->{ui}->title('May be removed or updated by');
 
-#line 261 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 258 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	for my $child ($envelope->child('updated by')->children) {
 		$o->showActorHash24($child->bytes);
 	}
 
-#line 265 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 262 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Expires
 	$o->{ui}->space;
 	$o->{ui}->title('Expires');
@@ -7502,22 +7499,22 @@ sub processMessageEnvelope2 {
 	$o->{ui}->space;
 }
 
-#line 273 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 270 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub processStreamHead {
 	my $o = shift;
 	my $head = shift;
 
-#line 274 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 271 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->space;
 	$o->{ui}->title('Stream head');
 	return $o->{ui}->pRed('The envelope does not mention a stream head.') if ! $head;
 	$o->{ui}->line($o->{ui}->gold('cds open envelope ', $head->hex, ' on ', $o->{actor}->storeReference($o->{store})));
 
-#line 279 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 276 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the envelope
 	my $envelope = $o->{actor}->uiGetRecord($head, $o->{store}, $o->{keyPairToken}) // return;
 
-#line 282 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 279 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Decrypt the content
 	my $encryptedContentBytes = $envelope->child('content')->bytesValue;
 	my $aesKey = $o->decryptAesKey($envelope) // return;
@@ -7525,14 +7522,14 @@ sub processStreamHead {
 	my $signedHash = CDS::Hash->calculateFor($encryptedContentBytes);
 	my $content = CDS::Record->fromObject($contentObject) // return {aesKey => $aesKey};
 
-#line 289 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 286 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Sender
 	my $senderHash = $content->child('sender')->hashValue;
 	my $senderStoreRecord = $content->child('store');
 	my $senderStore = $o->{actor}->storeForUrl($senderStoreRecord->textValue);
 	return {aesKey => $aesKey, senderHash => $senderHash, senderStore => $senderStore} if ! $senderHash || ! $senderStore;
 
-#line 295 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 292 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->pushIndent;
 	$o->{ui}->space;
 	$o->{ui}->title('Signed by');
@@ -7540,7 +7537,7 @@ sub processStreamHead {
 	$o->{ui}->line($o->{actor}->blueAccountReference($senderToken));
 	$o->showSignature($envelope, $senderHash, $senderStore, $signedHash);
 
-#line 302 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 299 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Recipients
 	$o->{ui}->space;
 	$o->{ui}->title('Encrypted for');
@@ -7548,31 +7545,31 @@ sub processStreamHead {
 		$o->showActorHash24($child->bytes);
 	}
 
-#line 309 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 306 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->popIndent;
 	return {aesKey => $aesKey, senderHash => $senderHash, senderStore => $senderStore, isValid => 1};
 }
 
-#line 313 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 310 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub processStreamEnvelope {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 
-#line 314 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 311 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->space;
 	$o->{ui}->title('Stream envelope');
 	$o->{ui}->line($o->{ui}->gold('cds show record ', $o->{hash}->hex, ' on ', $o->{actor}->storeReference($o->{store})));
 
-#line 318 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 315 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the head
 	my $streamHead = $o->processStreamHead($envelope->child('head')->hashValue);
 	$o->{ui}->pRed('The stream head cannot be opened. Open the stream head envelope for details.') if ! $streamHead || ! $streamHead->{isValid};
 
-#line 322 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 319 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the content
 	my $encryptedBytes = $envelope->child('content')->bytesValue;
 
-#line 325 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 322 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the CTR
 	$o->{ui}->space;
 	$o->{ui}->title('CTR');
@@ -7583,11 +7580,11 @@ sub processStreamEnvelope {
 		$o->{ui}->pRed('The CTR value is invalid.');
 	}
 
-#line 335 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 332 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	return $o->{ui}->space if ! $streamHead;
 	return $o->{ui}->space if ! $streamHead->{aesKey};
 
-#line 338 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 335 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get and verify the MAC
 	$o->{ui}->space;
 	$o->{ui}->title('Message authentication (MAC)');
@@ -7600,7 +7597,7 @@ sub processStreamEnvelope {
 		$o->{ui}->pRed('The MAC is invalid.');
 	}
 
-#line 350 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 347 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Decrypt the content
 	$o->{ui}->space;
 	$o->{ui}->title('Content');
@@ -7611,41 +7608,41 @@ sub processStreamEnvelope {
 		return;
 	}
 
-#line 360 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 357 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $content = CDS::Record->fromObject($contentObject);
 	return $o->{ui}->pRed('The content is not a record.') if ! $content;
 	$o->{ui}->recordChildren($content, $streamHead->{senderStore} ? $o->{actor}->storeReference($streamHead->{senderStore}) : undef);
 	$o->{ui}->space;
 
-#line 365 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 362 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# The envelope is valid
 	#my $source = CDS::Source->new($o->{pool}->{keyPair}, $o->{actorOnStore}, 'messages', $entry->{hash});
 	#return CDS::ReceivedMessage->new($o, $entry, $source, $envelope, $streamHead->senderStoreUrl, $streamHead->sender, $content, $streamHead);
 
-#line 369 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 366 "Condensation/CLI/Commands/OpenEnvelope.pm"
 }
 
-#line 371 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 368 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub showActorHash24 {
 	my $o = shift;
 	my $actorHashBytes = shift;
 
-#line 372 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 369 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $actorHashHex = unpack('H*', $actorHashBytes);
 	return $o->{ui}->line($o->{ui}->red($actorHashHex, ' (', length $actorHashBytes, ' instead of 24 bytes)')) if length $actorHashBytes != 24;
 
-#line 375 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 372 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $actorName = $o->{actor}->actorLabelByHashStartBytes($actorHashBytes);
 	$actorHashHex .= '·' x 16;
 
-#line 378 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 375 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $keyPairHashBytes = $o->{keyPairToken}->keyPair->publicKey->hash->bytes;
 	my $isMe = substr($keyPairHashBytes, 0, 24) eq $actorHashBytes;
 	$o->{ui}->line($isMe ? $o->{ui}->violet($actorHashHex) : $actorHashHex, (defined $actorName ? $o->{ui}->blue('  '.$actorName) : ''));
 	return $isMe;
 }
 
-#line 384 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 381 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub showSignature {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
@@ -7653,12 +7650,12 @@ sub showSignature {
 	my $senderStore = shift;
 	my $signedHash = shift; die 'wrong type '.ref($signedHash).' for $signedHash' if defined $signedHash && ref $signedHash ne 'CDS::Hash';
 
-#line 385 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 382 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Get the public key
 	my $publicKey = $o->getPublicKey($senderHash, $senderStore);
 	return $o->{ui}->line($o->{ui}->orange('The signature cannot be verified, because the signer\'s public key is not available.')) if ! $publicKey;
 
-#line 389 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 386 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	# Verify the signature
 	if (CDS->verifyEnvelopeSignature($envelope, $publicKey, $signedHash)) {
 		$o->{ui}->pGreen('The signature is valid.');
@@ -7667,58 +7664,58 @@ sub showSignature {
 	}
 }
 
-#line 397 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 394 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub getPublicKey {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $store = shift;
 
-#line 398 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 395 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	return $o->{keyPairToken}->keyPair->publicKey if $hash->equals($o->{keyPairToken}->keyPair->publicKey->hash);
 	return $o->{actor}->uiGetPublicKey($hash, $store, $o->{keyPairToken});
 }
 
-#line 402 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 399 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub showEncryptedFor {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 
-#line 403 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 400 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->space;
 	$o->{ui}->title('Encrypted for');
 
-#line 406 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 403 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $canDecrypt = 0;
 	for my $child ($envelope->child('encrypted for')->children) {
 		$canDecrypt = 1 if $o->showActorHash24($child->bytes);
 	}
 
-#line 411 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 408 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	return if $canDecrypt;
 	$o->{ui}->space;
 	my $keyPairHash = $o->{keyPairToken}->keyPair->publicKey->hash;
 	$o->{ui}->pOrange('This envelope is not encrypted for you (', $keyPairHash->shortHex, '). If you possess one of the keypairs mentioned above, add "… using KEYPAIR" to open this envelope.');
 }
 
-#line 417 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 414 "Condensation/CLI/Commands/OpenEnvelope.pm"
 sub decryptAesKey {
 	my $o = shift;
 	my $envelope = shift; die 'wrong type '.ref($envelope).' for $envelope' if defined $envelope && ref $envelope ne 'CDS::Record';
 
-#line 418 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 415 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $keyPair = $o->{keyPairToken}->keyPair;
 	my $hashBytes24 = substr($keyPair->publicKey->hash->bytes, 0, 24);
 	my $child = $envelope->child('encrypted for')->child($hashBytes24);
 
-#line 422 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 419 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $encryptedAesKey = $child->bytesValue;
 	return if ! length $encryptedAesKey;
 
-#line 425 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 422 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	my $aesKey = $keyPair->decrypt($encryptedAesKey);
 	return $aesKey if defined $aesKey && length $aesKey == 32;
 
-#line 428 "Condensation/CLI/Commands/OpenEnvelope.pm"
+#line 425 "Condensation/CLI/Commands/OpenEnvelope.pm"
 	$o->{ui}->pRed('The AES key failed to decrypt. It either wasn\'t encrypted properly, or the encryption was performed with the wrong public key.');
 	return;
 }
@@ -12593,7 +12590,7 @@ sub add {
 	my $permissions = $o->{permissions};
 
 #line 93 "Condensation/Stores/FolderStore.pm"
-	next if ! CDS->isValidBoxLabel($boxLabel);
+	return if ! CDS->isValidBoxLabel($boxLabel);
 	my $accountFolder = $o->{folder}.'/accounts/'.$accountHash->hex;
 	$permissions->mkdir($accountFolder, $permissions->accountFolderMode);
 	my $boxFolder = $accountFolder.'/'.$boxLabel;
@@ -12615,10 +12612,10 @@ sub remove {
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
 #line 106 "Condensation/Stores/FolderStore.pm"
-	next if ! CDS->isValidBoxLabel($boxLabel);
+	return if ! CDS->isValidBoxLabel($boxLabel);
 	my $accountFolder = $o->{folder}.'/accounts/'.$accountHash->hex;
 	my $boxFolder = $accountFolder.'/'.$boxLabel;
-	next if ! -d $boxFolder;
+	return if ! -d $boxFolder;
 	unlink $boxFolder.'/'.$hash->hex;
 	return;
 }
@@ -13799,12 +13796,24 @@ sub reply303 {
 	my $o = shift;
 	my $location = shift;
 	 $o->reply(303, 'See Other', {'Location' => $location}) }
-sub reply400 { shift->reply(400, 'Bad Request', &textContentType, @_) }
-sub reply403 { shift->reply(403, 'Forbidden', &textContentType, @_) }
-sub reply404 { shift->reply(404, 'Not Found', &textContentType, @_) }
-sub reply405 { shift->reply(405, 'Method Not Allowed', &textContentType, @_) }
-sub reply500 { shift->reply(500, 'Internal Server Error', &textContentType, @_) }
-sub reply503 { shift->reply(503, 'Service Not Available', &textContentType, @_) }
+sub reply400 {
+	my $o = shift;
+	 $o->reply(400, 'Bad Request', &textContentType, @_) }
+sub reply403 {
+	my $o = shift;
+	 $o->reply(403, 'Forbidden', &textContentType, @_) }
+sub reply404 {
+	my $o = shift;
+	 $o->reply(404, 'Not Found', &textContentType, @_) }
+sub reply405 {
+	my $o = shift;
+	 $o->reply(405, 'Method Not Allowed', &textContentType, @_) }
+sub reply500 {
+	my $o = shift;
+	 $o->reply(500, 'Internal Server Error', &textContentType, @_) }
+sub reply503 {
+	my $o = shift;
+	 $o->reply(503, 'Service Not Available', &textContentType, @_) }
 
 #line 160 "Condensation/HTTPServer/HTTPServer/Request.pm"
 sub reply {
@@ -14174,6 +14183,12 @@ sub box {
 #line 106 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	# List box
 	if ($request->method eq 'HEAD' || $request->method eq 'GET') {
+		if ($o->{checkSignatures}) {
+			my $actorHash = $request->checkSignature($o->{store});
+			return $request->reply403 if ! $o->verifyList($actorHash, $accountHash, $boxLabel);
+		}
+
+#line 113 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 		my $watch = $request->headers->{'condensation-watch'} // '';
 		my $timeout = $watch =~ /^(\d+)\s*ms$/ ? $1 + 0 : 0;
 		$timeout = $o->{maximumWatchTimeout} if $timeout > $o->{maximumWatchTimeout};
@@ -14182,11 +14197,11 @@ sub box {
 		return $request->reply200Bytes(join('', map { $_->bytes } @$hashes));
 	}
 
-#line 116 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 121 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	return $request->reply405;
 }
 
-#line 119 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 124 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 sub boxEntry {
 	my $o = shift;
 	my $request = shift;
@@ -14194,102 +14209,113 @@ sub boxEntry {
 	my $boxLabel = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 120 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 125 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	# Options
 	if ($request->method eq 'OPTIONS') {
 		return $request->replyOptions('HEAD', 'PUT', 'DELETE');
 	}
 
-#line 125 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 130 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	# Add
 	if ($request->method eq 'PUT') {
 		if ($o->{checkSignatures}) {
 			my $actorHash = $request->checkSignature($o->{store});
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyAddition($actorHash, $accountHash, $boxLabel, $hash);
 		}
 
-#line 133 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 137 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 		my $error = $o->{store}->add($accountHash, $boxLabel, $hash);
 		return $request->replyFatalError($error) if defined $error;
 		return $request->reply200;
 	}
 
-#line 138 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 142 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	# Remove
 	if ($request->method eq 'DELETE') {
 		if ($o->{checkSignatures}) {
 			my $actorHash = $request->checkSignature($o->{store});
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyRemoval($actorHash, $accountHash, $boxLabel, $hash);
 		}
 
-#line 146 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 149 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 		my ($booked, $error) = $o->{store}->remove($accountHash, $boxLabel, $hash);
 		return $request->replyFatalError($error) if defined $error;
 		return $request->reply200;
 	}
 
-#line 151 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 154 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	return $request->reply405;
 }
 
-#line 154 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 157 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 sub accounts {
 	my $o = shift;
 	my $request = shift;
 
-#line 155 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 158 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	# Options
 	if ($request->method eq 'OPTIONS') {
 		return $request->replyOptions('POST');
 	}
 
-#line 160 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 163 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	# Modify boxes
 	if ($request->method eq 'POST') {
 		my $bytes = $request->readData // return $request->reply400('No data received.');
 		my $modifications = CDS::StoreModifications->fromBytes($bytes);
 		return $request->reply400('Invalid modifications.') if ! $modifications;
 
-#line 166 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 169 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 		if ($o->{checkSignatures}) {
 			my $actorHash = $request->checkSignature(CDS::CheckSignatureStore->new($o->{store}, $modifications->objects), $bytes);
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyModifications($actorHash, $modifications);
 		}
 
-#line 172 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 174 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 		my $error = $o->{store}->modify($modifications);
 		return $request->replyFatalError($error) if defined $error;
 		return $request->reply200;
 	}
 
-#line 177 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 179 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	return $request->reply405;
 }
 
-#line 180 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 182 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+sub verifyList {
+	my $o = shift;
+	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
+	my $accountHash = shift; die 'wrong type '.ref($accountHash).' for $accountHash' if defined $accountHash && ref $accountHash ne 'CDS::Hash';
+	my $boxLabel = shift;
+
+#line 183 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+	return 1 if $boxLabel eq 'public';
+	return if ! $actorHash;
+	return 1 if $accountHash->equals($actorHash);
+	return;
+}
+
+#line 189 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 sub verifyModifications {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 	my $modifications = shift;
 
-#line 181 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 190 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	for my $operation (@{$modifications->additions}) {
 		return if ! $o->verifyAddition($actorHash, $operation->{accountHash}, $operation->{boxLabel}, $operation->{hash});
 	}
 
-#line 185 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 194 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	for my $operation (@{$modifications->removals}) {
 		return if ! $o->verifyRemoval($actorHash, $operation->{accountHash}, $operation->{boxLabel}, $operation->{hash});
 	}
 
-#line 189 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 198 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	return 1;
 }
 
-#line 192 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 201 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 sub verifyAddition {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
@@ -14297,13 +14323,14 @@ sub verifyAddition {
 	my $boxLabel = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 193 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
-	return 1 if $accountHash->equals($actorHash);
+#line 202 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	return 1 if $boxLabel eq 'messages';
+	return if ! $actorHash;
+	return 1 if $accountHash->equals($actorHash);
 	return;
 }
 
-#line 198 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 208 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 sub verifyRemoval {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
@@ -14311,17 +14338,18 @@ sub verifyRemoval {
 	my $boxLabel = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 199 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 209 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+	return if ! $actorHash;
 	return 1 if $accountHash->equals($actorHash);
 
-#line 201 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 212 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	# Get the envelope
 	my ($bytes, $error) = $o->{store}->get($hash);
 	return if defined $error;
 	return 1 if ! defined $bytes;
 	my $record = CDS::Record->fromObject(CDS::Object->fromBytes($bytes)) // return;
 
-#line 207 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 218 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	# Allow anyone listed under "updated by"
 	my $actorHashBytes24 = substr($actorHash->bytes, 0, 24);
 	for my $child ($record->child('updated by')->children) {
@@ -14330,7 +14358,7 @@ sub verifyRemoval {
 		return 1 if $hashBytes24 eq $actorHashBytes24;
 	}
 
-#line 215 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
+#line 226 "Condensation/HTTPServer/HTTPServer/StoreHandler.pm"
 	return;
 }
 
@@ -14387,7 +14415,7 @@ sub put {
 #line 28 "Condensation/Stores/HTTPStore.pm"
 	my $headers = HTTP::Headers->new;
 	$headers->header('Content-Type' => 'application/condensation-object');
-	my $response = $o->request('PUT', $o->{url}.'/objects/'.$hash->hex, $headers, $keyPair, $object->bytes);
+	my $response = $o->request('PUT', $o->{url}.'/objects/'.$hash->hex, $headers, $keyPair, $object->bytes, 1);
 	return if $response->is_success;
 	return 'put ==> HTTP '.$response->status_line;
 }
@@ -14399,7 +14427,7 @@ sub book {
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
 #line 36 "Condensation/Stores/HTTPStore.pm"
-	my $response = $o->request('POST', $o->{url}.'/objects/'.$hash->hex, HTTP::Headers->new, $keyPair);
+	my $response = $o->request('POST', $o->{url}.'/objects/'.$hash->hex, HTTP::Headers->new, $keyPair, undef, 1);
 	return if $response->code == 404;
 	return 1 if $response->is_success;
 	return undef, 'book ==> HTTP '.$response->status_line;
@@ -14417,11 +14445,12 @@ sub list {
 	my $boxUrl = $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel;
 	my $headers = HTTP::Headers->new;
 	$headers->header('Condensation-Watch' => $timeout.' ms') if $timeout > 0;
-	my $response = $o->request('GET', $boxUrl, $headers);
+	my $needsSignature = $boxLabel ne 'public';
+	my $response = $o->request('GET', $boxUrl, $headers, $keyPair, undef, $needsSignature);
 	return undef, 'list ==> HTTP '.$response->status_line if ! $response->is_success;
 	my $bytes = $response->decoded_content(charset => 'none');
 
-#line 50 "Condensation/Stores/HTTPStore.pm"
+#line 51 "Condensation/Stores/HTTPStore.pm"
 	if (length($bytes) % 32 != 0) {
 		print STDERR 'old procotol', "\n";
 		my $hashes = [];
@@ -14431,12 +14460,12 @@ sub list {
 		return $hashes;
 	}
 
-#line 59 "Condensation/Stores/HTTPStore.pm"
+#line 60 "Condensation/Stores/HTTPStore.pm"
 	my $countHashes = int(length($bytes) / 32);
 	return [map { CDS::Hash->fromBytes(substr($bytes, $_ * 32, 32)) } 0 .. $countHashes - 1];
 }
 
-#line 63 "Condensation/Stores/HTTPStore.pm"
+#line 64 "Condensation/Stores/HTTPStore.pm"
 sub add {
 	my $o = shift;
 	my $accountHash = shift; die 'wrong type '.ref($accountHash).' for $accountHash' if defined $accountHash && ref $accountHash ne 'CDS::Hash';
@@ -14444,14 +14473,15 @@ sub add {
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
-#line 64 "Condensation/Stores/HTTPStore.pm"
+#line 65 "Condensation/Stores/HTTPStore.pm"
 	my $headers = HTTP::Headers->new;
-	my $response = $o->request('PUT', $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel.'/'.$hash->hex, $headers, $keyPair);
+	my $needsSignature = $boxLabel ne 'messages';
+	my $response = $o->request('PUT', $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel.'/'.$hash->hex, $headers, $keyPair, undef, $needsSignature);
 	return if $response->is_success;
 	return 'add ==> HTTP '.$response->status_line;
 }
 
-#line 70 "Condensation/Stores/HTTPStore.pm"
+#line 72 "Condensation/Stores/HTTPStore.pm"
 sub remove {
 	my $o = shift;
 	my $accountHash = shift; die 'wrong type '.ref($accountHash).' for $accountHash' if defined $accountHash && ref $accountHash ne 'CDS::Hash';
@@ -14459,29 +14489,30 @@ sub remove {
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
-#line 71 "Condensation/Stores/HTTPStore.pm"
+#line 73 "Condensation/Stores/HTTPStore.pm"
 	my $headers = HTTP::Headers->new;
-	my $response = $o->request('DELETE', $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel.'/'.$hash->hex, $headers, $keyPair);
+	my $response = $o->request('DELETE', $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel.'/'.$hash->hex, $headers, $keyPair, undef, 1);
 	return if $response->is_success;
 	return 'remove ==> HTTP '.$response->status_line;
 }
 
-#line 77 "Condensation/Stores/HTTPStore.pm"
+#line 79 "Condensation/Stores/HTTPStore.pm"
 sub modify {
 	my $o = shift;
 	my $modifications = shift;
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
-#line 78 "Condensation/Stores/HTTPStore.pm"
+#line 80 "Condensation/Stores/HTTPStore.pm"
 	my $bytes = $modifications->toRecord->toObject->bytes;
+	my $needsSignature = $modifications->needsSignature($keyPair);
 	my $headers = HTTP::Headers->new;
 	$headers->header('Content-Type' => 'application/condensation-modifications');
-	my $response = $o->request('POST', $o->{url}.'/accounts', $headers, $keyPair, $bytes, 1);
+	my $response = $o->request('POST', $o->{url}.'/accounts', $headers, $keyPair, $bytes, $needsSignature, 1);
 	return if $response->is_success;
 	return 'modify ==> HTTP '.$response->status_line;
 }
 
-#line 86 "Condensation/Stores/HTTPStore.pm"
+#line 89 "Condensation/Stores/HTTPStore.pm"
 # Executes a HTTP request.
 sub request {
 	my $class = shift;
@@ -14490,13 +14521,14 @@ sub request {
 	my $headers = shift;
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 	my $data = shift;
+	my $addSignature = shift;
 	my $signData = shift;
 		# private
 	$headers->date(time);
 	$headers->header('User-Agent' => CDS->version);
 
-#line 91 "Condensation/Stores/HTTPStore.pm"
-	if ($keyPair) {
+#line 94 "Condensation/Stores/HTTPStore.pm"
+	if ($addSignature && $keyPair) {
 		my $hostAndPath = $url =~ /^https?:\/\/(.*)$/ ? $1 : $url;
 		my $date = CDS::ISODate->millisecondString;
 		my $bytesToSign = $date."\0".uc($method)."\0".$hostAndPath;
@@ -14508,7 +14540,7 @@ sub request {
 		$headers->header('Condensation-Signature' => unpack('H*', $signature));
 	}
 
-#line 103 "Condensation/Stores/HTTPStore.pm"
+#line 106 "Condensation/Stores/HTTPStore.pm"
 	return LWP::UserAgent->new->request(HTTP::Request->new($method, $url, $headers, $data));
 }
 
@@ -19493,60 +19525,30 @@ sub remove {
 }
 
 #line 33 "Condensation/Stores/StoreModifications.pm"
-sub executeIndividually {
-	my $o = shift;
-	my $store = shift;
-	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
-
-#line 34 "Condensation/Stores/StoreModifications.pm"
-	# Process objects
-	for my $entry (values %{$o->{objects}}) {
-		my $error = $store->put($entry->{hash}, $entry->{object}, $keyPair);
-		return $error if $error;
-	}
-
-#line 40 "Condensation/Stores/StoreModifications.pm"
-	# Process additions
-	for my $entry (@{$o->{additions}}) {
-		my $error = $store->add($entry->{accountHash}, $entry->{boxLabel}, $entry->{hash}, $keyPair);
-		return $error if $error;
-	}
-
-#line 46 "Condensation/Stores/StoreModifications.pm"
-	# Process removals (and ignore errors)
-	for my $entry (@{$o->{removals}}) {
-		$store->remove($entry->{accountHash}, $entry->{boxLabel}, $entry->{hash}, $keyPair);
-	}
-
-#line 51 "Condensation/Stores/StoreModifications.pm"
-	return;
-}
-
-#line 54 "Condensation/Stores/StoreModifications.pm"
 # Returns a text representation of box additions and removals.
 sub toRecord {
 	my $o = shift;
 
-#line 56 "Condensation/Stores/StoreModifications.pm"
+#line 35 "Condensation/Stores/StoreModifications.pm"
 	my $record = CDS::Record->new;
 
-#line 58 "Condensation/Stores/StoreModifications.pm"
+#line 37 "Condensation/Stores/StoreModifications.pm"
 	# Objects
 	my $objectsRecord = $record->add('put');
 	for my $entry (values %{$o->{objects}}) {
 		$objectsRecord->add($entry->{hash}->bytes)->add($entry->{object}->bytes);
 	}
 
-#line 64 "Condensation/Stores/StoreModifications.pm"
+#line 43 "Condensation/Stores/StoreModifications.pm"
 	# Box additions and removals
 	&addEntriesToRecord($o->{additions}, $record->add('add'));
 	&addEntriesToRecord($o->{removals}, $record->add('remove'));
 
-#line 68 "Condensation/Stores/StoreModifications.pm"
+#line 47 "Condensation/Stores/StoreModifications.pm"
 	return $record;
 }
 
-#line 71 "Condensation/Stores/StoreModifications.pm"
+#line 50 "Condensation/Stores/StoreModifications.pm"
 sub addEntriesToRecord {
 	my $unsortedEntries = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
@@ -19557,12 +19559,12 @@ sub addEntriesToRecord {
 		my $accountHash = $entry->{accountHash};
 		my $accountRecord = $record->add($accountHash->bytes);
 
-#line 78 "Condensation/Stores/StoreModifications.pm"
+#line 57 "Condensation/Stores/StoreModifications.pm"
 		while (defined $entry && $entry->{accountHash}->bytes eq $accountHash->bytes) {
 			my $boxLabel = $entry->{boxLabel};
 			my $boxRecord = $accountRecord->add($boxLabel);
 
-#line 82 "Condensation/Stores/StoreModifications.pm"
+#line 61 "Condensation/Stores/StoreModifications.pm"
 			while (defined $entry && $entry->{boxLabel} eq $boxLabel) {
 				$boxRecord->add($entry->{hash}->bytes);
 				$entry = shift @additions;
@@ -19571,26 +19573,26 @@ sub addEntriesToRecord {
 	}
 }
 
-#line 90 "Condensation/Stores/StoreModifications.pm"
+#line 69 "Condensation/Stores/StoreModifications.pm"
 sub fromBytes {
 	my $class = shift;
 	my $bytes = shift;
 
-#line 91 "Condensation/Stores/StoreModifications.pm"
+#line 70 "Condensation/Stores/StoreModifications.pm"
 	my $object = CDS::Object->fromBytes($bytes) // return;
 	my $record = CDS::Record->fromObject($object) // return;
 	return $class->fromRecord($record);
 }
 
-#line 96 "Condensation/Stores/StoreModifications.pm"
+#line 75 "Condensation/Stores/StoreModifications.pm"
 sub fromRecord {
 	my $class = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
 
-#line 97 "Condensation/Stores/StoreModifications.pm"
+#line 76 "Condensation/Stores/StoreModifications.pm"
 	my $modifications = $class->new;
 
-#line 99 "Condensation/Stores/StoreModifications.pm"
+#line 78 "Condensation/Stores/StoreModifications.pm"
 	# Read objects (and "envelopes" entries used before 2022-01)
 	for my $objectRecord ($record->child('put')->children, $record->child('envelopes')->children) {
 		my $hash = CDS::Hash->fromBytes($objectRecord->bytes) // return;
@@ -19599,16 +19601,16 @@ sub fromRecord {
 		$modifications->put($hash, $object);
 	}
 
-#line 107 "Condensation/Stores/StoreModifications.pm"
+#line 86 "Condensation/Stores/StoreModifications.pm"
 	# Read additions and removals
 	&readEntriesFromRecord($modifications->{additions}, $record->child('add')) // return;
 	&readEntriesFromRecord($modifications->{removals}, $record->child('remove')) // return;
 
-#line 111 "Condensation/Stores/StoreModifications.pm"
+#line 90 "Condensation/Stores/StoreModifications.pm"
 	return $modifications;
 }
 
-#line 114 "Condensation/Stores/StoreModifications.pm"
+#line 93 "Condensation/Stores/StoreModifications.pm"
 sub readEntriesFromRecord {
 	my $entries = shift;
 	my $record = shift; die 'wrong type '.ref($record).' for $record' if defined $record && ref $record ne 'CDS::Record';
@@ -19619,7 +19621,7 @@ sub readEntriesFromRecord {
 			my $boxLabel = $boxLabelRecord->bytes;
 			return if ! CDS->isValidBoxLabel($boxLabel);
 
-#line 121 "Condensation/Stores/StoreModifications.pm"
+#line 100 "Condensation/Stores/StoreModifications.pm"
 			for my $hashRecord ($boxLabelRecord->children) {
 				my $hash = CDS::Hash->fromBytes($hashRecord->bytes) // return;
 				push @$entries, {accountHash => $accountHash, boxLabel => $boxLabel, hash => $hash};
@@ -19627,8 +19629,54 @@ sub readEntriesFromRecord {
 		}
 	}
 
-#line 128 "Condensation/Stores/StoreModifications.pm"
+#line 107 "Condensation/Stores/StoreModifications.pm"
 	return 1;
+}
+
+#line 110 "Condensation/Stores/StoreModifications.pm"
+sub executeIndividually {
+	my $o = shift;
+	my $store = shift;
+	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
+
+#line 111 "Condensation/Stores/StoreModifications.pm"
+	# Process objects
+	for my $entry (values %{$o->{objects}}) {
+		my $error = $store->put($entry->{hash}, $entry->{object}, $keyPair);
+		return $error if $error;
+	}
+
+#line 117 "Condensation/Stores/StoreModifications.pm"
+	# Process additions
+	for my $entry (@{$o->{additions}}) {
+		my $error = $store->add($entry->{accountHash}, $entry->{boxLabel}, $entry->{hash}, $keyPair);
+		return $error if $error;
+	}
+
+#line 123 "Condensation/Stores/StoreModifications.pm"
+	# Process removals (and ignore errors)
+	for my $entry (@{$o->{removals}}) {
+		$store->remove($entry->{accountHash}, $entry->{boxLabel}, $entry->{hash}, $keyPair);
+	}
+
+#line 128 "Condensation/Stores/StoreModifications.pm"
+	return;
+}
+
+#line 131 "Condensation/Stores/StoreModifications.pm"
+sub needsSignature {
+	my $o = shift;
+
+#line 132 "Condensation/Stores/StoreModifications.pm"
+	return 0 if scalar @{$o->{removals}};
+
+#line 134 "Condensation/Stores/StoreModifications.pm"
+	for my $addition (@{$o->{additions}}) {
+		return 1 if $addition->boxLabel ne 'messages';
+	}
+
+#line 138 "Condensation/Stores/StoreModifications.pm"
+	return 0;
 }
 
 #line 1 "Condensation/Actors/StreamCache.pm"

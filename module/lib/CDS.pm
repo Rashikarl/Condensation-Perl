@@ -1,4 +1,4 @@
-# This is part of the Condensation Perl Module 0.29 (cli) built on 2022-03-07.
+# This is part of the Condensation Perl Module 0.30 (cli) built on 2022-10-11.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -37,9 +37,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 our $edition = 'cli';
-our $releaseDate = '2022-03-07';
+our $releaseDate = '2022-10-11';
 
 sub now { time * 1000 }
 
@@ -6344,9 +6344,6 @@ sub processMessageEnvelope {
 
 	# Content
 	$o->{ui}->space;
-	$o->{ui}->title('AES Key');
-	$o->{ui}->line(unpack('H*', $aesKey));
-	$o->{ui}->space;
 	$o->{ui}->title('Content');
 	$o->{ui}->recordChildren($content, $senderStore ? $o->{actor}->storeReference($senderStore) : undef);
 
@@ -10702,7 +10699,7 @@ sub add {
 
 	my $permissions = $o->{permissions};
 
-	next if ! CDS->isValidBoxLabel($boxLabel);
+	return if ! CDS->isValidBoxLabel($boxLabel);
 	my $accountFolder = $o->{folder}.'/accounts/'.$accountHash->hex;
 	$permissions->mkdir($accountFolder, $permissions->accountFolderMode);
 	my $boxFolder = $accountFolder.'/'.$boxLabel;
@@ -10721,10 +10718,10 @@ sub remove {
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
-	next if ! CDS->isValidBoxLabel($boxLabel);
+	return if ! CDS->isValidBoxLabel($boxLabel);
 	my $accountFolder = $o->{folder}.'/accounts/'.$accountHash->hex;
 	my $boxFolder = $accountFolder.'/'.$boxLabel;
-	next if ! -d $boxFolder;
+	return if ! -d $boxFolder;
 	unlink $boxFolder.'/'.$hash->hex;
 	return;
 }
@@ -11698,12 +11695,24 @@ sub reply303 {
 	my $o = shift;
 	my $location = shift;
 	 $o->reply(303, 'See Other', {'Location' => $location}) }
-sub reply400 { shift->reply(400, 'Bad Request', &textContentType, @_) }
-sub reply403 { shift->reply(403, 'Forbidden', &textContentType, @_) }
-sub reply404 { shift->reply(404, 'Not Found', &textContentType, @_) }
-sub reply405 { shift->reply(405, 'Method Not Allowed', &textContentType, @_) }
-sub reply500 { shift->reply(500, 'Internal Server Error', &textContentType, @_) }
-sub reply503 { shift->reply(503, 'Service Not Available', &textContentType, @_) }
+sub reply400 {
+	my $o = shift;
+	 $o->reply(400, 'Bad Request', &textContentType, @_) }
+sub reply403 {
+	my $o = shift;
+	 $o->reply(403, 'Forbidden', &textContentType, @_) }
+sub reply404 {
+	my $o = shift;
+	 $o->reply(404, 'Not Found', &textContentType, @_) }
+sub reply405 {
+	my $o = shift;
+	 $o->reply(405, 'Method Not Allowed', &textContentType, @_) }
+sub reply500 {
+	my $o = shift;
+	 $o->reply(500, 'Internal Server Error', &textContentType, @_) }
+sub reply503 {
+	my $o = shift;
+	 $o->reply(503, 'Service Not Available', &textContentType, @_) }
 
 sub reply {
 	my $o = shift;
@@ -12016,6 +12025,11 @@ sub box {
 
 	# List box
 	if ($request->method eq 'HEAD' || $request->method eq 'GET') {
+		if ($o->{checkSignatures}) {
+			my $actorHash = $request->checkSignature($o->{store});
+			return $request->reply403 if ! $o->verifyList($actorHash, $accountHash, $boxLabel);
+		}
+
 		my $watch = $request->headers->{'condensation-watch'} // '';
 		my $timeout = $watch =~ /^(\d+)\s*ms$/ ? $1 + 0 : 0;
 		$timeout = $o->{maximumWatchTimeout} if $timeout > $o->{maximumWatchTimeout};
@@ -12043,7 +12057,6 @@ sub boxEntry {
 	if ($request->method eq 'PUT') {
 		if ($o->{checkSignatures}) {
 			my $actorHash = $request->checkSignature($o->{store});
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyAddition($actorHash, $accountHash, $boxLabel, $hash);
 		}
 
@@ -12056,7 +12069,6 @@ sub boxEntry {
 	if ($request->method eq 'DELETE') {
 		if ($o->{checkSignatures}) {
 			my $actorHash = $request->checkSignature($o->{store});
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyRemoval($actorHash, $accountHash, $boxLabel, $hash);
 		}
 
@@ -12085,7 +12097,6 @@ sub accounts {
 
 		if ($o->{checkSignatures}) {
 			my $actorHash = $request->checkSignature(CDS::CheckSignatureStore->new($o->{store}, $modifications->objects), $bytes);
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyModifications($actorHash, $modifications);
 		}
 
@@ -12095,6 +12106,18 @@ sub accounts {
 	}
 
 	return $request->reply405;
+}
+
+sub verifyList {
+	my $o = shift;
+	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
+	my $accountHash = shift; die 'wrong type '.ref($accountHash).' for $accountHash' if defined $accountHash && ref $accountHash ne 'CDS::Hash';
+	my $boxLabel = shift;
+
+	return 1 if $boxLabel eq 'public';
+	return if ! $actorHash;
+	return 1 if $accountHash->equals($actorHash);
+	return;
 }
 
 sub verifyModifications {
@@ -12120,8 +12143,9 @@ sub verifyAddition {
 	my $boxLabel = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-	return 1 if $accountHash->equals($actorHash);
 	return 1 if $boxLabel eq 'messages';
+	return if ! $actorHash;
+	return 1 if $accountHash->equals($actorHash);
 	return;
 }
 
@@ -12132,6 +12156,7 @@ sub verifyRemoval {
 	my $boxLabel = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
+	return if ! $actorHash;
 	return 1 if $accountHash->equals($actorHash);
 
 	# Get the envelope
@@ -12194,7 +12219,7 @@ sub put {
 
 	my $headers = HTTP::Headers->new;
 	$headers->header('Content-Type' => 'application/condensation-object');
-	my $response = $o->request('PUT', $o->{url}.'/objects/'.$hash->hex, $headers, $keyPair, $object->bytes);
+	my $response = $o->request('PUT', $o->{url}.'/objects/'.$hash->hex, $headers, $keyPair, $object->bytes, 1);
 	return if $response->is_success;
 	return 'put ==> HTTP '.$response->status_line;
 }
@@ -12204,7 +12229,7 @@ sub book {
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
-	my $response = $o->request('POST', $o->{url}.'/objects/'.$hash->hex, HTTP::Headers->new, $keyPair);
+	my $response = $o->request('POST', $o->{url}.'/objects/'.$hash->hex, HTTP::Headers->new, $keyPair, undef, 1);
 	return if $response->code == 404;
 	return 1 if $response->is_success;
 	return undef, 'book ==> HTTP '.$response->status_line;
@@ -12220,7 +12245,8 @@ sub list {
 	my $boxUrl = $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel;
 	my $headers = HTTP::Headers->new;
 	$headers->header('Condensation-Watch' => $timeout.' ms') if $timeout > 0;
-	my $response = $o->request('GET', $boxUrl, $headers);
+	my $needsSignature = $boxLabel ne 'public';
+	my $response = $o->request('GET', $boxUrl, $headers, $keyPair, undef, $needsSignature);
 	return undef, 'list ==> HTTP '.$response->status_line if ! $response->is_success;
 	my $bytes = $response->decoded_content(charset => 'none');
 
@@ -12245,7 +12271,8 @@ sub add {
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
 	my $headers = HTTP::Headers->new;
-	my $response = $o->request('PUT', $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel.'/'.$hash->hex, $headers, $keyPair);
+	my $needsSignature = $boxLabel ne 'messages';
+	my $response = $o->request('PUT', $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel.'/'.$hash->hex, $headers, $keyPair, undef, $needsSignature);
 	return if $response->is_success;
 	return 'add ==> HTTP '.$response->status_line;
 }
@@ -12258,7 +12285,7 @@ sub remove {
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
 	my $headers = HTTP::Headers->new;
-	my $response = $o->request('DELETE', $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel.'/'.$hash->hex, $headers, $keyPair);
+	my $response = $o->request('DELETE', $o->{url}.'/accounts/'.$accountHash->hex.'/'.$boxLabel.'/'.$hash->hex, $headers, $keyPair, undef, 1);
 	return if $response->is_success;
 	return 'remove ==> HTTP '.$response->status_line;
 }
@@ -12269,9 +12296,10 @@ sub modify {
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 
 	my $bytes = $modifications->toRecord->toObject->bytes;
+	my $needsSignature = $modifications->needsSignature($keyPair);
 	my $headers = HTTP::Headers->new;
 	$headers->header('Content-Type' => 'application/condensation-modifications');
-	my $response = $o->request('POST', $o->{url}.'/accounts', $headers, $keyPair, $bytes, 1);
+	my $response = $o->request('POST', $o->{url}.'/accounts', $headers, $keyPair, $bytes, $needsSignature, 1);
 	return if $response->is_success;
 	return 'modify ==> HTTP '.$response->status_line;
 }
@@ -12284,12 +12312,13 @@ sub request {
 	my $headers = shift;
 	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
 	my $data = shift;
+	my $addSignature = shift;
 	my $signData = shift;
 		# private
 	$headers->date(time);
 	$headers->header('User-Agent' => CDS->version);
 
-	if ($keyPair) {
+	if ($addSignature && $keyPair) {
 		my $hostAndPath = $url =~ /^https?:\/\/(.*)$/ ? $1 : $url;
 		my $date = CDS::ISODate->millisecondString;
 		my $bytesToSign = $date."\0".uc($method)."\0".$hostAndPath;
@@ -16490,31 +16519,6 @@ sub remove {
 	push @{$o->{removals}}, {accountHash => $accountHash, boxLabel => $boxLabel, hash => $hash};
 }
 
-sub executeIndividually {
-	my $o = shift;
-	my $store = shift;
-	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
-
-	# Process objects
-	for my $entry (values %{$o->{objects}}) {
-		my $error = $store->put($entry->{hash}, $entry->{object}, $keyPair);
-		return $error if $error;
-	}
-
-	# Process additions
-	for my $entry (@{$o->{additions}}) {
-		my $error = $store->add($entry->{accountHash}, $entry->{boxLabel}, $entry->{hash}, $keyPair);
-		return $error if $error;
-	}
-
-	# Process removals (and ignore errors)
-	for my $entry (@{$o->{removals}}) {
-		$store->remove($entry->{accountHash}, $entry->{boxLabel}, $entry->{hash}, $keyPair);
-	}
-
-	return;
-}
-
 # Returns a text representation of box additions and removals.
 sub toRecord {
 	my $o = shift;
@@ -16604,6 +16608,43 @@ sub readEntriesFromRecord {
 	}
 
 	return 1;
+}
+
+sub executeIndividually {
+	my $o = shift;
+	my $store = shift;
+	my $keyPair = shift; die 'wrong type '.ref($keyPair).' for $keyPair' if defined $keyPair && ref $keyPair ne 'CDS::KeyPair';
+
+	# Process objects
+	for my $entry (values %{$o->{objects}}) {
+		my $error = $store->put($entry->{hash}, $entry->{object}, $keyPair);
+		return $error if $error;
+	}
+
+	# Process additions
+	for my $entry (@{$o->{additions}}) {
+		my $error = $store->add($entry->{accountHash}, $entry->{boxLabel}, $entry->{hash}, $keyPair);
+		return $error if $error;
+	}
+
+	# Process removals (and ignore errors)
+	for my $entry (@{$o->{removals}}) {
+		$store->remove($entry->{accountHash}, $entry->{boxLabel}, $entry->{hash}, $keyPair);
+	}
+
+	return;
+}
+
+sub needsSignature {
+	my $o = shift;
+
+	return 0 if scalar @{$o->{removals}};
+
+	for my $addition (@{$o->{additions}}) {
+		return 1 if $addition->boxLabel ne 'messages';
+	}
+
+	return 0;
 }
 
 package CDS::StreamCache;

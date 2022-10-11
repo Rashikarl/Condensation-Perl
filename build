@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 use strict;
 
-my $version = '0.29';
+my $version = '0.30';
 #system('./build-edition', $version, 'http-server');
 #system('./build-edition', $version, 'actor');
 system('./build-edition', $version, 'cli');

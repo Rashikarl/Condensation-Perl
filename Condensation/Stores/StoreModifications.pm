@@ -30,27 +30,6 @@ sub remove($o, $accountHash, $boxLabel, $hash) {
 	push @$o:removals, {accountHash => $accountHash, boxLabel => $boxLabel, hash => $hash};
 }
 
-sub executeIndividually($o, $store, $keyPair) {
-	# Process objects
-	for my $entry (values %$o:objects) {
-		my $error = $store->put($entry:hash, $entry:object, $keyPair);
-		return $error if $error;
-	}
-
-	# Process additions
-	for my $entry (@$o:additions) {
-		my $error = $store->add($entry:accountHash, $entry:boxLabel, $entry:hash, $keyPair);
-		return $error if $error;
-	}
-
-	# Process removals (and ignore errors)
-	for my $entry (@$o:removals) {
-		$store->remove($entry:accountHash, $entry:boxLabel, $entry:hash, $keyPair);
-	}
-
-	return;
-}
-
 # Returns a text representation of box additions and removals.
 sub toRecord($o) {
 	my $record = CDS::Record->new;
@@ -126,4 +105,35 @@ sub readEntriesFromRecord($entries, $record) {	# private
 	}
 
 	return 1;
+}
+
+sub executeIndividually($o, $store, $keyPair) {
+	# Process objects
+	for my $entry (values %$o:objects) {
+		my $error = $store->put($entry:hash, $entry:object, $keyPair);
+		return $error if $error;
+	}
+
+	# Process additions
+	for my $entry (@$o:additions) {
+		my $error = $store->add($entry:accountHash, $entry:boxLabel, $entry:hash, $keyPair);
+		return $error if $error;
+	}
+
+	# Process removals (and ignore errors)
+	for my $entry (@$o:removals) {
+		$store->remove($entry:accountHash, $entry:boxLabel, $entry:hash, $keyPair);
+	}
+
+	return;
+}
+
+sub needsSignature($o) {
+	return 0 if scalar @$o:removals;
+
+	for my $addition (@$o:additions) {
+		return 1 if $addition->boxLabel ne 'messages';
+	}
+
+	return 0;
 }

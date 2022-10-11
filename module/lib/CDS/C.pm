@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package CDS::C;
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 use Exporter 'import';
 our @EXPORT = qw();
 use CDS::C::Inline C => <<ENDOFCODE;

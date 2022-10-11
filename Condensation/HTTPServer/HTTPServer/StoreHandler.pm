@@ -105,6 +105,11 @@ sub box($o, $request, $accountHash, $boxLabel) {
 
 	# List box
 	if ($request->method eq 'HEAD' || $request->method eq 'GET') {
+		if ($o:checkSignatures) {
+			my $actorHash = $request->checkSignature($o:store);
+			return $request->reply403 if ! $o->verifyList($actorHash, $accountHash, $boxLabel);
+		}
+
 		my $watch = $request->headers->{'condensation-watch'} // '';
 		my $timeout = $watch =~ /^(\d+)\s*ms$/ ? $1 + 0 : 0;
 		$timeout = $o:maximumWatchTimeout if $timeout > $o:maximumWatchTimeout;
@@ -126,7 +131,6 @@ sub boxEntry($o, $request, $accountHash, $boxLabel, $hash) {
 	if ($request->method eq 'PUT') {
 		if ($o:checkSignatures) {
 			my $actorHash = $request->checkSignature($o:store);
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyAddition($actorHash, $accountHash, $boxLabel, $hash);
 		}
 
@@ -139,7 +143,6 @@ sub boxEntry($o, $request, $accountHash, $boxLabel, $hash) {
 	if ($request->method eq 'DELETE') {
 		if ($o:checkSignatures) {
 			my $actorHash = $request->checkSignature($o:store);
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyRemoval($actorHash, $accountHash, $boxLabel, $hash);
 		}
 
@@ -165,7 +168,6 @@ sub accounts($o, $request) {
 
 		if ($o:checkSignatures) {
 			my $actorHash = $request->checkSignature(CDS::CheckSignatureStore->new($o:store, $modifications->objects), $bytes);
-			return $request->reply403 if ! $actorHash;
 			return $request->reply403 if ! $o->verifyModifications($actorHash, $modifications);
 		}
 
@@ -175,6 +177,13 @@ sub accounts($o, $request) {
 	}
 
 	return $request->reply405;
+}
+
+sub verifyList($o, $actorHash, $accountHash, $boxLabel) {
+	return 1 if $boxLabel eq 'public';
+	return if ! $actorHash;
+	return 1 if $accountHash->equals($actorHash);
+	return;
 }
 
 sub verifyModifications($o, $actorHash, $modifications) {
@@ -190,12 +199,14 @@ sub verifyModifications($o, $actorHash, $modifications) {
 }
 
 sub verifyAddition($o, $actorHash, $accountHash, $boxLabel, $hash) {
-	return 1 if $accountHash->equals($actorHash);
 	return 1 if $boxLabel eq 'messages';
+	return if ! $actorHash;
+	return 1 if $accountHash->equals($actorHash);
 	return;
 }
 
 sub verifyRemoval($o, $actorHash, $accountHash, $boxLabel, $hash) {
+	return if ! $actorHash;
 	return 1 if $accountHash->equals($actorHash);
 
 	# Get the envelope
