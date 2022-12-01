@@ -4,63 +4,66 @@ sub register($class, $cds, $help) {
 	my $node000 = CDS::Parser::Node->new(0);
 	my $node001 = CDS::Parser::Node->new(0);
 	my $node002 = CDS::Parser::Node->new(0);
-	my $node003 = CDS::Parser::Node->new(0);
+	my $node003 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&help});
 	my $node004 = CDS::Parser::Node->new(0);
-	my $node005 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&help});
+	my $node005 = CDS::Parser::Node->new(0);
 	my $node006 = CDS::Parser::Node->new(0);
 	my $node007 = CDS::Parser::Node->new(0);
 	my $node008 = CDS::Parser::Node->new(0);
 	my $node009 = CDS::Parser::Node->new(0);
-	my $node010 = CDS::Parser::Node->new(1);
+	my $node010 = CDS::Parser::Node->new(0);
 	my $node011 = CDS::Parser::Node->new(0);
-	my $node012 = CDS::Parser::Node->new(0);
+	my $node012 = CDS::Parser::Node->new(1);
 	my $node013 = CDS::Parser::Node->new(0);
 	my $node014 = CDS::Parser::Node->new(0);
-	my $node015 = CDS::Parser::Node->new(0);
-	my $node016 = CDS::Parser::Node->new(1);
+	my $node015 = CDS::Parser::Node->new(1);
+	my $node016 = CDS::Parser::Node->new(0);
 	my $node017 = CDS::Parser::Node->new(0);
-	my $node018 = CDS::Parser::Node->new(0);
-	my $node019 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&get});
-	my $node020 = CDS::Parser::Node->new(1);
-	my $node021 = CDS::Parser::Node->new(0);
-	my $node022 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&get});
-	$cds->addArrow($node000, 1, 0, 'get');
-	$cds->addArrow($node001, 1, 0, 'save');
-	$cds->addArrow($node002, 1, 0, 'get');
-	$cds->addArrow($node003, 1, 0, 'get');
-	$cds->addArrow($node009, 1, 0, 'save', \&collectSave);
-	$help->addArrow($node005, 1, 0, 'get');
-	$help->addArrow($node005, 1, 0, 'save');
-	$node000->addArrow($node010, 1, 0, 'HASH', \&collectHash);
-	$node001->addArrow($node004, 1, 0, 'data');
-	$node002->addArrow($node006, 1, 0, 'HASH', \&collectHash1);
-	$node003->addArrow($node010, 1, 0, 'OBJECT', \&collectObject);
-	$node004->addArrow($node009, 1, 0, 'of', \&collectOf);
+	my $node018 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&get});
+	my $node019 = CDS::Parser::Node->new(1);
+	my $node020 = CDS::Parser::Node->new(0);
+	my $node021 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&get});
+	$cds->addArrow($node000, 1, 0, 'save');
+	$cds->addArrow($node001, 1, 0, 'hex');
+	$cds->addArrow($node004, 1, 0, 'get');
+	$cds->addArrow($node005, 1, 0, 'save', \&collectSave);
+	$help->addArrow($node003, 1, 0, 'get');
+	$help->addArrow($node003, 1, 0, 'save');
+	$node000->addArrow($node002, 1, 0, 'data');
+	$node001->addArrow($node004, 1, 0, 'dump', \&collectDump);
+	$node002->addArrow($node005, 1, 0, 'of', \&collectOf);
+	$node004->addArrow($node006, 1, 0, 'HASH', \&collectHash);
+	$node004->addArrow($node012, 1, 0, 'HASH', \&collectHash1);
+	$node004->addArrow($node012, 1, 0, 'OBJECT', \&collectObject);
+	$node005->addArrow($node009, 1, 0, 'HASH', \&collectHash);
+	$node005->addArrow($node015, 1, 0, 'HASH', \&collectHash1);
+	$node005->addArrow($node015, 1, 0, 'OBJECT', \&collectObject1);
 	$node006->addArrow($node007, 1, 0, 'on');
 	$node006->addArrow($node008, 0, 0, 'from');
-	$node007->addArrow($node010, 1, 0, 'STORE', \&collectStore);
-	$node008->addArrow($node010, 0, 0, 'STORE', \&collectStore);
-	$node009->addArrow($node013, 1, 0, 'HASH', \&collectHash1);
-	$node009->addArrow($node016, 1, 0, 'HASH', \&collectHash);
-	$node009->addArrow($node016, 1, 0, 'OBJECT', \&collectObject1);
-	$node010->addArrow($node011, 1, 0, 'decrypted');
-	$node010->addDefault($node019);
-	$node011->addArrow($node012, 1, 0, 'with');
-	$node012->addArrow($node019, 1, 0, 'AESKEY', \&collectAeskey);
-	$node013->addArrow($node014, 1, 0, 'on');
-	$node013->addArrow($node015, 0, 0, 'from');
-	$node014->addArrow($node016, 1, 0, 'STORE', \&collectStore);
-	$node015->addArrow($node016, 0, 0, 'STORE', \&collectStore);
-	$node016->addArrow($node017, 1, 0, 'decrypted');
-	$node016->addDefault($node020);
-	$node017->addArrow($node018, 1, 0, 'with');
-	$node018->addArrow($node020, 1, 0, 'AESKEY', \&collectAeskey);
-	$node020->addArrow($node021, 1, 0, 'as');
-	$node021->addArrow($node022, 1, 0, 'FILENAME', \&collectFilename);
+	$node007->addArrow($node012, 1, 0, 'STORE', \&collectStore);
+	$node008->addArrow($node012, 0, 0, 'STORE', \&collectStore);
+	$node009->addArrow($node010, 1, 0, 'on');
+	$node009->addArrow($node011, 0, 0, 'from');
+	$node010->addArrow($node015, 1, 0, 'STORE', \&collectStore);
+	$node011->addArrow($node015, 0, 0, 'STORE', \&collectStore);
+	$node012->addArrow($node013, 1, 0, 'decrypted');
+	$node012->addDefault($node018);
+	$node013->addArrow($node014, 1, 0, 'with');
+	$node014->addArrow($node018, 1, 0, 'AESKEY', \&collectAeskey);
+	$node015->addArrow($node016, 1, 0, 'decrypted');
+	$node015->addDefault($node019);
+	$node016->addArrow($node017, 1, 0, 'with');
+	$node017->addArrow($node019, 1, 0, 'AESKEY', \&collectAeskey);
+	$node019->addArrow($node020, 1, 0, 'as');
+	$node020->addArrow($node021, 1, 0, 'FILENAME', \&collectFilename);
 }
 
 sub collectAeskey($o, $label, $value) {
 	$o:aesKey = $value;
+}
+
+sub collectDump($o, $label, $value) {
+	$o:hexDump = 1;
 }
 
 sub collectFilename($o, $label, $value) {
@@ -69,11 +72,11 @@ sub collectFilename($o, $label, $value) {
 
 sub collectHash($o, $label, $value) {
 	$o:hash = $value;
-	$o:store = $o:actor->preferredStore;
 }
 
 sub collectHash1($o, $label, $value) {
 	$o:hash = $value;
+	$o:store = $o:actor->preferredStore;
 }
 
 sub collectObject($o, $label, $value) {
@@ -123,6 +126,9 @@ sub help($o, $cmd) {
 	$ui->command('cds save data of … as FILENAME');
 	$ui->p('Saves the object\'s data to FILENAME.');
 	$ui->space;
+	$ui->command('cds hex dump …');
+	$ui->p('Writes the object as hex string to STDOUT.');
+	$ui->space;
 	$ui->title('Related commands');
 	$ui->line('cds open envelope OBJECT');
 	$ui->line('cds show record OBJECT [decrypted with AESKEY]');
@@ -146,6 +152,8 @@ sub get($o, $cmd) {
 	} elsif ($o:saveObject) {
 		CDS->writeBytesToFile($o:filename, $object->bytes) // return $o:ui->error('Failed to write object to "', $o:filename, '".');
 		$o:ui->pGreen(length $object->bytes, ' bytes written to ', $o:filename, '.');
+	} elsif ($o:hexDump) {
+		$o:ui->raw(unpack('H*', $object->bytes)."\n");
 	} else {
 		$o:ui->raw($object->bytes);
 	}

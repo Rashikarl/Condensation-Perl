@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.30 (cli debug) built on 2022-10-11.
+# This is the Condensation Perl Module 0.30 (cli debug) built on 2022-12-01.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -38,7 +38,7 @@ package CDS;
 
 our $VERSION = '0.30';
 our $edition = 'cli debug';
-our $releaseDate = '2022-10-11';
+our $releaseDate = '2022-12-01';
 
 #line 3 "Condensation/Duration.pm"
 sub now { time * 1000 }
@@ -6192,171 +6192,180 @@ sub register {
 	my $node000 = CDS::Parser::Node->new(0);
 	my $node001 = CDS::Parser::Node->new(0);
 	my $node002 = CDS::Parser::Node->new(0);
-	my $node003 = CDS::Parser::Node->new(0);
+	my $node003 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&help});
 	my $node004 = CDS::Parser::Node->new(0);
-	my $node005 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&help});
+	my $node005 = CDS::Parser::Node->new(0);
 	my $node006 = CDS::Parser::Node->new(0);
 	my $node007 = CDS::Parser::Node->new(0);
 	my $node008 = CDS::Parser::Node->new(0);
 	my $node009 = CDS::Parser::Node->new(0);
-	my $node010 = CDS::Parser::Node->new(1);
+	my $node010 = CDS::Parser::Node->new(0);
 	my $node011 = CDS::Parser::Node->new(0);
-	my $node012 = CDS::Parser::Node->new(0);
+	my $node012 = CDS::Parser::Node->new(1);
 	my $node013 = CDS::Parser::Node->new(0);
 	my $node014 = CDS::Parser::Node->new(0);
-	my $node015 = CDS::Parser::Node->new(0);
-	my $node016 = CDS::Parser::Node->new(1);
+	my $node015 = CDS::Parser::Node->new(1);
+	my $node016 = CDS::Parser::Node->new(0);
 	my $node017 = CDS::Parser::Node->new(0);
-	my $node018 = CDS::Parser::Node->new(0);
-	my $node019 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&get});
-	my $node020 = CDS::Parser::Node->new(1);
-	my $node021 = CDS::Parser::Node->new(0);
-	my $node022 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&get});
-	$cds->addArrow($node000, 1, 0, 'get');
-	$cds->addArrow($node001, 1, 0, 'save');
-	$cds->addArrow($node002, 1, 0, 'get');
-	$cds->addArrow($node003, 1, 0, 'get');
-	$cds->addArrow($node009, 1, 0, 'save', \&collectSave);
-	$help->addArrow($node005, 1, 0, 'get');
-	$help->addArrow($node005, 1, 0, 'save');
-	$node000->addArrow($node010, 1, 0, 'HASH', \&collectHash);
-	$node001->addArrow($node004, 1, 0, 'data');
-	$node002->addArrow($node006, 1, 0, 'HASH', \&collectHash1);
-	$node003->addArrow($node010, 1, 0, 'OBJECT', \&collectObject);
-	$node004->addArrow($node009, 1, 0, 'of', \&collectOf);
+	my $node018 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&get});
+	my $node019 = CDS::Parser::Node->new(1);
+	my $node020 = CDS::Parser::Node->new(0);
+	my $node021 = CDS::Parser::Node->new(1, {constructor => \&new, function => \&get});
+	$cds->addArrow($node000, 1, 0, 'save');
+	$cds->addArrow($node001, 1, 0, 'hex');
+	$cds->addArrow($node004, 1, 0, 'get');
+	$cds->addArrow($node005, 1, 0, 'save', \&collectSave);
+	$help->addArrow($node003, 1, 0, 'get');
+	$help->addArrow($node003, 1, 0, 'save');
+	$node000->addArrow($node002, 1, 0, 'data');
+	$node001->addArrow($node004, 1, 0, 'dump', \&collectDump);
+	$node002->addArrow($node005, 1, 0, 'of', \&collectOf);
+	$node004->addArrow($node006, 1, 0, 'HASH', \&collectHash);
+	$node004->addArrow($node012, 1, 0, 'HASH', \&collectHash1);
+	$node004->addArrow($node012, 1, 0, 'OBJECT', \&collectObject);
+	$node005->addArrow($node009, 1, 0, 'HASH', \&collectHash);
+	$node005->addArrow($node015, 1, 0, 'HASH', \&collectHash1);
+	$node005->addArrow($node015, 1, 0, 'OBJECT', \&collectObject1);
 	$node006->addArrow($node007, 1, 0, 'on');
 	$node006->addArrow($node008, 0, 0, 'from');
-	$node007->addArrow($node010, 1, 0, 'STORE', \&collectStore);
-	$node008->addArrow($node010, 0, 0, 'STORE', \&collectStore);
-	$node009->addArrow($node013, 1, 0, 'HASH', \&collectHash1);
-	$node009->addArrow($node016, 1, 0, 'HASH', \&collectHash);
-	$node009->addArrow($node016, 1, 0, 'OBJECT', \&collectObject1);
-	$node010->addArrow($node011, 1, 0, 'decrypted');
-	$node010->addDefault($node019);
-	$node011->addArrow($node012, 1, 0, 'with');
-	$node012->addArrow($node019, 1, 0, 'AESKEY', \&collectAeskey);
-	$node013->addArrow($node014, 1, 0, 'on');
-	$node013->addArrow($node015, 0, 0, 'from');
-	$node014->addArrow($node016, 1, 0, 'STORE', \&collectStore);
-	$node015->addArrow($node016, 0, 0, 'STORE', \&collectStore);
-	$node016->addArrow($node017, 1, 0, 'decrypted');
-	$node016->addDefault($node020);
-	$node017->addArrow($node018, 1, 0, 'with');
-	$node018->addArrow($node020, 1, 0, 'AESKEY', \&collectAeskey);
-	$node020->addArrow($node021, 1, 0, 'as');
-	$node021->addArrow($node022, 1, 0, 'FILENAME', \&collectFilename);
+	$node007->addArrow($node012, 1, 0, 'STORE', \&collectStore);
+	$node008->addArrow($node012, 0, 0, 'STORE', \&collectStore);
+	$node009->addArrow($node010, 1, 0, 'on');
+	$node009->addArrow($node011, 0, 0, 'from');
+	$node010->addArrow($node015, 1, 0, 'STORE', \&collectStore);
+	$node011->addArrow($node015, 0, 0, 'STORE', \&collectStore);
+	$node012->addArrow($node013, 1, 0, 'decrypted');
+	$node012->addDefault($node018);
+	$node013->addArrow($node014, 1, 0, 'with');
+	$node014->addArrow($node018, 1, 0, 'AESKEY', \&collectAeskey);
+	$node015->addArrow($node016, 1, 0, 'decrypted');
+	$node015->addDefault($node019);
+	$node016->addArrow($node017, 1, 0, 'with');
+	$node017->addArrow($node019, 1, 0, 'AESKEY', \&collectAeskey);
+	$node019->addArrow($node020, 1, 0, 'as');
+	$node020->addArrow($node021, 1, 0, 'FILENAME', \&collectFilename);
 }
 
-#line 62 "Condensation/CLI/Commands/Get.pm"
+#line 61 "Condensation/CLI/Commands/Get.pm"
 sub collectAeskey {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 63 "Condensation/CLI/Commands/Get.pm"
+#line 62 "Condensation/CLI/Commands/Get.pm"
 	$o->{aesKey} = $value;
 }
 
+#line 65 "Condensation/CLI/Commands/Get.pm"
+sub collectDump {
+	my $o = shift;
+	my $label = shift;
+	my $value = shift;
+
 #line 66 "Condensation/CLI/Commands/Get.pm"
+	$o->{hexDump} = 1;
+}
+
+#line 69 "Condensation/CLI/Commands/Get.pm"
 sub collectFilename {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 67 "Condensation/CLI/Commands/Get.pm"
+#line 70 "Condensation/CLI/Commands/Get.pm"
 	$o->{filename} = $value;
 }
 
-#line 70 "Condensation/CLI/Commands/Get.pm"
+#line 73 "Condensation/CLI/Commands/Get.pm"
 sub collectHash {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 71 "Condensation/CLI/Commands/Get.pm"
+#line 74 "Condensation/CLI/Commands/Get.pm"
 	$o->{hash} = $value;
-	$o->{store} = $o->{actor}->preferredStore;
 }
 
-#line 75 "Condensation/CLI/Commands/Get.pm"
+#line 77 "Condensation/CLI/Commands/Get.pm"
 sub collectHash1 {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 76 "Condensation/CLI/Commands/Get.pm"
+#line 78 "Condensation/CLI/Commands/Get.pm"
 	$o->{hash} = $value;
+	$o->{store} = $o->{actor}->preferredStore;
 }
 
-#line 79 "Condensation/CLI/Commands/Get.pm"
+#line 82 "Condensation/CLI/Commands/Get.pm"
 sub collectObject {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 80 "Condensation/CLI/Commands/Get.pm"
+#line 83 "Condensation/CLI/Commands/Get.pm"
 	$o->{hash} = $value->hash;
 	$o->{store} = $value->cliStore;
 }
 
-#line 84 "Condensation/CLI/Commands/Get.pm"
+#line 87 "Condensation/CLI/Commands/Get.pm"
 sub collectObject1 {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 85 "Condensation/CLI/Commands/Get.pm"
+#line 88 "Condensation/CLI/Commands/Get.pm"
 	$o->{hash} = $value->hash;
 	push @{$o->{stores}}, $value->store;
 }
 
-#line 89 "Condensation/CLI/Commands/Get.pm"
+#line 92 "Condensation/CLI/Commands/Get.pm"
 sub collectOf {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 90 "Condensation/CLI/Commands/Get.pm"
+#line 93 "Condensation/CLI/Commands/Get.pm"
 	$o->{saveData} = 1;
 }
 
-#line 93 "Condensation/CLI/Commands/Get.pm"
+#line 96 "Condensation/CLI/Commands/Get.pm"
 sub collectSave {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 94 "Condensation/CLI/Commands/Get.pm"
+#line 97 "Condensation/CLI/Commands/Get.pm"
 	$o->{saveObject} = 1;
 }
 
-#line 97 "Condensation/CLI/Commands/Get.pm"
+#line 100 "Condensation/CLI/Commands/Get.pm"
 sub collectStore {
 	my $o = shift;
 	my $label = shift;
 	my $value = shift;
 
-#line 98 "Condensation/CLI/Commands/Get.pm"
+#line 101 "Condensation/CLI/Commands/Get.pm"
 	$o->{store} = $value;
 }
 
-#line 101 "Condensation/CLI/Commands/Get.pm"
+#line 104 "Condensation/CLI/Commands/Get.pm"
 sub new {
 	my $class = shift;
 	my $actor = shift;
 	 bless {actor => $actor, ui => $actor->ui} }
 
-#line 103 "Condensation/CLI/Commands/Get.pm"
+#line 106 "Condensation/CLI/Commands/Get.pm"
 # END AUTOGENERATED
 
-#line 105 "Condensation/CLI/Commands/Get.pm"
+#line 108 "Condensation/CLI/Commands/Get.pm"
 # HTML FOLDER NAME store-get
 # HTML TITLE Get
 sub help {
 	my $o = shift;
 	my $cmd = shift;
 
-#line 108 "Condensation/CLI/Commands/Get.pm"
+#line 111 "Condensation/CLI/Commands/Get.pm"
 	my $ui = $o->{ui};
 	$ui->space;
 	$ui->command('cds get OBJECT');
@@ -6375,6 +6384,9 @@ sub help {
 	$ui->command('cds save data of … as FILENAME');
 	$ui->p('Saves the object\'s data to FILENAME.');
 	$ui->space;
+	$ui->command('cds hex dump …');
+	$ui->p('Writes the object as hex string to STDOUT.');
+	$ui->space;
 	$ui->title('Related commands');
 	$ui->line('cds open envelope OBJECT');
 	$ui->line('cds show record OBJECT [decrypted with AESKEY]');
@@ -6382,23 +6394,23 @@ sub help {
 	$ui->space;
 }
 
-#line 133 "Condensation/CLI/Commands/Get.pm"
+#line 139 "Condensation/CLI/Commands/Get.pm"
 sub get {
 	my $o = shift;
 	my $cmd = shift;
 
-#line 134 "Condensation/CLI/Commands/Get.pm"
+#line 140 "Condensation/CLI/Commands/Get.pm"
 	$cmd->collect($o);
 
-#line 136 "Condensation/CLI/Commands/Get.pm"
+#line 142 "Condensation/CLI/Commands/Get.pm"
 	# Retrieve the object
 	my $object = $o->{actor}->uiGetObject($o->{hash}, $o->{store}, $o->{actor}->preferredKeyPairToken) // return;
 
-#line 139 "Condensation/CLI/Commands/Get.pm"
+#line 145 "Condensation/CLI/Commands/Get.pm"
 	# Decrypt
 	$object = $object->crypt($o->{aesKey}) if defined $o->{aesKey};
 
-#line 142 "Condensation/CLI/Commands/Get.pm"
+#line 148 "Condensation/CLI/Commands/Get.pm"
 	# Output
 	if ($o->{saveData}) {
 		CDS->writeBytesToFile($o->{filename}, $object->data) // return $o->{ui}->error('Failed to write data to "', $o->{filename}, '".');
@@ -6406,6 +6418,8 @@ sub get {
 	} elsif ($o->{saveObject}) {
 		CDS->writeBytesToFile($o->{filename}, $object->bytes) // return $o->{ui}->error('Failed to write object to "', $o->{filename}, '".');
 		$o->{ui}->pGreen(length $object->bytes, ' bytes written to ', $o->{filename}, '.');
+	} elsif ($o->{hexDump}) {
+		$o->{ui}->raw(unpack('H*', $object->bytes)."\n");
 	} else {
 		$o->{ui}->raw($object->bytes);
 	}

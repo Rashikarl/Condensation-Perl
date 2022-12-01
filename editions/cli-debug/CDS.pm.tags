@@ -390,6 +390,7 @@ collectBox||($label, $value) in CDS::Commands::Transfer|
 collectBytes||($label, $value) in CDS::Commands::ShowObject|
 collectData||($label, $value) in CDS::Commands::ShowObject|
 collectDate||($label, $value) in CDS::Commands::ShowPrivateData|
+collectDump||($label, $value) in CDS::Commands::Get|
 collectEntrusted||($label, $value) in CDS::Commands::Announce|
 collectEverybody||($label, $value) in CDS::Commands::FolderStore|
 collectEverybody||($label, $value) in CDS::Commands::StartHTTPServer|
