@@ -93,21 +93,16 @@ sub setMyGroupDataFlag($o, $flag) {
 
 ### Actor group
 
-sub isGroupMember($o, $actorHash) {
-	return 1 if $actorHash->equals($o:keyPair->publicKey->hash);
-	my $memberSelector = $o->findMember($actorHash) // return;
-	return ! $memberSelector->child('revoked')->isSet;
+sub groupMemberSelector($o, $actorHash) {
+	return $o:actorGroupSelector->child(substr($actorHash->bytes, 0, 16));
 }
 
-sub findMember($o, $memberHash) {
-	for my $child ($o:actorGroupSelector->children) {
-		my $record = $child->record;
-		my $hash = $record->child('hash')->hashValue // next;
-		next if ! $hash->equals($memberHash);
-		return $child;
-	}
-
-	return;
+sub isGroupMember($o, $actorHash) {
+	return 1 if $actorHash->equals($o:keyPair->publicKey->hash);
+	my $memberSelector = $o->groupMemberSelector($actorHash) // return;
+	return 0 if $memberSelector->child('revoked')->isSet;
+	my $record = $memberSelector->record;
+	return $actorHash->equals($record->child('hash')->hashValue);
 }
 
 sub forgetOldIdleActors($o, $limit) {
@@ -117,6 +112,24 @@ sub forgetOldIdleActors($o, $limit) {
 		next if $child->revision > $limit;
 		$child->forgetBranch;
 	}
+}
+
+sub setGroupMember($o, $publicKey, $storeUrl, $active, $groupData) {
+	my $memberSelector = $o->groupMemberSelector($publicKey->hash);
+	my $record = CDS::Record->new;
+	$record->add('hash')->addHash($publicKey->hash);
+	$record->add('store')->addText($storeUrl);
+	$memberSelector->set($record);
+	$memberSelector->addObject($publicKey->hash, $publicKey->object);
+
+	$memberSelector->child('active')->setBoolean($active);
+	$memberSelector->child('group data')->setBoolean($groupData);
+}
+
+sub revokeGroupMember($o, $actorHash, $storeUrl) {
+	my $memberSelector = $o->groupMemberSelector($actorHash);
+	return if ! $memberSelector->isSet;
+	$memberSelector->child('revoked')->setBoolean(1);
 }
 
 ### Group data members
@@ -139,7 +152,7 @@ sub getGroupDataMembers($o) {
 		# Keep
 		my $member = $o:cachedGroupDataMembers->{$child->label};
 		my $storeUrl = $record->child('store')->textValue;
-		next if $member && $member->storeUrl eq $storeUrl && $member->actorOnStore->publicKey->hash->equals($hash);
+		next if $member && $member:storeUrl eq $storeUrl && $member:actorOnStore->publicKey->hash->equals($hash);
 
 		# Verify the store
 		my $store = $o->onVerifyMemberStore($storeUrl, $child);
@@ -149,8 +162,8 @@ sub getGroupDataMembers($o) {
 		}
 
 		# Reuse the public key and add
-		if ($member && $member->actorOnStore->publicKey->hash->equals($hash)) {
-			my $actorOnStore = CDS::ActorOnStore->new($member->actorOnStore->publicKey, $store);
+		if ($member && $member:actorOnStore->publicKey->hash->equals($hash)) {
+			my $actorOnStore = CDS::ActorOnStore->new($member:actorOnStore->publicKey, $store);
 			$o:cachedEntrustedKeys->{$child->label} = {storeUrl => $storeUrl, actorOnStore => $actorOnStore};
 		}
 
@@ -231,7 +244,7 @@ sub procurePrivateData($o, $interval // CDS->DAY) {
 sub savePrivateDataAndShareGroupData($o) {
 	$o:localDocument->save;
 	$o:groupDocument->save;
-	$o->groupDataSharer->share;
+	$o:groupDataSharer->share;
 	my $entrustedKeys = $o->getEntrustedKeys // return;
 	my ($ok, $missingHash) = $o:storagePrivateRoot->save($entrustedKeys);
 	return 1 if $ok;

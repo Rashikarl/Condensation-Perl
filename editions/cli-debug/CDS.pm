@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.30 (cli debug) built on 2022-12-01.
+# This is the Condensation Perl Module 0.31 (cli debug) built on 2022-12-06.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -36,9 +36,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 our $edition = 'cli debug';
-our $releaseDate = '2022-12-01';
+our $releaseDate = '2022-12-06';
 
 #line 3 "Condensation/Duration.pm"
 sub now { time * 1000 }
@@ -1091,39 +1091,33 @@ sub setMyGroupDataFlag {
 ### Actor group
 
 #line 96 "Condensation/ActorWithDocument/ActorWithDocument.pm"
-sub isGroupMember {
+sub groupMemberSelector {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
 #line 97 "Condensation/ActorWithDocument/ActorWithDocument.pm"
-	return 1 if $actorHash->equals($o->{keyPair}->publicKey->hash);
-	my $memberSelector = $o->findMember($actorHash) // return;
-	return ! $memberSelector->child('revoked')->isSet;
+	return $o->{actorGroupSelector}->child(substr($actorHash->bytes, 0, 16));
 }
 
-#line 102 "Condensation/ActorWithDocument/ActorWithDocument.pm"
-sub findMember {
+#line 100 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+sub isGroupMember {
 	my $o = shift;
-	my $memberHash = shift; die 'wrong type '.ref($memberHash).' for $memberHash' if defined $memberHash && ref $memberHash ne 'CDS::Hash';
+	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
-#line 103 "Condensation/ActorWithDocument/ActorWithDocument.pm"
-	for my $child ($o->{actorGroupSelector}->children) {
-		my $record = $child->record;
-		my $hash = $record->child('hash')->hashValue // next;
-		next if ! $hash->equals($memberHash);
-		return $child;
-	}
-
-#line 110 "Condensation/ActorWithDocument/ActorWithDocument.pm"
-	return;
+#line 101 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+	return 1 if $actorHash->equals($o->{keyPair}->publicKey->hash);
+	my $memberSelector = $o->groupMemberSelector($actorHash) // return;
+	return 0 if $memberSelector->child('revoked')->isSet;
+	my $record = $memberSelector->record;
+	return $actorHash->equals($record->child('hash')->hashValue);
 }
 
-#line 113 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 108 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub forgetOldIdleActors {
 	my $o = shift;
 	my $limit = shift;
 
-#line 114 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 109 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	for my $child ($o->{actorGroupSelector}->children) {
 		next if $child->child('active')->booleanValue;
 		next if $child->child('group data')->booleanValue;
@@ -1132,14 +1126,47 @@ sub forgetOldIdleActors {
 	}
 }
 
-#line 122 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 117 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+sub setGroupMember {
+	my $o = shift;
+	my $publicKey = shift; die 'wrong type '.ref($publicKey).' for $publicKey' if defined $publicKey && ref $publicKey ne 'CDS::PublicKey';
+	my $storeUrl = shift;
+	my $active = shift;
+	my $groupData = shift;
+
+#line 118 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+	my $memberSelector = $o->groupMemberSelector($publicKey->hash);
+	my $record = CDS::Record->new;
+	$record->add('hash')->addHash($publicKey->hash);
+	$record->add('store')->addText($storeUrl);
+	$memberSelector->set($record);
+	$memberSelector->addObject($publicKey->hash, $publicKey->object);
+
+#line 125 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+	$memberSelector->child('active')->setBoolean($active);
+	$memberSelector->child('group data')->setBoolean($groupData);
+}
+
+#line 129 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+sub revokeGroupMember {
+	my $o = shift;
+	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
+	my $storeUrl = shift;
+
+#line 130 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+	my $memberSelector = $o->groupMemberSelector($actorHash);
+	return if ! $memberSelector->isSet;
+	$memberSelector->child('revoked')->setBoolean(1);
+}
+
+#line 135 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Group data members
 
-#line 124 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 137 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub getGroupDataMembers {
 	my $o = shift;
 
-#line 125 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 138 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Update the cached list
 	for my $child ($o->{actorGroupSelector}->children) {
 		my $record = $child->record;
@@ -1148,20 +1175,20 @@ sub getGroupDataMembers {
 		$hash = undef if $child->child('revoked')->isSet;
 		$hash = undef if ! $child->child('group data')->isSet;
 
-#line 133 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 146 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Remove
 		if (! $hash) {
 			delete $o->{cachedGroupDataMembers}->{$child->label};
 			next;
 		}
 
-#line 139 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 152 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Keep
 		my $member = $o->{cachedGroupDataMembers}->{$child->label};
 		my $storeUrl = $record->child('store')->textValue;
-		next if $member && $member->storeUrl eq $storeUrl && $member->actorOnStore->publicKey->hash->equals($hash);
+		next if $member && $member->{storeUrl} eq $storeUrl && $member->{actorOnStore}->publicKey->hash->equals($hash);
 
-#line 144 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 157 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Verify the store
 		my $store = $o->onVerifyMemberStore($storeUrl, $child);
 		if (! $store) {
@@ -1169,14 +1196,14 @@ sub getGroupDataMembers {
 			next;
 		}
 
-#line 151 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 164 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Reuse the public key and add
-		if ($member && $member->actorOnStore->publicKey->hash->equals($hash)) {
-			my $actorOnStore = CDS::ActorOnStore->new($member->actorOnStore->publicKey, $store);
+		if ($member && $member->{actorOnStore}->publicKey->hash->equals($hash)) {
+			my $actorOnStore = CDS::ActorOnStore->new($member->{actorOnStore}->publicKey, $store);
 			$o->{cachedEntrustedKeys}->{$child->label} = {storeUrl => $storeUrl, actorOnStore => $actorOnStore};
 		}
 
-#line 157 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 170 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		# Get the public key and add
 		my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDocument}->unsaved);
 		return if defined $storeError;
@@ -1185,26 +1212,26 @@ sub getGroupDataMembers {
 			next;
 		}
 
-#line 165 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 178 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 		my $actorOnStore = CDS::ActorOnStore->new($publicKey, $store);
 		$o->{cachedGroupDataMembers}->{$child->label} = {storeUrl => $storeUrl, actorOnStore => $actorOnStore};
 	}
 
-#line 169 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 182 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# Return the current list
 	return [map { $_->{actorOnStore} } values %{$o->{cachedGroupDataMembers}}];
 }
 
-#line 173 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 186 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Entrusted actors
 
-#line 175 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 188 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub entrust {
 	my $o = shift;
 	my $storeUrl = shift;
 	my $publicKey = shift; die 'wrong type '.ref($publicKey).' for $publicKey' if defined $publicKey && ref $publicKey ne 'CDS::PublicKey';
 
-#line 176 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 189 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# TODO: this is not compatible with the Java implementation (which uses a record with "hash" and "store")
 	my $selector = $o->{entrustedActorsSelector};
 	my $builder = CDS::ActorGroupBuilder->new;
@@ -1216,12 +1243,12 @@ sub entrust {
 	$o->{cachedEntrustedKeys}->{$publicKey->hash->bytes} = $publicKey;
 }
 
-#line 187 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 200 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub doNotEntrust {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 188 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 201 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	my $selector = $o->{entrustedActorsSelector};
 	my $builder = CDS::ActorGroupBuilder->new;
 	$builder->parseEntrustedActorList($selector->record, 1);
@@ -1230,11 +1257,11 @@ sub doNotEntrust {
 	delete $o->{cachedEntrustedKeys}->{$hash->bytes};
 }
 
-#line 196 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 209 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub getEntrustedKeys {
 	my $o = shift;
 
-#line 197 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 210 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	my $entrustedKeys = [];
 	for my $storeRecord ($o->{entrustedActorsSelector}->record->children) {
 		for my $child ($storeRecord->children) {
@@ -1243,24 +1270,24 @@ sub getEntrustedKeys {
 		}
 	}
 
-#line 205 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 218 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	# We could remove unused keys from $o->{cachedEntrustedKeys} here, but since this is
 	# such a rare event, and doesn't consume a lot of memory, this would be overkill.
 
-#line 208 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 221 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return $entrustedKeys;
 }
 
-#line 211 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 224 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub getEntrustedKey {
 	my $o = shift;
 	my $hash = shift; die 'wrong type '.ref($hash).' for $hash' if defined $hash && ref $hash ne 'CDS::Hash';
 
-#line 212 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 225 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	my $entrustedKey = $o->{cachedEntrustedKeys}->{$hash->bytes};
 	return $entrustedKey if $entrustedKey;
 
-#line 215 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 228 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	my ($publicKey, $invalidReason, $storeError) = $o->{keyPair}->getPublicKey($hash, $o->{groupDocument}->unsaved);
 	return if defined $storeError;
 	return if defined $invalidReason;
@@ -1268,29 +1295,29 @@ sub getEntrustedKey {
 	return $publicKey;
 }
 
-#line 222 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 235 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Private data
 
-#line 224 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 237 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub procurePrivateData {
 	my $o = shift;
 	my $interval = shift // CDS->DAY;
 
-#line 225 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 238 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{storagePrivateRoot}->procure($interval) // return;
 	$o->{groupDocument}->read // return;
 	$o->{localDocument}->read // return;
 	return 1;
 }
 
-#line 231 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 244 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub savePrivateDataAndShareGroupData {
 	my $o = shift;
 
-#line 232 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 245 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{localDocument}->save;
 	$o->{groupDocument}->save;
-	$o->groupDataSharer->share;
+	$o->{groupDataSharer}->share;
 	my $entrustedKeys = $o->getEntrustedKeys // return;
 	my ($ok, $missingHash) = $o->{storagePrivateRoot}->save($entrustedKeys);
 	return 1 if $ok;
@@ -1298,41 +1325,41 @@ sub savePrivateDataAndShareGroupData {
 	return;
 }
 
-#line 242 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 255 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 # abstract sub onVerifyMemberStore($storeUrl, $selector)
 # abstract sub onPrivateRootReadingInvalidEntry($o, $source, $reason)
 # abstract sub onMissingObject($missingHash)
 
-#line 246 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 259 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Sending messages
 
-#line 248 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 261 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub procureSentList {
 	my $o = shift;
 	my $interval = shift // CDS->DAY;
 
-#line 249 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 262 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	$o->{messagingPrivateRoot}->procure($interval) // return;
 	$o->{sentList}->read // return;
 	$o->{sentListReady} = 1;
 	return 1;
 }
 
-#line 255 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 268 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub openMessageChannel {
 	my $o = shift;
 	my $label = shift;
 	my $validity = shift;
 
-#line 256 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 269 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return CDS::MessageChannel->new($o, $label, $validity);
 }
 
-#line 259 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 272 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 sub sendMessages {
 	my $o = shift;
 
-#line 260 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 273 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 	return 1 if ! $o->{sentList}->hasChanges;
 	$o->{sentList}->save;
 	my $entrustedKeys = $o->getEntrustedKeys // return;
@@ -1342,10 +1369,10 @@ sub sendMessages {
 	return;
 }
 
-#line 269 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 282 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 ### Receiving messages
 
-#line 271 "Condensation/ActorWithDocument/ActorWithDocument.pm"
+#line 284 "Condensation/ActorWithDocument/ActorWithDocument.pm"
 # abstract sub onMessageBoxVerifyStore($o, $senderStoreUrl, $hash, $envelope, $senderHash)
 # abstract sub onMessage($o, $message)
 # abstract sub onInvalidMessage($o, $source, $reason)
@@ -19686,7 +19713,7 @@ sub needsSignature {
 
 #line 134 "Condensation/Stores/StoreModifications.pm"
 	for my $addition (@{$o->{additions}}) {
-		return 1 if $addition->boxLabel ne 'messages';
+		return 1 if $addition->{boxLabel} ne 'messages';
 	}
 
 #line 138 "Condensation/Stores/StoreModifications.pm"

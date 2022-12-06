@@ -132,7 +132,7 @@ sub needsSignature($o) {
 	return 0 if scalar @$o:removals;
 
 	for my $addition (@$o:additions) {
-		return 1 if $addition->boxLabel ne 'messages';
+		return 1 if $addition:boxLabel ne 'messages';
 	}
 
 	return 0;

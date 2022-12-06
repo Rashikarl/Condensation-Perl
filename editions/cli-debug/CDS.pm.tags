@@ -668,7 +668,6 @@ file||in CDS::ObjectFileToken|
 finalizeWrong||() in CDS::Commands::FolderStore::CheckLogger|
 finalizeWrong||() in CDS::Commands::FolderStore::FixLogger|
 finalizeWrong||() in CDS::Commands::FolderStore::SetLogger|
-findMember||($memberHash) in CDS::ActorWithDocument|
 firstChild||() in CDS::Record|
 firstValue||() in CDS::Selector|
 fixPermissions||($cmd) in CDS::Commands::FolderStore|
@@ -746,6 +745,7 @@ gray||() in CDS::UI|
 green||() in CDS::UI|
 groupDataSharer||in CDS::ActorWithDocument|
 groupDocument||in CDS::ActorWithDocument|
+groupMemberSelector||($actorHash) in CDS::ActorWithDocument|
 groupRoot||in CDS::ActorWithDocument|
 groupedBoxOperations||($operations) in CDS STATIC|
 groupname||($gid) in CDS::Commands::FolderStore::Logger|
@@ -1362,6 +1362,7 @@ revision||in CDS::ActorGroup::Member|
 revision||in CDS::ActorGroupBuilder::Member|
 revision||in CDS::DiscoverActorGroup::Link|
 revision||in CDS::DiscoverActorGroup::Node|
+revokeGroupMember||($actorHash, $storeUrl) in CDS::ActorWithDocument|
 right||($width, $text) in CDS::UI|
 rootItem||() in CDS::Document|
 root||($document) in CDS::Selector STATIC|
@@ -1408,6 +1409,7 @@ setError||($item) in CDS::Commands::FolderStore::Logger|
 setFlag||($actorSelector, $label, $value) in CDS::Commands::ActorGroup|
 setFloat32||($value, $hash) in CDS::Selector|
 setFloat64||($value, $hash) in CDS::Selector|
+setGroupMember||($publicKey, $storeUrl, $active, $groupData) in CDS::ActorWithDocument|
 setHashAndKey||($hashAndKey) in CDS::Selector|
 setHash||($hash) in CDS::Selector|
 setHeader||($key, $value) in CDS::HTTPServer::Request|

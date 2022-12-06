@@ -1,4 +1,4 @@
-# This is the Condensation Perl Module 0.30 (cli) built on 2022-12-01.
+# This is the Condensation Perl Module 0.31 (cli) built on 2022-12-06.
 # See https://condensation.io for information about the Condensation Data System.
 
 use strict;
@@ -36,9 +36,9 @@ use Time::Local;
 use utf8;
 package CDS;
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 our $edition = 'cli';
-our $releaseDate = '2022-12-01';
+our $releaseDate = '2022-12-06';
 
 sub now { time * 1000 }
 
@@ -916,27 +916,22 @@ sub setMyGroupDataFlag {
 
 ### Actor group
 
+sub groupMemberSelector {
+	my $o = shift;
+	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
+
+	return $o->{actorGroupSelector}->child(substr($actorHash->bytes, 0, 16));
+}
+
 sub isGroupMember {
 	my $o = shift;
 	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
 
 	return 1 if $actorHash->equals($o->{keyPair}->publicKey->hash);
-	my $memberSelector = $o->findMember($actorHash) // return;
-	return ! $memberSelector->child('revoked')->isSet;
-}
-
-sub findMember {
-	my $o = shift;
-	my $memberHash = shift; die 'wrong type '.ref($memberHash).' for $memberHash' if defined $memberHash && ref $memberHash ne 'CDS::Hash';
-
-	for my $child ($o->{actorGroupSelector}->children) {
-		my $record = $child->record;
-		my $hash = $record->child('hash')->hashValue // next;
-		next if ! $hash->equals($memberHash);
-		return $child;
-	}
-
-	return;
+	my $memberSelector = $o->groupMemberSelector($actorHash) // return;
+	return 0 if $memberSelector->child('revoked')->isSet;
+	my $record = $memberSelector->record;
+	return $actorHash->equals($record->child('hash')->hashValue);
 }
 
 sub forgetOldIdleActors {
@@ -949,6 +944,34 @@ sub forgetOldIdleActors {
 		next if $child->revision > $limit;
 		$child->forgetBranch;
 	}
+}
+
+sub setGroupMember {
+	my $o = shift;
+	my $publicKey = shift; die 'wrong type '.ref($publicKey).' for $publicKey' if defined $publicKey && ref $publicKey ne 'CDS::PublicKey';
+	my $storeUrl = shift;
+	my $active = shift;
+	my $groupData = shift;
+
+	my $memberSelector = $o->groupMemberSelector($publicKey->hash);
+	my $record = CDS::Record->new;
+	$record->add('hash')->addHash($publicKey->hash);
+	$record->add('store')->addText($storeUrl);
+	$memberSelector->set($record);
+	$memberSelector->addObject($publicKey->hash, $publicKey->object);
+
+	$memberSelector->child('active')->setBoolean($active);
+	$memberSelector->child('group data')->setBoolean($groupData);
+}
+
+sub revokeGroupMember {
+	my $o = shift;
+	my $actorHash = shift; die 'wrong type '.ref($actorHash).' for $actorHash' if defined $actorHash && ref $actorHash ne 'CDS::Hash';
+	my $storeUrl = shift;
+
+	my $memberSelector = $o->groupMemberSelector($actorHash);
+	return if ! $memberSelector->isSet;
+	$memberSelector->child('revoked')->setBoolean(1);
 }
 
 ### Group data members
@@ -973,7 +996,7 @@ sub getGroupDataMembers {
 		# Keep
 		my $member = $o->{cachedGroupDataMembers}->{$child->label};
 		my $storeUrl = $record->child('store')->textValue;
-		next if $member && $member->storeUrl eq $storeUrl && $member->actorOnStore->publicKey->hash->equals($hash);
+		next if $member && $member->{storeUrl} eq $storeUrl && $member->{actorOnStore}->publicKey->hash->equals($hash);
 
 		# Verify the store
 		my $store = $o->onVerifyMemberStore($storeUrl, $child);
@@ -983,8 +1006,8 @@ sub getGroupDataMembers {
 		}
 
 		# Reuse the public key and add
-		if ($member && $member->actorOnStore->publicKey->hash->equals($hash)) {
-			my $actorOnStore = CDS::ActorOnStore->new($member->actorOnStore->publicKey, $store);
+		if ($member && $member->{actorOnStore}->publicKey->hash->equals($hash)) {
+			my $actorOnStore = CDS::ActorOnStore->new($member->{actorOnStore}->publicKey, $store);
 			$o->{cachedEntrustedKeys}->{$child->label} = {storeUrl => $storeUrl, actorOnStore => $actorOnStore};
 		}
 
@@ -1082,7 +1105,7 @@ sub savePrivateDataAndShareGroupData {
 
 	$o->{localDocument}->save;
 	$o->{groupDocument}->save;
-	$o->groupDataSharer->share;
+	$o->{groupDataSharer}->share;
 	my $entrustedKeys = $o->getEntrustedKeys // return;
 	my ($ok, $missingHash) = $o->{storagePrivateRoot}->save($entrustedKeys);
 	return 1 if $ok;
@@ -16652,7 +16675,7 @@ sub needsSignature {
 	return 0 if scalar @{$o->{removals}};
 
 	for my $addition (@{$o->{additions}}) {
-		return 1 if $addition->boxLabel ne 'messages';
+		return 1 if $addition->{boxLabel} ne 'messages';
 	}
 
 	return 0;
